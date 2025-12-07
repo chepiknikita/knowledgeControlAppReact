@@ -7,18 +7,10 @@ import CardActionArea from "@mui/material/CardActionArea";
 import { Link } from "react-router-dom";
 import { Avatar, Box } from "@mui/material";
 import DykTypography from "../../../components/UI/typography/DykTypography";
-
-interface Task {
-  id: number;
-  name: string;
-  description: string;
-  img: string;
-  author: string;
-  date?: string;
-}
+import { TaskItem } from "../../../api/interfaces/tasks";
 
 interface Props {
-  task: Task;
+  task: TaskItem;
 }
 
 export default function PreviewTask({ task }: Props) {
@@ -41,10 +33,10 @@ export default function PreviewTask({ task }: Props) {
               display: "flex",
             }}
           >
-            <Avatar alt="avatar" src={task.author ?? undefined} />
+            {/* <Avatar alt="avatar" src={task.author ?? undefined} /> */}
             <Box sx={{ overflow: "hidden", ml: 2 }}>
               <DykTypography
-                text={`${task.name} asdasdasd adasdasdas as dasdasd asd asd`}
+                text={task.name}
                 variant="body1"
                 sx={{
                   textOverflow: "ellipsis",
@@ -52,14 +44,17 @@ export default function PreviewTask({ task }: Props) {
                   overflow: "hidden",
                 }}
               />
-              <DykTypography text={task.date ?? "asdasdasd"} variant="body2" />
+              <DykTypography
+                text={new Date(task.createdAt).toLocaleString()}
+                variant="body2"
+              />
             </Box>
           </Box>
-          {task.img ? (
+          {task.image ? (
             <CardMedia
               component="img"
               alt="image-task"
-              image={task.img}
+              image={task.image}
               sx={{ height: "100%" }}
             />
           ) : (
@@ -88,7 +83,7 @@ export default function PreviewTask({ task }: Props) {
             }}
           >
             <Typography variant="body2" component="div">
-              {task.name}
+              {task.description}
             </Typography>
           </CardContent>
         </CardActionArea>

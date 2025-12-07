@@ -2,16 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { Question } from './entities/question.model';
 import { InjectModel } from '@nestjs/sequelize';
+import { Answer } from './entities/answer.model';
 
 @Injectable()
 export class QuestionService {
-  constructor(@InjectModel(Question) private questionRepository: typeof Question) {}
+  constructor(
+    @InjectModel(Question) private questionRepository: typeof Question,
+  ) {}
 
   async getAll() {
     return await this.questionRepository.findAll({ include: { all: true } });
   }
 
-  async getTaskById(id: number) {
+  async getQuestionById(id: number) {
     return await this.questionRepository.findOne({
       where: { id },
       include: { all: true },
@@ -19,11 +22,21 @@ export class QuestionService {
   }
 
   async create(dto: CreateQuestionDto) {
-    return await this.questionRepository.create(dto);
+    const { answers, ...question } = dto;
+    const res = await this.questionRepository.create(question);
+
+    if (answers && answers.length > 0) {
+      await res.$create('answers', answers);
+    }
+
+    return await this.questionRepository.findByPk(res.id, {
+      include: [Answer]
+    });
   }
 
   async edit(id: number, dto: CreateQuestionDto) {
-    return await this.questionRepository.update(dto, { where: { id } });
+    const {answers, ...question} = dto
+    return await this.questionRepository.update(question, { where: { id } });
   }
 
   async delete(id: number) {

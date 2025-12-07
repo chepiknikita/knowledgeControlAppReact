@@ -16,7 +16,7 @@ interface UserCreationAttrs {
   password: string;
 }
 
-@Table({ tableName: 'users' })
+@Table({ tableName: 'users', createdAt: false, updatedAt: false })
 export class User extends Model<User, UserCreationAttrs> {
   @ApiProperty({ example: '1', description: 'Indentificator' })
   @Column({
@@ -36,7 +36,7 @@ export class User extends Model<User, UserCreationAttrs> {
   password: string;
 
   @ApiProperty({ example: 'Аватар пользователя', description: 'User avatar' })
-  @Column({ type: DataType.STRING })
+  @Column({ type: DataType.STRING, allowNull: true })
   avatar: string;
 
   @BelongsToMany(() => Role, () => UserRoles)

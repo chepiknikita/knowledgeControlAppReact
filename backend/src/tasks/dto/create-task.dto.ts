@@ -1,8 +1,9 @@
-import { Question } from "src/question/entities/question.model";
+import { CreateQuestionDto } from 'src/question/dto/create-question.dto';
 
 export class CreateTaskDto {
+  readonly image: string;
   readonly name: string;
   readonly description: string;
-  // readonly userId: number;
-  readonly question: Question[];
+  readonly userId: string;
+  readonly questions: CreateQuestionDto[];
 }

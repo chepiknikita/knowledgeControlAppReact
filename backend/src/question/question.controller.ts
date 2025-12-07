@@ -20,8 +20,8 @@ export class QuestionController {
   }
 
   @Get('/:id')
-  getTaskById(@Param('id') id: number) {
-    return this.questionService.getTaskById(id);
+  getQuestionById(@Param('id') id: number) {
+    return this.questionService.getQuestionById(id);
   }
 
   @Post()

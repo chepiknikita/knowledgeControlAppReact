@@ -63,6 +63,7 @@ export default function TheTaskQuestions() {
       ],
     },
   ];
+
   const onAnswer = () => {
     navigation(`/task/end/3`);
   };

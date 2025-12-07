@@ -2,7 +2,7 @@ import { Avatar, Box, ButtonBase, Divider, Pagination, TextField } from "@mui/ma
 import React, { useState } from "react";
 import DykTypography from "../components/UI/typography/DykTypography";
 import DykButton from "../components/UI/buttons/DykButton";
-import PreviewTask from "../features/task/components/PreviewTask";
+import PreviewTask from "../features/task/components/PreviewTest";
 
 export default function PersonalProfile() {
   const [avatarSrc, setAvatarSrc] = React.useState<string | undefined>(
@@ -152,9 +152,9 @@ export default function PersonalProfile() {
                 justifyContent: "center",
               }}
               >
-              {items.map((task) => (
+              {/* {items.map((task) => (
                 <PreviewTask key={task.id} task={task} />
-              ))}
+              ))} */}
             </Box>
             <Pagination count={5} variant="outlined" shape="rounded" />
               </Box>

@@ -1,4 +1,3 @@
-import { AxiosInstance } from "axios";
 import { AuthService } from "./services/AuthService";
 import { QuestionService } from "./services/QuestionService";
 import { TaskService } from "./services/TaskService";
@@ -10,33 +9,33 @@ import QuestionRepository from "./repositories/QuestionRepository";
 import QuestionEnpoint from "./endpoints/QuestionEnpoint";
 import ApiClient from "./config/ApiClient";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000/api";
+const API_URL = process.env.REACT_APP_NEST_SERVER_API_URL || "http://localhost:3000/api";
 
 export class ApiFactory {
-  private static apiInstance: AxiosInstance;
+  private static apiInstance: ApiClient;
 
   private static initialize() {
     if (!this.apiInstance) {
-      this.apiInstance = new ApiClient(API_URL) as unknown as AxiosInstance;
+      this.apiInstance = new ApiClient(API_URL);
     }
   }
 
   public static createAuthService(): AuthService {
     this.initialize();
-    const repository = new AuthRepository(new AuthEnpoint(this.apiInstance));
+    const repository = new AuthRepository(new AuthEnpoint(this.apiInstance.api));
     return new AuthService(repository);
   }
 
   public static createTaskService(): TaskService {
     this.initialize();
-    const repository = new TaskRepository(new TaskEnpoint(this.apiInstance));
+    const repository = new TaskRepository(new TaskEnpoint(this.apiInstance.api));
     return new TaskService(repository);
   }
 
   public static createQuestionService(): QuestionService {
     this.initialize();
     const repository = new QuestionRepository(
-      new QuestionEnpoint(this.apiInstance)
+      new QuestionEnpoint(this.apiInstance.api)
     );
     return new QuestionService(repository);
   }

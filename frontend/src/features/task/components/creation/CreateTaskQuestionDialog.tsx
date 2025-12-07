@@ -35,6 +35,8 @@ export default function TheDialog({ header, onSaveQuestion }: Props) {
   const [question, setQuestion] = React.useState("");
 
   const handleClickOpen = () => {
+    setAswers([]);
+    setQuestion("");
     setOpen(true);
   };
 
@@ -51,9 +53,11 @@ export default function TheDialog({ header, onSaveQuestion }: Props) {
   };
 
   const handleQuestion = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("test", e);
     setQuestion(e.target.value);
   };
+
+  const isValidAnswers = answers.every((v) => v.text) && answers.some((v) => v.valid);
+  const disabled = question && answers.length > 3 && isValidAnswers;
 
   const handleInputChange = (id: number, value: string) => {
     setAswers((prevAnswers) =>
@@ -69,7 +73,7 @@ export default function TheDialog({ header, onSaveQuestion }: Props) {
   ) => {
     setAswers((prevAnswers) =>
       prevAnswers.map((answer) =>
-        answer.id === id ? { ...answer, valid: value.target.checked } : answer
+        answer.id === id ? { ...answer, valid: value.target.checked } : { ...answer, valid: false }
       )
     );
   };
@@ -179,7 +183,7 @@ export default function TheDialog({ header, onSaveQuestion }: Props) {
         </DialogContent>
         <DialogActions sx={{ m: 1 }}>
           {/* TODO: autoFocus */}
-          <DykButton title="Сохранить" onClick={onSave} />
+          <DykButton title="Сохранить" disabled={!disabled} onClick={onSave} />
           <DykButton title="Отмена" onClick={handleClose} />
         </DialogActions>
       </Dialog>

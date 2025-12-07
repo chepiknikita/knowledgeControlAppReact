@@ -1,5 +1,5 @@
 import {
-  TaskCreate,
+  TaskCreating,
   TaskEdit,
   TaskItem,
   TaskItemById,
@@ -11,7 +11,7 @@ export class TaskService {
 
   async getAll(): Promise<TaskItem[]> {
     try {
-      const tasks = await this.repository.getAll();
+      const tasks = (await this.repository.getAll()).data;
       return tasks;
     } catch (error) {
       console.error(error);
@@ -21,7 +21,7 @@ export class TaskService {
 
   async getById(id: number): Promise<TaskItemById | null> {
     try {
-      const task = await this.repository.getById(id);
+      const task = (await this.repository.getById(id)).data;
       return task;
     } catch (error) {
       console.error(error);
@@ -29,9 +29,9 @@ export class TaskService {
     }
   }
 
-  async create(payload: TaskCreate): Promise<TaskItem | null> {
+  async create(payload: TaskCreating): Promise<TaskItem | null> {
     try {
-      const task = await this.repository.create(payload);
+      const task = (await this.repository.create(payload)).data;
       return task;
     } catch (error) {
       console.error(error);

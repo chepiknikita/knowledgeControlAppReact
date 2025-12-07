@@ -1,7 +1,8 @@
-import { Answer } from "../entities/answer.model";
+import { CreateAnswerDto } from "./create-answer.dto";
 
 export class CreateQuestionDto {
+  readonly id?  : number;
   readonly taskId: number; 
   readonly question: string;
-  readonly answers: Answer[];
+  readonly answers: CreateAnswerDto[];
 }

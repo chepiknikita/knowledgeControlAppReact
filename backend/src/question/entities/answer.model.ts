@@ -12,6 +12,7 @@ import { Question } from 'src/question/entities/question.model';
 interface AnswerCreation {
   text: string;
   valid: boolean;
+  questionId: number;
 }
 
 @Table({ tableName: 'answers' })
@@ -26,7 +27,7 @@ export class Answer extends Model<Answer, AnswerCreation> {
   id: number;
 
   @ApiProperty({ example: 'Текс ответа', description: 'Answer text' })
-  @Column({ type: DataType.STRING, unique: true, allowNull: false })
+  @Column({ type: DataType.STRING, allowNull: false })
   text: string;
 
   @ApiProperty({ example: 'Флаг правильного варианта', description: 'isCorrect' })
@@ -34,7 +35,7 @@ export class Answer extends Model<Answer, AnswerCreation> {
   isCorrect: boolean;
 
   @ForeignKey(() => Question)
-  @Column({ type: DataType.INTEGER })
+  @Column({ type: DataType.INTEGER, allowNull: false })
   questionId: number;
 
   @BelongsTo(() => Question)

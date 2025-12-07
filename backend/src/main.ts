@@ -14,6 +14,11 @@ async function bootstrap() {
       .addTag('DYK')
       .build();
 
+    app.enableCors({
+      origin: '*',
+      credentials: true,
+    });
+
     const documentFactory = () => SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('/api/docs', app, documentFactory);
     await app.listen(PORT, () => console.log(`server started on port ${PORT}`));

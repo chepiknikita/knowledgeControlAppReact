@@ -21,7 +21,7 @@ export class UserService {
   }
 
   async getAllUsers() {
-    return await this.userRepository.findAll({ include: { all: true }});
+    return await this.userRepository.findAll({ include: { all: true } });
   }
 
   async getUserByLogin(login: string) {

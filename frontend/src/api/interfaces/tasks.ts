@@ -7,9 +7,9 @@ export interface Author {
 
 export interface TaskItem {
   id: number;
-  date: number;
+  createdAt: string;
   author: Author;
-  img: string;
+  image: string;
   name: string;
   description: string;
   countQuestions: number;
@@ -19,9 +19,13 @@ export interface TaskItemById extends TaskItem {
   questions: QuestionItem[];
 }
 
-export type TaskCreate = Pick<
-  TaskItem,
-  "author" | "img" | "name" | "description"
->;
+export interface TaskCreating {
+  image: string;
+  name: string;
+  description: string;
+  userId: number;
+  questions: QuestionItem[];
+}
 
-export type TaskEdit = Pick<TaskItem, "img" | "name" | "description">;
+
+export type TaskEdit = Pick<TaskItem, "image" | "name" | "description">;

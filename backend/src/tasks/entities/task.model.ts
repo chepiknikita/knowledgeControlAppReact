@@ -42,12 +42,15 @@ export class Task extends Model<Task, TaskCreationAttrs> {
   image: string;
 
   @ForeignKey(() => User)
-  @Column({ type: DataType.INTEGER })
+  @Column({ type: DataType.INTEGER, allowNull: false })
   userId: number;
 
   @BelongsTo(() => User)
-  author: User;
+  user: User;
 
-  @HasMany(() => Question)
-  question: Question[];
+  @HasMany(() => Question, { 
+    foreignKey: 'taskId',
+    onDelete: 'CASCADE'
+  })
+  questions: Question[];
 }

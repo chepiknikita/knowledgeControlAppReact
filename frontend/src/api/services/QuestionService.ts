@@ -6,7 +6,7 @@ export class QuestionService {
 
   async getAll(taskId: number): Promise<QuestionItem[]> {
     try {
-      const questions = await this.repository.getAll(taskId);
+      const questions = (await this.repository.getAll(taskId)).data;
       return questions;
     } catch (error) {
       // throw new ApiException(error);
@@ -17,7 +17,7 @@ export class QuestionService {
 
   async getById(id: number): Promise<QuestionItem | null> {
     try {
-      const question = await this.repository.getById(id);
+      const question = (await this.repository.getById(id)).data;
       return question;
     } catch (error) {
       console.error(error);
@@ -27,7 +27,7 @@ export class QuestionService {
 
   async create(payload: QuestionItem[]): Promise<QuestionItem | null> {
     try {
-      const question = await this.repository.create(payload);
+      const question = (await this.repository.create(payload)).data;
       return question;
     } catch (error) {
       console.error(error);

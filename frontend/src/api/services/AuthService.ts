@@ -6,8 +6,7 @@ export class AuthService {
 
   async login(payload: Auth): Promise<void> {
     try {
-      const task = await this.repository.login(payload);
-      return task;
+      await this.repository.login(payload);
     } catch (error) {
       console.error(error);
     }

@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import React from "react";
-import PreviewTask from "../task/components/PreviewTask";
-import { TaskItem } from "../task/types/task";
+import PreviewTask from "../task/components/PreviewTest";
+import { TaskItem } from "../../api/interfaces/tasks";
 
 export default function TaskList({ data }: { data: TaskItem[] }) {
   return (

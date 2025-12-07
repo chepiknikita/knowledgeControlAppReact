@@ -1,8 +1,5 @@
-import { AxiosInstance } from "axios";
-import {
-  TaskCreate,
-  TaskEdit,
-} from "../interfaces/tasks";
+import { AxiosInstance, AxiosResponse } from "axios";
+import { TaskCreating, TaskEdit } from "../interfaces/tasks";
 
 export default class TaskEnpoint {
   api: AxiosInstance;
@@ -11,23 +8,23 @@ export default class TaskEnpoint {
     this.api = api;
   }
 
-  async getAll<T>(): Promise<T> {
+  async getAll<T>(): Promise<AxiosResponse<T>> {
     return this.api.get("tasks");
   }
 
-  async getById<T>(id: number): Promise<T> {
-    return this.api.get(`tasks/${id}`);
+  async getById<T>(id: number): Promise<AxiosResponse<T>> {
+    return this.api.get<T>(`tasks/${id}`);
   }
 
-  async create<T>(payload: TaskCreate): Promise<T> {
+  async create<T>(payload: TaskCreating): Promise<AxiosResponse<T>> {
     return this.api.post("tasks", payload);
   }
 
-  async update<T>(id: number, payload: TaskEdit): Promise<T> {
+  async update<T>(id: number, payload: TaskEdit): Promise<AxiosResponse<T>> {
     return this.api.put(`tasks/${id}`, payload);
   }
 
-  async delete<T>(id: number): Promise<T> {
+  async delete<T>(id: number): Promise<AxiosResponse<T>> {
     return this.api.delete(`tasks/${id}`);
   }
 }
