@@ -17,21 +17,31 @@ export class TasksService {
   ) {}
 
   async getAll() {
-    return await this.taskRepository.findAll({ include: [
-      {
-        model: Question,
-        include: [Answer],
-      },
-      {
-        model: User,
-      }
-    ] });
+    return await this.taskRepository.findAll({
+      include: [
+        {
+          model: Question,
+          include: [Answer],
+        },
+        {
+          model: User,
+        },
+      ],
+    });
   }
 
   async getTaskById(id: number) {
     return await this.taskRepository.findOne({
       where: { id },
-      include: { all: true },
+      include: [
+        {
+          model: Question,
+          include: [Answer],
+        },
+        {
+          model: User,
+        },
+      ],
     });
   }
 
@@ -92,10 +102,10 @@ export class TasksService {
   async edit(id: number, dto: CreateTaskDto) {
     const sequelize = this.taskRepository.sequelize;
     const transaction = await sequelize.transaction();
-    
+
     try {
       const task = await this.taskRepository.findByPk(id, { transaction });
-      
+
       if (!task) {
         throw new Error('Task not found');
       }
@@ -104,7 +114,7 @@ export class TasksService {
       if (dto.description !== undefined) task.description = dto.description;
       if (dto.image !== undefined) task.image = dto.image;
       if (dto.userId !== undefined) task.userId = +dto.userId;
-      
+
       await task.save({ transaction });
 
       if (dto.questions !== undefined) {
@@ -114,7 +124,6 @@ export class TasksService {
       await transaction.commit();
 
       return await this.getTaskWithRelations(id);
-
     } catch (error) {
       await transaction.rollback();
       console.error('Error updating task:', error);
@@ -122,42 +131,58 @@ export class TasksService {
     }
   }
 
-  private async updateQuestions(task: Task, questionsDto: CreateQuestionDto[], transaction: any) {
-    const existingQuestions = await task.$get('questions', { 
+  private async updateQuestions(
+    task: Task,
+    questionsDto: CreateQuestionDto[],
+    transaction: any,
+  ) {
+    const existingQuestions = await task.$get('questions', {
       include: [Answer],
-      transaction 
+      transaction,
     });
 
     for (const questionDto of questionsDto) {
       if (questionDto.id) {
-        const existingQuestion = existingQuestions.find(q => q.id === questionDto.id);
+        const existingQuestion = existingQuestions.find(
+          (q) => q.id === questionDto.id,
+        );
         if (existingQuestion) {
-          await existingQuestion.update({ question: questionDto.question }, { transaction });
-          await this.updateAnswers(existingQuestion, questionDto.answers || [], transaction);
+          await existingQuestion.update(
+            { question: questionDto.question },
+            { transaction },
+          );
+          await this.updateAnswers(
+            existingQuestion,
+            questionDto.answers || [],
+            transaction,
+          );
         }
       } else {
-        const newQuestion = await this.questionRepository.create({
-          question: questionDto.question,
-          taskId: task.id,
-        }, { transaction });
+        const newQuestion = await this.questionRepository.create(
+          {
+            question: questionDto.question,
+            taskId: task.id,
+          },
+          { transaction },
+        );
 
         if (questionDto.answers && questionDto.answers.length > 0) {
           await this.answerModel.bulkCreate(
-            questionDto.answers.map(answer => ({
+            questionDto.answers.map((answer) => ({
               text: answer.text,
               isCorrect: answer.valid,
               questionId: newQuestion.id,
             })),
-            { transaction }
+            { transaction },
           );
         }
       }
     }
 
     const dtoQuestionIds = questionsDto
-      .filter(q => q.id)
-      .map(q => q.id as number);
-    
+      .filter((q) => q.id)
+      .map((q) => q.id as number);
+
     for (const existingQuestion of existingQuestions) {
       if (!dtoQuestionIds.includes(existingQuestion.id)) {
         await existingQuestion.destroy({ transaction });
@@ -165,32 +190,42 @@ export class TasksService {
     }
   }
 
-  private async updateAnswers(question: Question, answersDto: CreateAnswerDto[], transaction: any) {
+  private async updateAnswers(
+    question: Question,
+    answersDto: CreateAnswerDto[],
+    transaction: any,
+  ) {
     const existingAnswers = await question.$get('answers', { transaction });
 
     for (const answerDto of answersDto) {
       if (answerDto.id) {
-        const existingAnswer = existingAnswers.find(a => a.id === answerDto.id);
+        const existingAnswer = existingAnswers.find(
+          (a) => a.id === answerDto.id,
+        );
         if (existingAnswer) {
           existingAnswer.text = answerDto.text;
-          existingAnswer.isCorrect = answerDto.valid !== undefined 
-            ? answerDto.valid 
-            : existingAnswer.isCorrect;
+          existingAnswer.isCorrect =
+            answerDto.valid !== undefined
+              ? answerDto.valid
+              : existingAnswer.isCorrect;
           await existingAnswer.save({ transaction });
         }
       } else {
-        await this.answerModel.create({
-          text: answerDto.text,
-          valid: answerDto.valid || false,
-          questionId: question.id,
-        }, { transaction });
+        await this.answerModel.create(
+          {
+            text: answerDto.text,
+            valid: answerDto.valid || false,
+            questionId: question.id,
+          },
+          { transaction },
+        );
       }
     }
 
     const dtoAnswerIds = answersDto
-      .filter(a => a.id)
-      .map(a => a.id as number);
-    
+      .filter((a) => a.id)
+      .map((a) => a.id as number);
+
     for (const existingAnswer of existingAnswers) {
       if (!dtoAnswerIds.includes(existingAnswer.id)) {
         await existingAnswer.destroy({ transaction });

@@ -1,13 +1,13 @@
 import { Box, CardActions, CardContent, CardMedia } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { TaskItem } from "./types/task";
 import CardWrapper from "./components/CardWrapper";
 import DykTypography from "../../components/UI/typography/DykTypography";
 import DykButton from "../../components/UI/buttons/DykButton";
+import { TaskItemById } from "../../api/interfaces/tasks";
 
 interface Props {
-  task: TaskItem;
+  task: TaskItemById;
 }
 
 export default function TaskDescription({ task }: Props) {
@@ -24,11 +24,11 @@ export default function TaskDescription({ task }: Props) {
   return (
     <CardWrapper>
       <Box sx={{ height: "250px" }}>
-        {task.img ? (
+        {task.image ? (
           <CardMedia
             component="img"
             alt="image-task"
-            image={task.img}
+            image={task.image}
             sx={{ height: "100%" }}
           />
         ) : (
@@ -48,9 +48,9 @@ export default function TaskDescription({ task }: Props) {
       </Box>
       <CardContent>
         <DykTypography text={task.name} variant="body1" />
-        <DykTypography text={task.description} variant="body2"/>
+        <DykTypography text={task.description} variant="body2" />
         <DykTypography
-          text={`Количество вопорсов - ${task.count}`}
+          text={`Количество вопорсов - ${task.questions.length}`}
           variant="body2"
         />
       </CardContent>

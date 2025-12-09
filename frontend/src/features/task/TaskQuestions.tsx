@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CardWrapper from "./components/CardWrapper";
 import {
   CardActions,
@@ -10,20 +10,35 @@ import {
   TextField,
 } from "@mui/material";
 import DykButton from "../../components/UI/buttons/DykButton";
-import { QuestionItem } from "./types/task";
+import { AnswerItem, QuestionItem } from "./types/task";
 
 interface Props {
   question: QuestionItem;
-  onAnswer: <T>(event: React.MouseEvent<T, MouseEvent>) => void;
+  onAnswer: (answer: AnswerItem | undefined) => void;
+  onBack: <T>(event: React.MouseEvent<T, MouseEvent>) => void;
 }
 
-export default function TaskQuestions({ question, onAnswer }: Props) {
-  const [value, setValue] = useState("");
+export default function TaskQuestions({ question, onAnswer, onBack }: Props) {
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
+  useEffect(() => {
+    setSelectedId(null);
+  }, [question])
+  
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("change");
-    setValue((event.target as HTMLInputElement).value);
+    const id = Number(event.target.value);
+    setSelectedId(id);
   };
+
+  const onNext = () => {
+    const selectedAnswer = question.answers?.find(a => a.id === selectedId);
+    onAnswer(selectedAnswer);
+  }
+
+  const onPrev = () => {
+  
+  }
+
   return (
     <CardWrapper>
       <CardContent
@@ -31,32 +46,36 @@ export default function TaskQuestions({ question, onAnswer }: Props) {
       >
         <TextField
           id="outlined-required"
-          defaultValue={question.question}
+          value={question.question}
           size="small"
+          slotProps={{
+            input: {
+              readOnly: true,
+            },
+          }}
           sx={{ mb: 1 }}
         />
         <RadioGroup
           name="questions"
-          value={value}
+          value={selectedId ? selectedId.toString() : ''}
           onChange={handleRadioChange}
           sx={{ m: 2 }}
         >
-          {question.answers.map((answer) => (
-            <>
+          {(question.answers ?? []).map((answer) => (
+            <React.Fragment key={answer.id}>
               <FormControlLabel
-                key={answer.id}
-                value={answer.text}
+                value={answer.id.toString()}
                 label={answer.text}
                 control={<Radio disableRipple />}
               />
               <Divider variant="middle" sx={{ mx: 4 }} />
-            </>
+            </React.Fragment>
           ))}
         </RadioGroup>
       </CardContent>
       <CardActions sx={{ justifyContent: "flex-end", mx: 1, mb: 2 }}>
-        <DykButton title="Ответить" onClick={onAnswer} />
-        <DykButton title="Назад" />
+        <DykButton title="Ответить" disabled={!selectedId} onClick={onNext} />
+        <DykButton title="Назад" onClick={onBack}/>
       </CardActions>
     </CardWrapper>
   );
