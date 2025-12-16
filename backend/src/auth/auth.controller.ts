@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -13,6 +13,7 @@ export class AuthController {
     return this.authService.login(userDto);
   }
 
+  @UsePipes(ValidationPipe)
   @Post('/sing-up')
   signUp(@Body() userDto: CreateUserDto) {
     return this.authService.signUp(userDto);

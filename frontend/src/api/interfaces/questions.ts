@@ -1,7 +1,7 @@
 export interface AnswerItem {
   id: number;
   text: string;
-  valid: boolean;
+  isCorrect: boolean;
   isSelect?: boolean;
 }
 

@@ -21,10 +21,25 @@ export class TasksService {
       include: [
         {
           model: Question,
-          include: [Answer],
         },
         {
           model: User,
+          attributes: ['id', 'login', 'avatar'],
+        },
+      ],
+    });
+  }
+
+  async getAllByUserId(userId: number) {
+    return await this.taskRepository.findAll({
+      where: { userId },
+      include: [
+        {
+          model: Question,
+        },
+        {
+          model: User,
+          attributes: ['id', 'login', 'avatar'],
         },
       ],
     });

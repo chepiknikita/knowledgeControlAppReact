@@ -19,6 +19,16 @@ export class TaskService {
     }
   }
 
+  async getAllByUserId(userId: number): Promise<TaskItem[]> {
+    try {
+      const tasks = (await this.repository.getAllByUserId(userId)).data;
+      return tasks;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
+
   async getById(id: number): Promise<TaskItemById | null> {
     try {
       const task = (await this.repository.getById(id)).data;

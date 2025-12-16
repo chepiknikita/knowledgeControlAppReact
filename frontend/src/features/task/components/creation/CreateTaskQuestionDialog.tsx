@@ -86,7 +86,7 @@ export default function TheDialog({ header, onSaveQuestion }: Props) {
     onSaveQuestion({
       id: Date.now(),
       question,
-      answers,
+      answers: answers.map((v) => ({ id: v.id, text: v.text, isCorrect: v.valid })),
     });
     handleClose();
   };

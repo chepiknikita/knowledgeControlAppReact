@@ -14,7 +14,7 @@ export default function TaskDescription({ task }: Props) {
   const navigation = useNavigate();
 
   const goBack = () => {
-    navigation(-1);
+    navigation("/");
   };
 
   const onStartTask = () => {

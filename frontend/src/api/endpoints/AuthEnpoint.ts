@@ -1,5 +1,5 @@
 import { AxiosInstance, AxiosResponse } from "axios";
-import { Auth } from "../interfaces/auth";
+import { Auth, AuthToken } from "../interfaces/auth";
 
 export default class AuthEnpoint {
   api: AxiosInstance;
@@ -8,11 +8,11 @@ export default class AuthEnpoint {
     this.api = api;
   }
 
-  async login(payload: Auth): Promise<AxiosResponse<void>> {
+  async login(payload: Auth): Promise<AxiosResponse<AuthToken>> {
     return this.api.post("auth/login", payload);
   }
 
-  async signUp(payload: Auth): Promise<AxiosResponse<void>> {
+  async signUp(payload: Auth): Promise<AxiosResponse<AuthToken>> {
     return this.api.post("auth/sign-up/", payload);
   }
 }

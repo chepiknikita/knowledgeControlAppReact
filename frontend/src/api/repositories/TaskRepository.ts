@@ -19,6 +19,10 @@ export default class TaskRepository extends BaseRepository<any> {
     return this.api.getAll<TaskItem[]>();
   }
 
+  async getAllByUserId(userId: number): Promise<AxiosResponse<TaskItem[]>> {
+    return this.api.getAllByUserId<TaskItem[]>(userId);
+  }
+
   async getById(id: number): Promise<AxiosResponse<TaskItemById>> {
     return this.api.getById<TaskItemById>(id);
   }

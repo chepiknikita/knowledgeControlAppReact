@@ -11,14 +11,17 @@ import {
 } from "@mui/material";
 import DykButton from "../../components/UI/buttons/DykButton";
 import { AnswerItem, QuestionItem } from "./types/task";
+import DykTypography from "../../components/UI/typography/DykTypography";
+import { Box } from "@mui/system";
 
 interface Props {
   question: QuestionItem;
+  questionProgress: string;
   onAnswer: (answer: AnswerItem | undefined) => void;
   onBack: <T>(event: React.MouseEvent<T, MouseEvent>) => void;
 }
 
-export default function TaskQuestions({ question, onAnswer, onBack }: Props) {
+export default function TaskQuestions({ question, questionProgress, onAnswer, onBack }: Props) {
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -36,7 +39,7 @@ export default function TaskQuestions({ question, onAnswer, onBack }: Props) {
   }
 
   const onPrev = () => {
-  
+    //TODO сохраять пред. ответ при шаге назад
   }
 
   return (
@@ -44,17 +47,20 @@ export default function TaskQuestions({ question, onAnswer, onBack }: Props) {
       <CardContent
         sx={{ display: "flex", flexDirection: "column", px: 2, pt: 2, pb: 0 }}
       >
-        <TextField
-          id="outlined-required"
-          value={question.question}
-          size="small"
-          slotProps={{
-            input: {
-              readOnly: true,
-            },
-          }}
-          sx={{ mb: 1 }}
-        />
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <TextField
+            id="outlined-required"
+            value={question.question}
+            size="small"
+            slotProps={{
+              input: {
+                readOnly: true,
+              },
+            }}
+            sx={{ mb: 1, ml: 2, flex: 1 }}
+          />
+          <DykTypography text={questionProgress} variant="body1" sx={{ mx: 2}} />
+        </Box>
         <RadioGroup
           name="questions"
           value={selectedId ? selectedId.toString() : ''}

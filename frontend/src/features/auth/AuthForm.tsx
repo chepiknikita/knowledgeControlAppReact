@@ -4,32 +4,41 @@ import { Box, Card, CardContent, TextField } from "@mui/material";
 import DykTypography from "../../components/UI/typography/DykTypography";
 import DykButton from "../../components/UI/buttons/DykButton";
 import { useNavigate } from "react-router-dom";
+import { ApiFactory } from "../../api";
 
 export default function AuthForm({
   isShowSignUp = false,
 }: {
   isShowSignUp?: boolean;
 }) {
+  const authService =  ApiFactory.createAuthService();
   const navigation = useNavigate();
 
   const [formData, setFormData] = useState({
-    passwd: "",
-    email: "",
+    password: "",
+    login: "",
   });
 
   const title = isShowSignUp ? "Форма входа" : "Зарегистрируйтесь";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevState: { passwd: string; email: string }) => ({
+    console.log('32', name, value)
+    setFormData((prevState: { password: string; login: string }) => ({
       ...prevState,
       [name]: value,
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log(formData);
-    // Add form submission logic here
+    if (isShowSignUp) {
+      const data = await authService.login(formData);
+      console.log('LOGIN', data);
+    } else {
+      const data = await authService.signUp(formData)
+      console.log('SING-UP', data);
+    }
   };
 
   const signUp = () => {
@@ -47,22 +56,23 @@ export default function AuthForm({
             sx={{ my: 1 }}
           />
           <TextField
-            placeholder="Email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
+            placeholder="Login"
+            name="login"
             fullWidth
             size="small"
             sx={{ my: 1 }}
+            value={formData.login}
+            onChange={handleChange}
           />
           <TextField
             placeholder="Пароль"
-            name="passwd"
-            value={formData.passwd}
-            onChange={handleChange}
+            name="password"
+            type="password"
             fullWidth
             size="small"
             sx={{ mt: 1 }}
+            value={formData.password}
+            onChange={handleChange}
           />
         </CardContent>
         <Box sx={{ px: 2, pb: 2 }}>

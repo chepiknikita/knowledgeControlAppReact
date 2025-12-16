@@ -16,15 +16,17 @@ export default function TheTaskQuestions() {
   const [number, setNumber] = useState<number>(0);
   const { id } = useParams();
   const [userAnswers, setUserAnswers] = useState<AnswerItem[]>([]);
+  const [questionProgress, setQuestionProgress] = useState("");
 
   useEffect(() => {
     if (questions.length > 0 && number < questions.length) {
       setCurrent(questions[number]);
+      setQuestionProgress(`${number + 1}/${questions.length}`);
     }
   }, [number, questions]);
 
   const onAnswer = (answer: AnswerItem | undefined) => {
-    if (number != questions.length - 1) {
+    if (number !== questions.length) {
       if (answer) {
         setUserAnswers((prev) => [...prev, answer]);
       }
@@ -58,17 +60,23 @@ export default function TheTaskQuestions() {
     fetchTasks();
   }, []);
 
+  const onRepeat = () => {
+    setNumber(0);
+    setUserAnswers([]);
+  }
+
   return (
     <>
       {current && !loading ? (
-        number != questions.length - 1 ? (
+        number !== questions.length ? (
           <TaskQuestions
             question={current}
+            questionProgress={questionProgress}
             onAnswer={onAnswer}
             onBack={onBack}
           />
         ) : (
-          <TaskFinish />
+          <TaskFinish answers={userAnswers} onRepeat={onRepeat}/>
         )
       ) : (
         <Box>Идет загрузка</Box>

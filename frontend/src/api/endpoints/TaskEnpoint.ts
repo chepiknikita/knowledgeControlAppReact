@@ -12,6 +12,10 @@ export default class TaskEnpoint {
     return this.api.get("tasks");
   }
 
+  async getAllByUserId<T>(userId: number): Promise<AxiosResponse<T>> {
+    return this.api.get(`tasks/user/${userId}`);
+  }
+
   async getById<T>(id: number): Promise<AxiosResponse<T>> {
     return this.api.get<T>(`tasks/${id}`);
   }

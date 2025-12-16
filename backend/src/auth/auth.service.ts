@@ -52,7 +52,7 @@ export class AuthService {
     const hashPasswd = await bcrypt.hash(userDto.password, 5);
     const user = await this.userService.createUser({
       login: userDto.login,
-      password: hashPasswd,
+      password: hashPasswd
     });
 
     return this.generateToken(user);

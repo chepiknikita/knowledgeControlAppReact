@@ -18,7 +18,6 @@ export default function Home() {
       try {
         setLoading(true);
         const data = await taskService.getAll();
-        console.log('32', data)
         setTasks(data);
       } catch (err) {
         console.error(err);
