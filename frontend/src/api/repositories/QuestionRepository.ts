@@ -1,7 +1,8 @@
 import { AxiosResponse } from "axios";
 import { BaseRepository } from "../core/BaseRepository";
 import QuestionEnpoint from "../endpoints/QuestionEnpoint";
-import { QuestionItem } from "../interfaces/questions";
+import { QuestionResponse } from "../interfaces/questions";
+import { IQuestion } from "../../entities/question";
 
 export default class QuestionRepository extends BaseRepository<any> {
   api: QuestionEnpoint;
@@ -11,20 +12,20 @@ export default class QuestionRepository extends BaseRepository<any> {
     this.api = api;
   }
 
-  async getAll(taskId: number): Promise<AxiosResponse<QuestionItem[]>> {
-    return this.api.getAll<QuestionItem[]>(taskId);
+  async getAll(taskId: number): Promise<AxiosResponse<QuestionResponse[]>> {
+    return this.api.getAll<QuestionResponse[]>(taskId);
   }
 
   // Возможно не нужен
-  async getById(id: number): Promise<AxiosResponse<QuestionItem>> {
-    return this.api.getById<QuestionItem>(id);
+  async getById(id: number): Promise<AxiosResponse<QuestionResponse>> {
+    return this.api.getById<QuestionResponse>(id);
   }
 
-  async create(payload: QuestionItem[]): Promise<AxiosResponse<QuestionItem>> {
-    return this.api.create<QuestionItem>(payload);
+  async create(payload: Partial<IQuestion>[]): Promise<AxiosResponse<QuestionResponse>> {
+    return this.api.create<QuestionResponse>(payload);
   }
 
-  async update(id: number, payload: QuestionItem): Promise<AxiosResponse<void>> {
+  async update(id: number, payload: Partial<IQuestion>): Promise<AxiosResponse<void>> {
     return this.api.update<void>(id, payload);
   }
 

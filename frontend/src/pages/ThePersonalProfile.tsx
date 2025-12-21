@@ -10,14 +10,16 @@ import React, { useEffect, useState } from "react";
 import DykTypography from "../components/UI/typography/DykTypography";
 import DykButton from "../components/UI/buttons/DykButton";
 import PreviewTask from "../features/task/components/PreviewTest";
-import { TaskItem } from "../api/interfaces/tasks";
 import { ApiFactory } from "../api";
+import { TaskResponse } from "../api/interfaces/tasks";
+import { useNavigate } from "react-router-dom";
 
 export default function PersonalProfile() {
   const taskService = ApiFactory.createTaskService();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-  const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [tasks, setTasks] = useState<TaskResponse[]>([]);
   const [search, setSearch] = useState("");
   const [avatarSrc, setAvatarSrc] = React.useState<string | undefined>(
     undefined
@@ -149,7 +151,13 @@ export default function PersonalProfile() {
                 }}
               >
                 {tasks.map((task) => (
-                  <PreviewTask key={task.id} task={task} />
+                  <PreviewTask
+                    key={task.id}
+                    task={task}
+                    showEdit={true}
+                    handleOpen={() => navigate(`/task/description/${task.id}`)}
+                    handleEdit={() => navigate(`/task/edit/${task.id}`)}
+                  />
                 ))}
               </Box>
               <Pagination

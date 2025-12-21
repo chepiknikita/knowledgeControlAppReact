@@ -7,6 +7,7 @@ import { Answer } from 'src/question/entities/answer.model';
 import { CreateQuestionDto } from 'src/question/dto/create-question.dto';
 import { CreateAnswerDto } from 'src/question/dto/create-answer.dto';
 import { User } from 'src/user/entities/user.model';
+import { FileService } from 'src/file/file.service';
 
 @Injectable()
 export class TasksService {
@@ -14,6 +15,7 @@ export class TasksService {
     @InjectModel(Task) private taskRepository: typeof Task,
     @InjectModel(Question) private questionRepository: typeof Question,
     @InjectModel(Answer) private answerModel: typeof Answer,
+    private fileService: FileService,
   ) {}
 
   async getAll() {
@@ -60,16 +62,17 @@ export class TasksService {
     });
   }
 
-  async create(dto: CreateTaskDto): Promise<Task> {
+  async create(dto: CreateTaskDto, image: File): Promise<Task> {
     const sequelize = this.taskRepository.sequelize;
     const transaction = await sequelize.transaction();
 
     try {
+      const fileName = await this.fileService.createFile(image);
       const task = await this.taskRepository.create(
         {
           name: dto.name,
           description: dto.description,
-          image: dto.image || '',
+          image: fileName,
           userId: dto.userId,
         },
         { transaction },
@@ -88,7 +91,7 @@ export class TasksService {
           if (questionDto.answers && questionDto.answers.length > 0) {
             const answersData = questionDto.answers.map((answer) => ({
               text: answer.text,
-              isCorrect: answer.valid,
+              isCorrect: answer.isCorrect,
               questionId: question.id,
             }));
 
@@ -185,7 +188,7 @@ export class TasksService {
           await this.answerModel.bulkCreate(
             questionDto.answers.map((answer) => ({
               text: answer.text,
-              isCorrect: answer.valid,
+              isCorrect: answer.isCorrect,
               questionId: newQuestion.id,
             })),
             { transaction },
@@ -220,8 +223,8 @@ export class TasksService {
         if (existingAnswer) {
           existingAnswer.text = answerDto.text;
           existingAnswer.isCorrect =
-            answerDto.valid !== undefined
-              ? answerDto.valid
+            answerDto.isCorrect !== undefined
+              ? answerDto.isCorrect
               : existingAnswer.isCorrect;
           await existingAnswer.save({ transaction });
         }
@@ -229,7 +232,7 @@ export class TasksService {
         await this.answerModel.create(
           {
             text: answerDto.text,
-            valid: answerDto.valid || false,
+            valid: answerDto.isCorrect || false,
             questionId: question.id,
           },
           { transaction },

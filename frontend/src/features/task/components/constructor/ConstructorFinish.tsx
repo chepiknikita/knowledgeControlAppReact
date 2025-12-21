@@ -5,13 +5,13 @@ import DykButton from "../../../../components/UI/buttons/DykButton";
 
 interface Props {
   disabled: boolean;
-  handleBack: () => void;
   onSave: () => void;
+  handleBack: () => void;
 }
-export default function CreateTaskReady({
+export default function ConstructorFinish({
   disabled,
-  handleBack,
   onSave,
+  handleBack,
 }: Props) {
   return (
     <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -23,7 +23,10 @@ export default function CreateTaskReady({
           alignItems: "center",
         }}
       >
-        <DykTypography text="Поздравляю! Тест полностью сформирован." variant="body2" />
+        <DykTypography
+          text="Поздравляю! Тест полностью сформирован."
+          variant="body2"
+        />
       </Box>
       <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
         <DykButton title="Назад" disabled={disabled} onClick={handleBack} />

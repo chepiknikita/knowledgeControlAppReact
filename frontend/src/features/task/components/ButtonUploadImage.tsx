@@ -4,14 +4,15 @@ import ButtonUploadFile from "../../../components/uploadFile/ButtonUploadFile";
 
 interface Props {
   image: string;
-  uploadImage: (str: string) => void;
+  uploadImage: (str: File) => void;
+  uploadImageBase64: (str: string) => void;
 }
 
-export default function ButtonUploadImage({ image, uploadImage }: Props) {
+export default function ButtonUploadImage({ image, uploadImage, uploadImageBase64 }: Props) {
   return (
     <>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <ButtonUploadFile uploadFile={uploadImage}>
+        <ButtonUploadFile uploadFile={uploadImage} uploadImageBase64={uploadImageBase64}>
           <Box
             sx={{
               width: 500,

@@ -10,6 +10,7 @@ import TheTaskDescription from './TheTaskDescription'
 import TheTaskQuestions from "./TheTaskQuestions";
 import TheTaskEnd from "./TheTaskEnd";
 import TheTask from "./TheTask";
+import TheTaskEdit from "./TheTaskEdit";
 
 export default function Router() {
   return (
@@ -20,6 +21,7 @@ export default function Router() {
       <Route path="/constructor" element={<TheConstructor />} />
       <Route path="/personal-profile" element={<ThePersonalProfile />} />
       <Route path="/task" element={<TheTask />}>
+        <Route path="edit/:id" element={<TheTaskEdit />} />
         <Route path="description/:id" element={<TheTaskDescription />} />
         <Route path="questions/:id" element={<TheTaskQuestions />} />
         <Route path="end/:id" element={<TheTaskEnd />} />

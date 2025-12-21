@@ -5,12 +5,13 @@ import DykTypography from "../../../../components/UI/typography/DykTypography";
 interface Props {
   steps: string[];
   activeStep: number;
+  title: string;
 }
 
-export default function CreateTaskHeader({ steps, activeStep }: Props) {
+export default function ConstructorStepper({ steps, activeStep, title }: Props) {
   return (
     <Box>
-      <DykTypography text="Создание теста" variant="body1" align="center" />
+      <DykTypography text={`${title} теста`} variant="body1" align="center" />
       <Stepper activeStep={activeStep} sx={{ my: 2 }}>
         {steps.map((label) => (
           <Step key={label}>

@@ -1,35 +1,33 @@
-import {
-  TaskCreating,
-  TaskEdit,
-  TaskItem,
-  TaskItemById,
-} from "../interfaces/tasks";
+import { ITask } from "../../entities/task";
+import { TaskResponse } from "../interfaces/tasks";
 import TaskRepository from "../repositories/TaskRepository";
+import urlService from "../serverUrl/urlService";
 
 export class TaskService {
   constructor(private repository: TaskRepository) {}
 
-  async getAll(): Promise<TaskItem[]> {
+  async getAll(): Promise<TaskResponse[]> {
+
     try {
       const tasks = (await this.repository.getAll()).data;
-      return tasks;
+      return tasks.map((v) => ({ ...v, imageBase64: v.image ? urlService.getImageUrl(v.image) : '' }));
     } catch (error) {
       console.error(error);
       return [];
     }
   }
 
-  async getAllByUserId(userId: number): Promise<TaskItem[]> {
+  async getAllByUserId(userId: number): Promise<TaskResponse[]> {
     try {
       const tasks = (await this.repository.getAllByUserId(userId)).data;
-      return tasks;
+      return tasks.map((v) => ({ ...v, imageBase64: v.image ? urlService.getImageUrl(v.image) : '' }));
     } catch (error) {
       console.error(error);
       return [];
     }
   }
 
-  async getById(id: number): Promise<TaskItemById | null> {
+  async getById(id: number): Promise<TaskResponse | null> {
     try {
       const task = (await this.repository.getById(id)).data;
       return task;
@@ -39,7 +37,7 @@ export class TaskService {
     }
   }
 
-  async create(payload: TaskCreating): Promise<TaskItem | null> {
+  async create(payload: FormData): Promise<TaskResponse | null> {
     try {
       const task = (await this.repository.create(payload)).data;
       return task;
@@ -49,7 +47,7 @@ export class TaskService {
     }
   }
 
-  async update(id: number, payload: TaskEdit): Promise<void> {
+  async update(id: number, payload: Partial<ITask>): Promise<void> {
     try {
       await this.repository.update(id, payload);
     } catch (error) {

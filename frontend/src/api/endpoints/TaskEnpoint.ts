@@ -1,5 +1,5 @@
 import { AxiosInstance, AxiosResponse } from "axios";
-import { TaskCreating, TaskEdit } from "../interfaces/tasks";
+import { ITask } from "../../entities/task";
 
 export default class TaskEnpoint {
   api: AxiosInstance;
@@ -20,11 +20,18 @@ export default class TaskEnpoint {
     return this.api.get<T>(`tasks/${id}`);
   }
 
-  async create<T>(payload: TaskCreating): Promise<AxiosResponse<T>> {
-    return this.api.post("tasks", payload);
+  async create<T>(payload: FormData): Promise<AxiosResponse<T>> {
+    return this.api.post("tasks", payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   }
 
-  async update<T>(id: number, payload: TaskEdit): Promise<AxiosResponse<T>> {
+  async update<T>(
+    id: number,
+    payload: Partial<ITask>
+  ): Promise<AxiosResponse<T>> {
     return this.api.put(`tasks/${id}`, payload);
   }
 

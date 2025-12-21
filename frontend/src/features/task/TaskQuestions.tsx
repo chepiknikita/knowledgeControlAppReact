@@ -10,14 +10,14 @@ import {
   TextField,
 } from "@mui/material";
 import DykButton from "../../components/UI/buttons/DykButton";
-import { AnswerItem, QuestionItem } from "./types/task";
 import DykTypography from "../../components/UI/typography/DykTypography";
 import { Box } from "@mui/system";
+import { AnswerResponse, QuestionResponse } from "../../api/interfaces/questions";
 
 interface Props {
-  question: QuestionItem;
+  question: QuestionResponse;
   questionProgress: string;
-  onAnswer: (answer: AnswerItem | undefined) => void;
+  onAnswer: (answer: AnswerResponse | undefined) => void;
   onBack: <T>(event: React.MouseEvent<T, MouseEvent>) => void;
 }
 

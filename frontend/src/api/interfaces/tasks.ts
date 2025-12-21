@@ -1,31 +1,18 @@
-import { QuestionItem } from "./questions";
+import { QuestionResponse } from "./questions";
 
 export interface Author {
+  id: number;
   name: string;
   avatar: string;
 }
 
-export interface TaskItem {
+export interface TaskResponse {
   id: number;
+  name: string;
+  description: string;
+  image: string;
+  imageBase64: string;
+  user: Author;
   createdAt: string;
-  author: Author;
-  image: string;
-  name: string;
-  description: string;
-  countQuestions: number;
+  questions: QuestionResponse[];
 }
-
-export interface TaskItemById extends TaskItem {
-  questions: QuestionItem[];
-}
-
-export interface TaskCreating {
-  image: string;
-  name: string;
-  description: string;
-  userId: number;
-  questions: QuestionItem[];
-}
-
-
-export type TaskEdit = Pick<TaskItem, "image" | "name" | "description">;

@@ -4,21 +4,30 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import CardActionArea from "@mui/material/CardActionArea";
-import { Link } from "react-router-dom";
 import { Avatar, Box } from "@mui/material";
 import DykTypography from "../../../components/UI/typography/DykTypography";
-import { TaskItem } from "../../../api/interfaces/tasks";
+import EditIcon from "@mui/icons-material/Edit";
+import { TaskResponse } from "../../../api/interfaces/tasks";
+import { Task } from "../../../entities/task";
 
 interface Props {
-  task: TaskItem;
+  task: TaskResponse | Task;
+  showEdit: boolean;
+  handleOpen: () => void;
+  handleEdit?: () => void;
 }
 
-export default function PreviewTask({ task }: Props) {
+export default function PreviewTask({
+  task,
+  handleOpen,
+  handleEdit,
+  showEdit,
+}: Props) {
   return (
-    <Card sx={{ maxWidth: 345, m: 2 }}>
-      <Link
-        to={`/task/description/${task.id}`}
+    <Card sx={{ maxWidth: 345, m: 2, position: "relative" }}>
+      <Box
         style={{ textDecoration: "none", color: "inherit" }}
+        onClick={handleOpen}
       >
         <CardActionArea sx={{ height: "250px", width: "300px" }}>
           <Box
@@ -29,11 +38,12 @@ export default function PreviewTask({ task }: Props) {
               right: 0,
               bgcolor: "rgba(0,0,0, 0.5)",
               py: 1,
-              px: 2,
+              pl: 2,
+              pr: 6,
               display: "flex",
             }}
           >
-            {/* <Avatar alt="avatar" src={task.author ?? undefined} /> */}
+            {/* <Avatar alt="avatar" src={task.user ?? undefined} /> */}
             <Box sx={{ overflow: "hidden", ml: 2 }}>
               <DykTypography
                 text={task.name}
@@ -44,17 +54,17 @@ export default function PreviewTask({ task }: Props) {
                   overflow: "hidden",
                 }}
               />
-              <DykTypography
+              {/* <DykTypography
                 text={new Date(task.createdAt).toLocaleString()}
                 variant="body2"
-              />
+              /> */}
             </Box>
           </Box>
-          {task.image ? (
+          {task.imageBase64 ? (
             <CardMedia
               component="img"
               alt="image-task"
-              image={task.image}
+              image={task.imageBase64}
               sx={{ height: "100%" }}
             />
           ) : (
@@ -87,7 +97,23 @@ export default function PreviewTask({ task }: Props) {
             </Typography>
           </CardContent>
         </CardActionArea>
-      </Link>
+      </Box>
+      {showEdit && (
+        <Box
+          style={{
+            textDecoration: "none",
+            position: "absolute",
+            color: "inherit",
+            right: "0px",
+            top: "0px",
+            width: "40px",
+            height: "40px",
+          }}
+          onClick={handleEdit}
+        >
+          <EditIcon sx={{ mt: 1, ml: 1 }} />
+        </Box>
+      )}
     </Card>
   );
 }

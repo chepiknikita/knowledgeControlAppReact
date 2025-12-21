@@ -4,10 +4,10 @@ import { CardActions, CardContent } from "@mui/material";
 import CardWrapper from "./components/CardWrapper";
 import DykTypography from "../../components/UI/typography/DykTypography";
 import DykButton from "../../components/UI/buttons/DykButton";
-import { AnswerItem } from "../../api/interfaces/questions";
+import { AnswerResponse } from "../../api/interfaces/questions";
 
 interface Props {
-  answers: AnswerItem[];
+  answers: AnswerResponse[];
   onRepeat: <T>(event: React.MouseEvent<T, MouseEvent>) => void;
 }
 

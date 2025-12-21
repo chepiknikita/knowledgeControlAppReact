@@ -1,9 +1,12 @@
 import { Box } from "@mui/material";
 import React from "react";
 import PreviewTask from "../task/components/PreviewTest";
-import { TaskItem } from "../../api/interfaces/tasks";
+import { TaskResponse } from "../../api/interfaces/tasks";
+import { useNavigate } from "react-router-dom";
 
-export default function TaskList({ data }: { data: TaskItem[] }) {
+export default function TaskList({ data }: { data: TaskResponse[] }) {
+  const navigate = useNavigate();
+
   return (
     <Box
       sx={{
@@ -14,7 +17,13 @@ export default function TaskList({ data }: { data: TaskItem[] }) {
       }}
     >
       {data.map((item) => (
-        <PreviewTask key={item.id} task={item} />
+        <PreviewTask
+          key={item.id}
+          task={item}
+          showEdit={true}
+          handleOpen={() => navigate(`/task/description/${item.id}`)}
+          handleEdit={() => navigate(`/task/edit/${item.id}`)}
+        />
       ))}
     </Box>
   );

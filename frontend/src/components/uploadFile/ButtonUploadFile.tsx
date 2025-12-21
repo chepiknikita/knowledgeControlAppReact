@@ -2,18 +2,20 @@ import { ButtonBase } from "@mui/material";
 import React, { ReactNode } from "react";
 
 interface Props {
-  children?: ReactNode,
-  uploadFile: (file: string) => void,
+  children?: ReactNode;
+  uploadFile: (file: File) => void;
+  uploadImageBase64: (str: string) => void;
 }
 
-export default function ButtonUploadFile({ children,  uploadFile}: Props) {
+export default function ButtonUploadFile({ children,  uploadFile, uploadImageBase64 }: Props) {
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      uploadFile(file);
       const reader = new FileReader();
       reader.onload = () => {
-        uploadFile(reader.result as string);
+        uploadImageBase64(reader.result as string);
       };
       reader.readAsDataURL(file);
     }

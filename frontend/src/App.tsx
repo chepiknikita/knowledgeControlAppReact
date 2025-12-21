@@ -7,6 +7,7 @@ function App() {
   return (
     <Default>
       <Container
+        maxWidth="xl"
         sx={{
           flex: 1,
           display: "flex",

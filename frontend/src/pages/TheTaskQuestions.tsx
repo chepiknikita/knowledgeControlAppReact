@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import TaskQuestions from "../features/task/TaskQuestions";
 import { ApiFactory } from "../api";
-import { AnswerItem, QuestionItem } from "../api/interfaces/questions";
+import { AnswerResponse, QuestionResponse } from "../api/interfaces/questions";
 import { Box } from "@mui/system";
 import TaskFinish from "../features/task/TaskFinish";
 
@@ -11,11 +11,11 @@ export default function TheTaskQuestions() {
   const navigation = useNavigate();
 
   const [loading, setLoading] = useState(false);
-  const [questions, setQuestions] = useState<QuestionItem[]>([]);
-  const [current, setCurrent] = useState<QuestionItem | null>(null);
+  const [questions, setQuestions] = useState<QuestionResponse[]>([]);
+  const [current, setCurrent] = useState<QuestionResponse | null>(null);
   const [number, setNumber] = useState<number>(0);
   const { id } = useParams();
-  const [userAnswers, setUserAnswers] = useState<AnswerItem[]>([]);
+  const [userAnswers, setUserAnswers] = useState<AnswerResponse[]>([]);
   const [questionProgress, setQuestionProgress] = useState("");
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function TheTaskQuestions() {
     }
   }, [number, questions]);
 
-  const onAnswer = (answer: AnswerItem | undefined) => {
+  const onAnswer = (answer: AnswerResponse | undefined) => {
     if (number !== questions.length) {
       if (answer) {
         setUserAnswers((prev) => [...prev, answer]);

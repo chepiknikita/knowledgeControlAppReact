@@ -1,12 +1,8 @@
 import { AxiosResponse } from "axios";
 import { BaseRepository } from "../core/BaseRepository";
 import TaskEnpoint from "../endpoints/TaskEnpoint";
-import {
-  TaskCreating,
-  TaskEdit,
-  TaskItem,
-  TaskItemById,
-} from "../interfaces/tasks";
+import { TaskResponse } from "../interfaces/tasks";
+import { ITask } from "../../entities/task";
 
 export default class TaskRepository extends BaseRepository<any> {
   api: TaskEnpoint;
@@ -15,23 +11,23 @@ export default class TaskRepository extends BaseRepository<any> {
     this.api = api;
   }
 
-  async getAll(): Promise<AxiosResponse<TaskItem[]>> {
-    return this.api.getAll<TaskItem[]>();
+  async getAll(): Promise<AxiosResponse<TaskResponse[]>> {
+    return this.api.getAll<TaskResponse[]>();
   }
 
-  async getAllByUserId(userId: number): Promise<AxiosResponse<TaskItem[]>> {
-    return this.api.getAllByUserId<TaskItem[]>(userId);
+  async getAllByUserId(userId: number): Promise<AxiosResponse<TaskResponse[]>> {
+    return this.api.getAllByUserId<TaskResponse[]>(userId);
   }
 
-  async getById(id: number): Promise<AxiosResponse<TaskItemById>> {
-    return this.api.getById<TaskItemById>(id);
+  async getById(id: number): Promise<AxiosResponse<TaskResponse>> {
+    return this.api.getById<TaskResponse>(id);
   }
 
-  async create(payload: TaskCreating): Promise<AxiosResponse<TaskItem>> {
-    return this.api.create<TaskItem>(payload);
+  async create(payload: FormData): Promise<AxiosResponse<TaskResponse>> {
+    return this.api.create<TaskResponse>(payload);
   }
 
-  async update(id: number, payload: TaskEdit): Promise<AxiosResponse<void>> {
+  async update(id: number, payload: Partial<ITask>): Promise<AxiosResponse<void>> {
     return this.api.update<void>(id, payload);
   }
 

@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 import CardWrapper from "./components/CardWrapper";
 import DykTypography from "../../components/UI/typography/DykTypography";
 import DykButton from "../../components/UI/buttons/DykButton";
-import { TaskItemById } from "../../api/interfaces/tasks";
+import { TaskResponse } from "../../api/interfaces/tasks";
 
 interface Props {
-  task: TaskItemById;
+  task: TaskResponse;
 }
 
 export default function TaskDescription({ task }: Props) {
@@ -24,11 +24,11 @@ export default function TaskDescription({ task }: Props) {
   return (
     <CardWrapper>
       <Box sx={{ height: "250px" }}>
-        {task.image ? (
+        {task.imageBase64 ? (
           <CardMedia
             component="img"
             alt="image-task"
-            image={task.image}
+            image={task.imageBase64}
             sx={{ height: "100%" }}
           />
         ) : (

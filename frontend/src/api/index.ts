@@ -8,15 +8,14 @@ import TaskEnpoint from "./endpoints/TaskEnpoint";
 import QuestionRepository from "./repositories/QuestionRepository";
 import QuestionEnpoint from "./endpoints/QuestionEnpoint";
 import ApiClient from "./config/ApiClient";
-
-const API_URL = process.env.REACT_APP_NEST_SERVER_API_URL || "http://localhost:3000/api";
+import urlService from "./serverUrl/urlService";
 
 export class ApiFactory {
   private static apiInstance: ApiClient;
 
   private static initialize() {
     if (!this.apiInstance) {
-      this.apiInstance = new ApiClient(API_URL);
+      this.apiInstance = new ApiClient(urlService.getServerUrl());
     }
   }
 

@@ -1,5 +1,5 @@
 import { AxiosInstance, AxiosResponse } from "axios";
-import { QuestionItem } from "../interfaces/questions";
+import { IQuestion } from "../../entities/question";
 
 export default class QuestionEnpoint {
   api: AxiosInstance;
@@ -16,11 +16,11 @@ export default class QuestionEnpoint {
     return this.api.get(`questions/${id}`);
   }
 
-  async create<T>(payload: QuestionItem[]): Promise<AxiosResponse<T>> {
+  async create<T>(payload: Partial<IQuestion>[]): Promise<AxiosResponse<T>> {
     return this.api.post("questions", payload);
   }
 
-  async update<T>(id: number, payload: QuestionItem): Promise<AxiosResponse<T>> {
+  async update<T>(id: number, payload: Partial<IQuestion>): Promise<AxiosResponse<T>> {
     return this.api.put(`questions/${id}`, payload);
   }
 
