@@ -4,6 +4,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseFilePipe,
   Post,
@@ -11,12 +13,15 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TasksService } from './tasks.service';
-import { CreateTaskDto } from './dto/create-task.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { PaginationFilterDto } from 'src/common/dto/pagination-filter.dto';
+import { createFileInterceptorOptions } from 'src/utils/file-upload.utils';
+import { parseMultipartJson } from 'src/utils/multipart.utils';
 
 @ApiTags('Тесты')
 @Controller('tasks')
@@ -43,47 +48,43 @@ export class TasksController {
   // @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(
-    FileInterceptor('image', {
-      limits: {
-        fileSize: 50 * 1024 * 1024,
-        files: 1,
-      },
-      fileFilter: (req, file, cb) => {
-        const allowedTypes = [
-          'image/jpeg',
-          'image/png',
-          'image/gif',
-          'image/webp',
-        ];
-        if (!allowedTypes.includes(file.mimetype)) {
-          return cb(new BadRequestException('Недопустимый тип файла'), false);
-        }
-        cb(null, true);
-      },
-    }),
+    FileInterceptor('image', createFileInterceptorOptions('IMAGE')),
   )
   create(
     @Body() body: { data: string },
     @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) image: File,
   ) {
-    let taskDto;
-    try {
-      taskDto = JSON.parse(body.data);
-    } catch {
-      throw new BadRequestException('Неверный формат данных');
-    }
+    const taskDto = parseMultipartJson(body.data);
     return this.tasksService.create(taskDto, image);
   }
 
   // @UseGuards(JwtAuthGuard)
   @Put('/:id')
-  edit(@Body() taskDto: CreateTaskDto, @Param('id') id: number) {
-    return this.tasksService.edit(id, taskDto);
+  @UseInterceptors(
+    FileInterceptor('image', createFileInterceptorOptions('IMAGE')),
+  )
+  edit(
+    @Param('id') id: number,
+    @Body() body: { data: string },
+    @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) image: File,
+  ) {
+    const taskDto = parseMultipartJson(body.data);
+    return this.tasksService.edit(id, taskDto, image);
   }
 
   // @UseGuards(JwtAuthGuard)
   @Delete('/:id')
   delete(@Param('id') id: number) {
     return this.tasksService.delete(id);
+  }
+
+  @Post('filter')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Фильтрация задач' })
+  @ApiBody({ type: PaginationFilterDto })
+  async filter(
+    @Body(new ValidationPipe({ transform: true })) request: PaginationFilterDto,
+  ) {
+    return await this.tasksService.findAllPaginated(request);
   }
 }

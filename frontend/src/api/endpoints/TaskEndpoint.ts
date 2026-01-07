@@ -1,7 +1,7 @@
 import { AxiosInstance, AxiosResponse } from "axios";
 import { ITask } from "../../entities/task";
 
-export default class TaskEnpoint {
+export default class TaskEndpoint {
   api: AxiosInstance;
 
   constructor(api: AxiosInstance) {

@@ -1,12 +1,12 @@
 import { AxiosResponse } from "axios";
 import { BaseRepository } from "../core/BaseRepository";
-import TaskEnpoint from "../endpoints/TaskEnpoint";
+import TaskEndpoint from "../endpoints/TaskEndpoint";
 import { TaskResponse } from "../interfaces/tasks";
 import { ITask } from "../../entities/task";
 
 export default class TaskRepository extends BaseRepository<any> {
-  api: TaskEnpoint;
-  constructor(api: TaskEnpoint) {
+  api: TaskEndpoint;
+  constructor(api: TaskEndpoint) {
     super();
     this.api = api;
   }

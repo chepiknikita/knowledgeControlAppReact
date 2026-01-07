@@ -4,12 +4,16 @@ import { User } from './entities/user.model';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AddRoleDto } from './dto/add-role.dto';
 import { RoleService } from 'src/role/role.service';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { FileService } from 'src/file/file.service';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User) private userRepository: typeof User,
     private roleService: RoleService,
+    private fileService: FileService,
   ) {}
 
   async createUser(dto: CreateUserDto) {
@@ -44,4 +48,81 @@ export class UserService {
       HttpStatus.NOT_FOUND,
     );
   }
- }
+
+  async update(id: number, dto: UpdateUserDto, image: File) {
+    const user = await this.userRepository.findByPk(id);
+    if (!user) {
+      throw new HttpException('Пользователь не найден', HttpStatus.NOT_FOUND);
+    }
+
+    if (dto.login) {
+      const candidate = await this.getUserByLogin(dto.login);
+      if (candidate) {
+        throw new HttpException(
+          'Такой пользователь существует',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+
+    try {
+      const updateData: UpdateUserDto = { ...dto };
+      let oldImagePath: string | null = null;
+
+      if (user.avatar) {
+        oldImagePath = user.avatar;
+      }
+
+      if (dto.password) {
+        updateData.password = await bcrypt.hash(dto.password, 5);
+      }
+
+      if (image) {
+        updateData.avatar = await this.fileService.createFile(image);
+      }
+
+      await this.userRepository.update(updateData, {
+        where: { id },
+      });
+
+      if (oldImagePath && image) {
+        await this.fileService.deleteFile(oldImagePath);
+      }
+
+      return await this.userRepository.findByPk(id);
+    } catch (error) {
+      console.error('Update error:', error);
+
+      throw new HttpException(
+        'Ошибка при обновлении пользователя',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async delete(id: number) {
+    const user = await this.userRepository.findByPk(id);
+    if (user) {
+      try {
+        await this.userRepository.destroy({
+          where: { id },
+        });
+
+        if (user.avatar) {
+          await this.fileService.deleteFile(user.avatar);
+        }
+        return {
+          message: 'Пользователь успешно удален',
+          id: id,
+        };
+      } catch (error) {
+        console.error('Delete error:', error);
+        throw new HttpException(
+          'Ошибка при удалении пользователя',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+    throw new HttpException('Пользователь не найдены', HttpStatus.NOT_FOUND);
+  }
+}

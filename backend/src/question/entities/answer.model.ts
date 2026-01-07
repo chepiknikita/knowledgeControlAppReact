@@ -11,7 +11,7 @@ import { Question } from 'src/question/entities/question.model';
 
 interface AnswerCreation {
   text: string;
-  valid: boolean;
+  isCorrect: boolean;
   questionId: number;
 }
 

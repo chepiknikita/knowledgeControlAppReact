@@ -1,7 +1,7 @@
 import { AxiosInstance, AxiosResponse } from "axios";
 import { Auth, AuthToken } from "../interfaces/auth";
 
-export default class AuthEnpoint {
+export default class AuthEndpoint {
   api: AxiosInstance;
 
   constructor(api: AxiosInstance) {

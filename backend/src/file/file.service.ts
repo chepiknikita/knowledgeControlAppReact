@@ -29,4 +29,24 @@ export class FileService {
       );
     }
   }
+
+  async deleteFile(filePath: string): Promise<boolean> {
+    try {
+      const fileName = filePath.replace('static/', '');
+      const fullPath = path.join(this.staticPath, fileName);
+      
+      if (!fs.existsSync(fullPath)) {
+        console.warn(`Файл не найден: ${fullPath}`);
+        return false;
+      }
+
+      // Удаляем файл
+      fs.unlinkSync(fullPath);
+      return true;
+      
+    } catch (error) {
+      console.error(`Ошибка при удалении файла ${filePath}:`, error);
+      return false;
+    }
+  }
 }

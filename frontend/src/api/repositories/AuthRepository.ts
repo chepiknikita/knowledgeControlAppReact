@@ -1,10 +1,10 @@
-import AuthEnpoint from "../endpoints/AuthEnpoint";
+import AuthEndpoint from "../endpoints/AuthEndpoint";
 import { Auth } from "../interfaces/auth";
 
 export default class AuthRepository {
-  api: AuthEnpoint;
+  api: AuthEndpoint;
 
-  constructor(api: AuthEnpoint) {
+  constructor(api: AuthEndpoint) {
     this.api = api;
   }
 

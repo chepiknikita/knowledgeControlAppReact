@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Task } from './entities/task.model';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -8,15 +12,20 @@ import { CreateQuestionDto } from 'src/question/dto/create-question.dto';
 import { CreateAnswerDto } from 'src/question/dto/create-answer.dto';
 import { User } from 'src/user/entities/user.model';
 import { FileService } from 'src/file/file.service';
+import { BaseService } from 'src/common/base/base.service';
 
 @Injectable()
-export class TasksService {
+export class TasksService extends BaseService<Task> {
   constructor(
     @InjectModel(Task) private taskRepository: typeof Task,
     @InjectModel(Question) private questionRepository: typeof Question,
     @InjectModel(Answer) private answerModel: typeof Answer,
     private fileService: FileService,
-  ) {}
+  ) {
+    super();
+  }
+
+  protected model = this.taskRepository;
 
   async getAll() {
     return await this.taskRepository.findAll({
@@ -117,7 +126,7 @@ export class TasksService {
     }
   }
 
-  async edit(id: number, dto: CreateTaskDto) {
+  async edit(id: number, dto: CreateTaskDto, image: File): Promise<Task> {
     const sequelize = this.taskRepository.sequelize;
     const transaction = await sequelize.transaction();
 
@@ -128,12 +137,25 @@ export class TasksService {
         throw new Error('Task not found');
       }
 
-      if (dto.name !== undefined) task.name = dto.name;
-      if (dto.description !== undefined) task.description = dto.description;
-      if (dto.image !== undefined) task.image = dto.image;
-      if (dto.userId !== undefined) task.userId = +dto.userId;
+      let fileName = task.image;
+      if (image) {
+        if (task.image) {
+          await this.fileService.deleteFile(task.image);
+        }
+        fileName = await this.fileService.createFile(image);
+      }
 
-      await task.save({ transaction });
+      const updateData: Partial<Task> = {};
+
+      if (dto.name !== undefined) updateData.name = dto.name;
+      if (dto.description !== undefined)
+        updateData.description = dto.description;
+      if (dto.userId !== undefined) updateData.userId = parseInt(dto.userId);
+      if (image) updateData.image = fileName;
+
+      if (Object.keys(updateData).length > 0) {
+        await task.update(updateData, { transaction });
+      }
 
       if (dto.questions !== undefined) {
         await this.updateQuestions(task, dto.questions, transaction);
@@ -221,18 +243,21 @@ export class TasksService {
           (a) => a.id === answerDto.id,
         );
         if (existingAnswer) {
-          existingAnswer.text = answerDto.text;
-          existingAnswer.isCorrect =
-            answerDto.isCorrect !== undefined
-              ? answerDto.isCorrect
-              : existingAnswer.isCorrect;
-          await existingAnswer.save({ transaction });
+          const updateData: Partial<Answer> = {};
+
+          if (answerDto.text !== undefined) updateData.text = answerDto.text;
+          if (answerDto.isCorrect !== undefined)
+            updateData.isCorrect = answerDto.isCorrect;
+
+          if (Object.keys(updateData).length > 0) {
+            await existingAnswer.update(updateData, { transaction });
+          }
         }
       } else {
         await this.answerModel.create(
           {
             text: answerDto.text,
-            valid: answerDto.isCorrect || false,
+            isCorrect: answerDto.isCorrect ?? false,
             questionId: question.id,
           },
           { transaction },
@@ -263,6 +288,42 @@ export class TasksService {
   }
 
   async delete(id: number) {
-    return await this.taskRepository.destroy({ where: { id } });
+    const sequelize = this.taskRepository.sequelize;
+    const transaction = await sequelize.transaction();
+
+    try {
+      const task = await this.taskRepository.findByPk(id, {
+        include: [Question],
+        transaction,
+      });
+
+      if (!task) {
+        throw new NotFoundException('Task not found');
+      }
+
+      await this.taskRepository.destroy({
+        where: { id },
+        transaction,
+      });
+
+      if (task.image) {
+        await this.fileService.deleteFile(task.image);
+      }
+
+      await transaction.commit();
+
+      return {
+        message: 'Task deleted successfully',
+        deleted: true,
+      };
+    } catch (error) {
+      await transaction.rollback();
+      console.error('Error deleting task:', error);
+
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to delete task');
+    }
   }
 }

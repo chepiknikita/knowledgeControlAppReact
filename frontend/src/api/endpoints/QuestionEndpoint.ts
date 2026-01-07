@@ -1,7 +1,7 @@
 import { AxiosInstance, AxiosResponse } from "axios";
 import { IQuestion } from "../../entities/question";
 
-export default class QuestionEnpoint {
+export default class QuestionEndpoint {
   api: AxiosInstance;
 
   constructor(api: AxiosInstance) {

@@ -13,23 +13,30 @@ import { Role } from './role/entities/role.model';
 import { UserRoles } from './role/entities/user-roles.model';
 import { Question } from './question/entities/question.model';
 import { Answer } from './question/entities/answer.model';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   controllers: [],
   providers: [],
   imports: [
+    ConfigModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: path.resolve(__dirname, 'static'),
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: +process.env.POSTGRES_PORT,
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
+      host: "localhost",
+      port: 5436,
+      username: "root",
+      password: "root",
       database: process.env.POSTGRES_DB,
       models: [User, Role, UserRoles, Task, Question, Answer],
       autoLoadModels: true,
+      logging: console.log,  // Показывает детали ошибок
+      sync: {
+        force: false,    // Не использовать true в production
+        alter: true      // Аккуратно обновляет структуру
+      },
     }),
     UserModule,
     RoleModule,

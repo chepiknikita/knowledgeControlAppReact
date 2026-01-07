@@ -2,13 +2,16 @@ import { AuthService } from "./services/AuthService";
 import { QuestionService } from "./services/QuestionService";
 import { TaskService } from "./services/TaskService";
 import AuthRepository from "./repositories/AuthRepository";
-import AuthEnpoint from "./endpoints/AuthEnpoint";
+import AuthEndpoint from "./endpoints/AuthEndpoint";
 import TaskRepository from "./repositories/TaskRepository";
-import TaskEnpoint from "./endpoints/TaskEnpoint";
+import TaskEndpoint from "./endpoints/TaskEndpoint";
 import QuestionRepository from "./repositories/QuestionRepository";
-import QuestionEnpoint from "./endpoints/QuestionEnpoint";
+import QuestionEndpoint from "./endpoints/QuestionEndpoint";
 import ApiClient from "./config/ApiClient";
 import urlService from "./serverUrl/urlService";
+import UserService from "./services/UserService";
+import UserRepository from "./repositories/UserRepository";
+import UserEndpoint from "./endpoints/UserEndpoint";
 
 export class ApiFactory {
   private static apiInstance: ApiClient;
@@ -21,21 +24,33 @@ export class ApiFactory {
 
   public static createAuthService(): AuthService {
     this.initialize();
-    const repository = new AuthRepository(new AuthEnpoint(this.apiInstance.api));
+    const repository = new AuthRepository(
+      new AuthEndpoint(this.apiInstance.api)
+    );
     return new AuthService(repository);
   }
 
   public static createTaskService(): TaskService {
     this.initialize();
-    const repository = new TaskRepository(new TaskEnpoint(this.apiInstance.api));
+    const repository = new TaskRepository(
+      new TaskEndpoint(this.apiInstance.api)
+    );
     return new TaskService(repository);
   }
 
   public static createQuestionService(): QuestionService {
     this.initialize();
     const repository = new QuestionRepository(
-      new QuestionEnpoint(this.apiInstance.api)
+      new QuestionEndpoint(this.apiInstance.api)
     );
     return new QuestionService(repository);
+  }
+
+  public static createUserService(): UserService {
+    this.initialize();
+    const repository = new UserRepository(
+      new UserEndpoint(this.apiInstance.api)
+    );
+    return new UserService(repository);
   }
 }

@@ -1,13 +1,13 @@
 import { AxiosResponse } from "axios";
 import { BaseRepository } from "../core/BaseRepository";
-import QuestionEnpoint from "../endpoints/QuestionEnpoint";
+import QuestionEndpoint from "../endpoints/QuestionEndpoint";
 import { QuestionResponse } from "../interfaces/questions";
 import { IQuestion } from "../../entities/question";
 
 export default class QuestionRepository extends BaseRepository<any> {
-  api: QuestionEnpoint;
+  api: QuestionEndpoint;
 
-  constructor(api: QuestionEnpoint) {
+  constructor(api: QuestionEndpoint) {
     super();
     this.api = api;
   }
