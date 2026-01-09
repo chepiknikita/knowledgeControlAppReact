@@ -26,19 +26,19 @@ export class QuestionController {
     return this.questionService.getQuestionById(id);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() dto: CreateQuestionDto) {
     return this.questionService.create(dto);
   }
 
-  // @UseGuards(JwtAuthGuard) 
+  @UseGuards(JwtAuthGuard)
   @Put('/:id')
   edit(@Body() dto: CreateQuestionDto, @Param('id') id: number) {
     return this.questionService.edit(id, dto);
   }
 
-  // @UseGuards(JwtAuthGuard) 
+  @UseGuards(JwtAuthGuard)
   @Delete('/:id')
   delete(@Param('id') id: number) {
     return this.questionService.delete(id);

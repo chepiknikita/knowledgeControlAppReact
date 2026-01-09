@@ -47,7 +47,7 @@ export class TaskService {
     }
   }
 
-  async update(id: number, payload: Partial<ITask>): Promise<void> {
+  async update(id: number, payload: FormData): Promise<void> {
     try {
       await this.repository.update(id, payload);
     } catch (error) {

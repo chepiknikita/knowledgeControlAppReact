@@ -15,4 +15,8 @@ export default class UserRepository {
   async delete(id: number) {
     return this.api.delete(id);
   }
+
+  async getProfile() {
+    return this.api.getProfile();
+  }
 }

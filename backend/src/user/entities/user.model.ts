@@ -38,6 +38,9 @@ export class User extends Model<User, UserCreationAttrs> {
   @ApiProperty({ example: 'Аватар пользователя', description: 'User avatar' })
   @Column({ type: DataType.STRING, allowNull: true })
   avatar: string;
+  
+  @Column({ type: DataType.STRING, allowNull: true })
+  refreshToken?: string;
 
   @BelongsToMany(() => Role, () => UserRoles)
   roles: Role[];

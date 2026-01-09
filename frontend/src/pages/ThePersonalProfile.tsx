@@ -21,9 +21,7 @@ export default function PersonalProfile() {
   const [loading, setLoading] = useState(false);
   const [tasks, setTasks] = useState<TaskResponse[]>([]);
   const [search, setSearch] = useState("");
-  const [avatarSrc, setAvatarSrc] = React.useState<string | undefined>(
-    undefined
-  );
+  const [avatarSrc, setAvatarSrc] = React.useState<string | undefined>(undefined);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -44,7 +42,6 @@ export default function PersonalProfile() {
   const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Read the file as a data URL
       const reader = new FileReader();
       reader.onload = () => {
         setAvatarSrc(reader.result as string);

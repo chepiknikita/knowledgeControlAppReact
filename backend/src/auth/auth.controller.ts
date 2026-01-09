@@ -1,7 +1,8 @@
-import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from './jwt-auth-guard';
 
 @ApiTags('Авторизация')
 @Controller('auth')
@@ -14,8 +15,19 @@ export class AuthController {
   }
 
   @UsePipes(ValidationPipe)
-  @Post('/sing-up')
+  @Post('/sign-up')
   signUp(@Body() userDto: CreateUserDto) {
     return this.authService.signUp(userDto);
+  }
+
+  @Post('refresh')
+  async refresh(@Body() body: { refreshToken: string }) {
+    return this.authService.refreshTokens(body.refreshToken);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logout(@Request() req) {
+    return this.authService.logout(req.user.id);
   }
 }

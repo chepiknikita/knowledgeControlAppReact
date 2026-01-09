@@ -13,39 +13,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import { NavLink } from "react-router-dom";
 import "./Header.css";
-
-const pages = [
-  {
-    name: "Главная",
-    path: "/",
-  },
-  {
-    name: "Конструктор",
-    path: "/constructor",
-  },
-];
-
-const settings = [
-  {
-    name: "Личный кабинет",
-    path: "/personal-profile",
-  },
-  {
-    name: "Войти",
-    path: "/login",
-  },
-];
-
-const authSettings = [
-  {
-    name: "Личный кабинет",
-    path: "/personal-profile",
-  },
-  {
-    name: "Выйти",
-    path: "/login",
-  },
-];
+import { useAuth } from "../../context/AuthContext";
 
 export default function TheHeader() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -54,12 +22,11 @@ export default function TheHeader() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+  const { user, logout, isAuthenticated } = useAuth();
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
+  const handleLogout = async () => {
+    handleCloseUserMenu();
+    await logout();
   };
 
   const handleCloseNavMenu = () => {
@@ -68,6 +35,59 @@ export default function TheHeader() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const guestSettings = [
+    {
+      name: "Войти",
+      path: "/login",
+      onClick: handleCloseUserMenu,
+    },
+    {
+      name: "Зарегистрироваться",
+      path: "/signup",
+      onClick: handleCloseUserMenu,
+    },
+  ];
+
+  const userSettings = [
+    {
+      name: "Личный кабинет",
+      path: "/personal-profile",
+      onClick: handleCloseUserMenu,
+    },
+    {
+      name: "Выйти",
+      path: "#",
+      onClick: handleLogout,
+    },
+  ];
+
+  const questPages = [
+    {
+      name: "Главная",
+      path: "/",
+    },
+  ];
+  const userPages = [
+    {
+      name: "Главная",
+      path: "/",
+    },
+    {
+      name: "Конструктор",
+      path: "/constructor",
+    },
+  ];
+
+  const settings = isAuthenticated ? userSettings : guestSettings;
+  const pages = isAuthenticated ? userPages : questPages;
+
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElNav(event.currentTarget);
+  };
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
   };
 
   return (
@@ -168,37 +188,78 @@ export default function TheHeader() {
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Меню">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="user-avatart" src={undefined} />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <NavLink
-                  key={setting.name}
-                  to={setting.path}
-                  className="navLink"
+            {isAuthenticated ? (
+              <>
+                <Tooltip title="Меню">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <Avatar alt="user-avatart" src={undefined} />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: "45px" }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
                 >
-                  <MenuItem onClick={handleCloseUserMenu}>
-                    <Typography sx={{ textAlign: "center", fontSize: '14px' }}>
-                      {setting.name}
-                    </Typography>
-                  </MenuItem>
-                 </NavLink>
-              ))}
-            </Menu>
+                  {settings.map((setting) => {
+                    if (setting.path === "#") {
+                      return (
+                        <MenuItem key={setting.name} onClick={setting.onClick}>
+                          <Typography
+                            sx={{ textAlign: "center", fontSize: "14px" }}
+                          >
+                            {setting.name}
+                          </Typography>
+                        </MenuItem>
+                      );
+                    }
+
+                    return (
+                      <NavLink
+                        key={setting.name}
+                        to={setting.path}
+                        className="navLink"
+                      >
+                        <MenuItem onClick={handleCloseUserMenu}>
+                          <Typography
+                            sx={{ textAlign: "center", fontSize: "14px" }}
+                          >
+                            {setting.name}
+                          </Typography>
+                        </MenuItem>
+                      </NavLink>
+                    );
+                  })}
+                </Menu>
+              </>
+            ) : (
+              <Box sx={{ display: "flex", gap: 1 }}>
+                <Button
+                  component={NavLink}
+                  to="/login"
+                  variant="outlined"
+                  size="small"
+                  sx={{ textTransform: "none" }}
+                >
+                  Войти
+                </Button>
+                <Button
+                  component={NavLink}
+                  to="/signup"
+                  variant="contained"
+                  size="small"
+                  sx={{ textTransform: "none" }}
+                >
+                  Регистрация
+                </Button>
+              </Box>
+            )}
           </Box>
         </Toolbar>
       </Container>

@@ -35,6 +35,10 @@ export class UserService {
     });
   }
 
+  async getUserById(id: string): Promise<User | null> {
+    return await this.userRepository.findOne({ where: { id } });
+  }
+
   async addRole(dto: AddRoleDto) {
     const user = await this.userRepository.findByPk(dto.userId);
     const role = await this.roleService.getRoleByName(dto.name);
@@ -124,5 +128,43 @@ export class UserService {
       }
     }
     throw new HttpException('Пользователь не найдены', HttpStatus.NOT_FOUND);
+  }
+
+  async updateRefreshToken(id: number, refreshToken: string): Promise<void> {
+    const hashRefreshToken = refreshToken
+      ? await bcrypt.hash(refreshToken, 5)
+      : null;
+
+    await this.userRepository.update(
+      {
+        refreshToken: hashRefreshToken,
+      },
+      { where: { id } },
+    );
+  }
+
+  async clearRefreshToken(id: number): Promise<void> {
+    await this.userRepository.update(
+      {
+        refreshToken: null,
+      },
+      { where: { id } },
+    );
+  }
+
+  async validateRefreshToken(
+    id: number,
+    refreshToken: string,
+  ): Promise<boolean> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      include: ['id', 'refreshToken'],
+    });
+
+    if (!user || !user.refreshToken) {
+      return false;
+    }
+
+    return await bcrypt.compare(refreshToken, user.refreshToken);
   }
 }

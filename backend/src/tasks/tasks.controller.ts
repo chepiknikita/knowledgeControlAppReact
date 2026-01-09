@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -15,7 +14,7 @@ import {
   UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TasksService } from './tasks.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -45,7 +44,7 @@ export class TasksController {
     return this.tasksService.getTaskById(id);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(
     FileInterceptor('image', createFileInterceptorOptions('IMAGE')),
@@ -58,7 +57,7 @@ export class TasksController {
     return this.tasksService.create(taskDto, image);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Put('/:id')
   @UseInterceptors(
     FileInterceptor('image', createFileInterceptorOptions('IMAGE')),
@@ -72,7 +71,7 @@ export class TasksController {
     return this.tasksService.edit(id, taskDto, image);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Delete('/:id')
   delete(@Param('id') id: number) {
     return this.tasksService.delete(id);

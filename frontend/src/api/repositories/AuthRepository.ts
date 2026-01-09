@@ -15,4 +15,8 @@ export default class AuthRepository {
   async signUp(payload: Auth) {
     return this.api.signUp(payload);
   }
+
+  async logout() {
+    return this.api.logout();
+  }
 }

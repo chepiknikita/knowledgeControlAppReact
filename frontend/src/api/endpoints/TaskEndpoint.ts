@@ -1,5 +1,4 @@
 import { AxiosInstance, AxiosResponse } from "axios";
-import { ITask } from "../../entities/task";
 
 export default class TaskEndpoint {
   api: AxiosInstance;
@@ -28,11 +27,12 @@ export default class TaskEndpoint {
     });
   }
 
-  async update<T>(
-    id: number,
-    payload: Partial<ITask>
-  ): Promise<AxiosResponse<T>> {
-    return this.api.put(`tasks/${id}`, payload);
+  async update<T>(id: number, payload: FormData): Promise<AxiosResponse<T>> {
+    return this.api.put(`tasks/${id}`, payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   }
 
   async delete<T>(id: number): Promise<AxiosResponse<T>> {

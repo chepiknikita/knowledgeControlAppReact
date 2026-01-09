@@ -7,13 +7,15 @@ import { Task } from './entities/task.model';
 import { Question } from 'src/question/entities/question.model';
 import { Answer } from 'src/question/entities/answer.model';
 import { FileModule } from 'src/file/file.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   providers: [TasksService],
   controllers: [TasksController],
   imports: [
     SequelizeModule.forFeature([Task, Question, Answer, User]),
-    FileModule
+    FileModule,
+    AuthModule,
   ],
 })
 export class TasksModule {}

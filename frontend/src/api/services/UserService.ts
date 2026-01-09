@@ -20,4 +20,13 @@ export default class UserService {
       console.error(error);
     }
   }
+
+  async getProfile() {
+    try {
+      const data = (await this.repository.getProfile()).data;
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }

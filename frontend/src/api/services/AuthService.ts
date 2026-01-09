@@ -1,36 +1,45 @@
-import { Auth, AuthToken } from "../interfaces/auth";
+import { Auth, AuthTokens, AuthUser } from "../interfaces/auth";
 import AuthRepository from "../repositories/AuthRepository";
 
 export class AuthService {
   constructor(private repository: AuthRepository) {}
 
-  async login(payload: Auth): Promise<AuthToken | undefined> {
+  async login(payload: Auth): Promise<AuthTokens> {
     try {
       const data = (await this.repository.login(payload)).data;
+      
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+
       return data;
     } catch (error) {
       console.error(error);
+      throw error;
     }
   }
 
-  async signUp(payload: Auth): Promise<AuthToken | undefined> {
+  async signUp(payload: Auth): Promise<AuthTokens> {
     try {
       const data = (await this.repository.signUp(payload)).data;
+
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+
       return data;
     } catch (error) {
       console.error(error);
+      throw error;
     }
   }
 
   async logout(): Promise<void> {
-    const refreshToken = localStorage.getItem('refreshToken');
-    localStorage.removeItem("token");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
-    // try {
-    //   await this.repository.signUp(payload);
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    try {
+      await this.repository.logout();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+    }
   }
 }
