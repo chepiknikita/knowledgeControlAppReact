@@ -14,6 +14,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { NavLink } from "react-router-dom";
 import "./Header.css";
 import { useAuth } from "../../context/AuthContext";
+import urlService from "../../api/serverUrl/urlService";
 
 export default function TheHeader() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -41,11 +42,6 @@ export default function TheHeader() {
     {
       name: "Войти",
       path: "/login",
-      onClick: handleCloseUserMenu,
-    },
-    {
-      name: "Зарегистрироваться",
-      path: "/signup",
       onClick: handleCloseUserMenu,
     },
   ];
@@ -192,7 +188,7 @@ export default function TheHeader() {
               <>
                 <Tooltip title="Меню">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar alt="user-avatart" src={undefined} />
+                    <Avatar alt="user-avatart" src={user?.avatar ? urlService.getImageUrl(user.avatar) : ''} />
                   </IconButton>
                 </Tooltip>
                 <Menu
@@ -243,20 +239,16 @@ export default function TheHeader() {
                 <Button
                   component={NavLink}
                   to="/login"
-                  variant="outlined"
-                  size="small"
-                  sx={{ textTransform: "none" }}
+                  variant="text"
+                  sx={{
+                    my: 2,
+                    color: "white",
+                    display: "block",
+                    textTransform: "none",
+                    fontSize: 16,
+                   }}
                 >
                   Войти
-                </Button>
-                <Button
-                  component={NavLink}
-                  to="/signup"
-                  variant="contained"
-                  size="small"
-                  sx={{ textTransform: "none" }}
-                >
-                  Регистрация
                 </Button>
               </Box>
             )}

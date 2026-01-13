@@ -11,24 +11,31 @@ import DykTypography from "../components/UI/typography/DykTypography";
 import DykButton from "../components/UI/buttons/DykButton";
 import PreviewTask from "../features/task/components/PreviewTest";
 import { ApiFactory } from "../api";
-import { TaskResponse } from "../api/interfaces/tasks";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { User } from "../entities/user";
+import { Task } from "../entities/task";
 
 export default function PersonalProfile() {
   const taskService = ApiFactory.createTaskService();
+  const userService = ApiFactory.createUserService();
+  const { user, logout } = useAuth();
+
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-  const [tasks, setTasks] = useState<TaskResponse[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [profile, setProfile] = useState<User | null>(null);
   const [search, setSearch] = useState("");
-  const [avatarSrc, setAvatarSrc] = React.useState<string | undefined>(undefined);
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         setLoading(true);
-        const data = await taskService.getAllByUserId(1);
-        setTasks(data);
+        const taskData = (await taskService.getAllByUserId(user?.id ?? 0))?.map((v) => Task.fromApi(v));;
+        const userData = await userService.getProfile()
+        setTasks(taskData);
+        setProfile(User.fromApi(userData));
       } catch (err) {
         console.error(err);
       } finally {
@@ -39,14 +46,21 @@ export default function PersonalProfile() {
     fetchTasks();
   }, []);
 
-  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setAvatarSrc(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (file && profile?.id) {
+      try {
+        const formData = new FormData();
+        formData.append("image", file);
+
+        await userService.update(profile.id, formData);
+        const updatedProfile = await userService.getProfile();
+        setProfile(User.fromApi(updatedProfile));
+      } catch (error) {
+        console.error("Failed to update avatar:", error);
+      }
     }
   };
 
@@ -55,6 +69,22 @@ export default function PersonalProfile() {
   ) => {
     setSearch(e.target.value);
   };
+
+  const onDelete = async () => {
+    const id = user?.id;
+    if (id) {
+      await logout();
+      await userService.delete(id);
+    }
+  };
+
+  const onDeleteTask = async (id?: number) => {
+    if (id) {
+      await taskService.delete(id);
+      const taskData = (await taskService.getAllByUserId(user?.id ?? 0))?.map((v) => Task.fromApi(v));;
+      setTasks(taskData);
+    }
+  }
 
   return (
     <Box sx={{ flex: 1, display: "flex", overflow: "hidden" }}>
@@ -74,7 +104,7 @@ export default function PersonalProfile() {
         >
           <Avatar
             alt="Upload new avatar"
-            src={avatarSrc}
+            src={profile?.avatarBase64}
             sx={{ width: 256, height: 256, mb: 2 }}
           />
           <input
@@ -101,10 +131,14 @@ export default function PersonalProfile() {
             justifyContent: "center",
           }}
         >
-          <DykTypography text="Nickname" variant="h6" />
+          <DykTypography text={profile?.login ?? " Неизвестно"} variant="h6" />
           <DykTypography text="Количество тестов: 0" variant="body2" />
-          <DykButton title="Удалить аккаунт" sx={{ my: 1 }} />
-          <DykButton title="Выход" sx={{ my: 1 }} />
+          <DykButton
+            title="Удалить аккаунт"
+            sx={{ my: 1 }}
+            onClick={onDelete}
+          />
+          <DykButton title="Выход" sx={{ my: 1 }} onClick={logout} />
         </Box>
       </Box>
       <Divider orientation="vertical" flexItem />
@@ -152,8 +186,9 @@ export default function PersonalProfile() {
                     key={task.id}
                     task={task}
                     showEdit={true}
-                    handleOpen={() => navigate(`/task/description/${task.id}`)}
+                    handleOpen={() => navigate(`/task/${task.id}`)}
                     handleEdit={() => navigate(`/task/edit/${task.id}`)}
+                    handleDelete={() => onDeleteTask(task.id)}
                   />
                 ))}
               </Box>

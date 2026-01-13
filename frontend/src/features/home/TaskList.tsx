@@ -1,10 +1,10 @@
 import { Box } from "@mui/material";
 import React from "react";
 import PreviewTask from "../task/components/PreviewTest";
-import { TaskResponse } from "../../api/interfaces/tasks";
 import { useNavigate } from "react-router-dom";
+import { Task } from "../../entities/task";
 
-export default function TaskList({ data }: { data: TaskResponse[] }) {
+export default function TaskList({ data }: { data: Task[] }) {
   const navigate = useNavigate();
 
   return (

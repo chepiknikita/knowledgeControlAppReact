@@ -7,20 +7,22 @@ import CardActionArea from "@mui/material/CardActionArea";
 import { Avatar, Box } from "@mui/material";
 import DykTypography from "../../../components/UI/typography/DykTypography";
 import EditIcon from "@mui/icons-material/Edit";
-import { TaskResponse } from "../../../api/interfaces/tasks";
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Task } from "../../../entities/task";
 
 interface Props {
-  task: TaskResponse | Task;
+  task: Task;
   showEdit: boolean;
   handleOpen: () => void;
   handleEdit?: () => void;
+  handleDelete?: () => void;
 }
 
 export default function PreviewTask({
   task,
   handleOpen,
   handleEdit,
+  handleDelete,
   showEdit,
 }: Props) {
   return (
@@ -41,9 +43,12 @@ export default function PreviewTask({
               pl: 2,
               pr: 6,
               display: "flex",
+              alignItems: "center"
             }}
           >
-            {/* <Avatar alt="avatar" src={task.user ?? undefined} /> */}
+            {task.user && 
+              <Avatar alt={task.user?.login ?? 'avatar'} src={task.user?.imageUrl ?? undefined} />
+            }
             <Box sx={{ overflow: "hidden", ml: 2 }}>
               <DykTypography
                 text={task.name}
@@ -54,10 +59,11 @@ export default function PreviewTask({
                   overflow: "hidden",
                 }}
               />
-              {/* <DykTypography
+              {task.createdAt &&
+              <DykTypography
                 text={new Date(task.createdAt).toLocaleString()}
                 variant="body2"
-              /> */}
+              /> }
             </Box>
           </Box>
           {task.imageBase64 ? (
@@ -105,13 +111,13 @@ export default function PreviewTask({
             position: "absolute",
             color: "inherit",
             right: "0px",
-            top: "0px",
-            width: "40px",
+            top: "8px",
+            width: "80px",
             height: "40px",
           }}
-          onClick={handleEdit}
         >
-          <EditIcon sx={{ mt: 1, ml: 1 }} />
+            <EditIcon sx={{ mt: 1, ml: 1, cursor: 'pointer' }} onClick={handleEdit} />
+            <DeleteIcon sx={{ mt: 1, ml: 1, cursor: 'pointer' }} onClick={handleDelete} />
         </Box>
       )}
     </Card>

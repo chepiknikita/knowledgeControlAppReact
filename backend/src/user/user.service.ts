@@ -53,13 +53,13 @@ export class UserService {
     );
   }
 
-  async update(id: number, dto: UpdateUserDto, image: File) {
+  async update(id: number, image: File, dto: UpdateUserDto | null) {
     const user = await this.userRepository.findByPk(id);
     if (!user) {
       throw new HttpException('Пользователь не найден', HttpStatus.NOT_FOUND);
     }
 
-    if (dto.login) {
+    if (dto?.login) {
       const candidate = await this.getUserByLogin(dto.login);
       if (candidate) {
         throw new HttpException(
@@ -70,14 +70,14 @@ export class UserService {
     }
 
     try {
-      const updateData: UpdateUserDto = { ...dto };
+      const updateData: UpdateUserDto = { ...(dto ?? {}) };
       let oldImagePath: string | null = null;
 
       if (user.avatar) {
         oldImagePath = user.avatar;
       }
 
-      if (dto.password) {
+      if (dto?.password) {
         updateData.password = await bcrypt.hash(dto.password, 5);
       }
 

@@ -20,15 +20,15 @@ export default function ConstructorResult({ title, onHome}: Props) {
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <Button
           onClick={onHome}
+          variant="text"
           sx={{
             mx: 1,
-            color: "black",
-            textDecoration: "none",
+            color: "white",
             textTransform: "none",
-            backgroundColor: "white",
+            fontSize: 16,
           }}
         >
-          Перейти на главную
+          На главную
         </Button>
       </Box>
     </Box>

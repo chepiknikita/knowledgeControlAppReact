@@ -1,4 +1,4 @@
-import { ITask } from "../../entities/task";
+import { PaginationFilterPayload } from "../interfaces/paginationFilterPayload";
 import { TaskResponse } from "../interfaces/tasks";
 import TaskRepository from "../repositories/TaskRepository";
 import urlService from "../serverUrl/urlService";
@@ -60,6 +60,15 @@ export class TaskService {
       await this.repository.delete(id);
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  async getAllFiltered(payload: PaginationFilterPayload): Promise<any> {
+    try {
+      const tasks = (await this.repository.getAllFiltered(payload)).data;
+      return tasks;
+    } catch (error) {
+      throw error;
     }
   }
 }

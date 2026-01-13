@@ -2,7 +2,7 @@ import { QuestionResponse } from "./questions";
 
 export interface Author {
   id: number;
-  name: string;
+  login: string;
   avatar: string;
 }
 

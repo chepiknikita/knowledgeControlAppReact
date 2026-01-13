@@ -2,6 +2,7 @@ import { AxiosResponse } from "axios";
 import { BaseRepository } from "../core/BaseRepository";
 import TaskEndpoint from "../endpoints/TaskEndpoint";
 import { TaskResponse } from "../interfaces/tasks";
+import { PaginationFilterPayload } from "../interfaces/paginationFilterPayload";
 
 export default class TaskRepository extends BaseRepository<any> {
   api: TaskEndpoint;
@@ -32,5 +33,9 @@ export default class TaskRepository extends BaseRepository<any> {
 
   async delete(id: number): Promise<AxiosResponse<void>> {
     return this.api.delete<void>(id);
+  }
+
+  async getAllFiltered(payload: PaginationFilterPayload): Promise<AxiosResponse<any>> {
+    return this.api.getAllFiltered(payload);
   }
 }

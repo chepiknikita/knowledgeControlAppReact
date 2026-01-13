@@ -9,7 +9,8 @@ export interface AuthTokens {
 }
 
 export interface AuthUser {
-  id: string;
+  id: number;
   login: string;
+  avatar: string;
   roles: string[];
 }

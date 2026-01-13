@@ -40,7 +40,6 @@ export class FileService {
         return false;
       }
 
-      // Удаляем файл
       fs.unlinkSync(fullPath);
       return true;
       

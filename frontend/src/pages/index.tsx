@@ -6,9 +6,7 @@ import PageNotFound from "./PageNotFound";
 import ThePersonalProfile from "./ThePersonalProfile";
 import TheLogin from "./TheLogin";
 import TheSignUp from "./TheSignUp";
-import TheTaskDescription from "./TheTaskDescription";
-import TheTaskQuestions from "./TheTaskQuestions";
-import TheTaskEnd from "./TheTaskEnd";
+import TheTaskById from "./TheTaskById";
 import TheTask from "./TheTask";
 import TheTaskEdit from "./TheTaskEdit";
 import { ProtectedRoute } from "../components/ProtectedRoute";
@@ -44,9 +42,7 @@ export default function Router() {
             </ProtectedRoute>
           }
         />
-        <Route path="description/:id" element={<TheTaskDescription />} />
-        <Route path="questions/:id" element={<TheTaskQuestions />} />
-        <Route path="end/:id" element={<TheTaskEnd />} />
+        <Route path=":id" element={<TheTaskById />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

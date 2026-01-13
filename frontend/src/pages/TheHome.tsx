@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom";
 import DykDatePicker from "../components/UI/datePickers/DykDatePicker";
 import PreviewTask from "../features/task/components/PreviewTest";
 import { ApiFactory } from "../api";
-import { TaskResponse } from "../api/interfaces/tasks";
+import { Task } from "../entities/task";
 
 export default function Home() {
   const navigate = useNavigate();
   const taskService = ApiFactory.createTaskService();
-  const [tasks, setTasks] = useState<TaskResponse[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [search, setSearch] = useState("");
 
@@ -18,7 +18,7 @@ export default function Home() {
       try {
         setLoading(true);
         const data = await taskService.getAll();
-        setTasks(data);
+        setTasks(data?.map((v) => Task.fromApi(v)));
       } catch (err) {
         console.error(err);
       } finally {
@@ -99,9 +99,8 @@ export default function Home() {
               <PreviewTask
                 key={task.id}
                 task={task}
-                showEdit={true}
-                handleOpen={() => navigate(`/task/description/${task.id}`)}
-                handleEdit={() => navigate(`/task/edit/${task.id}`)}
+                showEdit={false}
+                handleOpen={() => navigate(`/task/${task.id}`)}
               />
             ))}
           </Box>

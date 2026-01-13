@@ -26,7 +26,7 @@ export default class UserService {
       const data = (await this.repository.getProfile()).data;
       return data;
     } catch (error) {
-      console.error(error);
+      throw error;
     }
   }
 }

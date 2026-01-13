@@ -45,6 +45,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
           setUser({
             id: payload.id,
             login: payload.login,
+            avatar: payload.avatar,
             roles: payload.roles || [],
           });
         } catch (error) {
@@ -67,6 +68,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setUser({
         id: data.id,
         login: data.login,
+        avatar: data.avatar,
         roles: data.roles || [],
       });
 
@@ -87,6 +89,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setUser({
         id: data.id,
         login: data.login,
+        avatar: data.avatar,
         roles: data.roles || [],
       });
 

@@ -1,5 +1,6 @@
 import { AxiosResponse } from "axios";
 import UserEndpoint from "../endpoints/UserEndpoint";
+import { AuthUser } from "../interfaces/auth";
 
 export default class UserRepository {
   api: UserEndpoint;
@@ -16,7 +17,7 @@ export default class UserRepository {
     return this.api.delete(id);
   }
 
-  async getProfile() {
+  async getProfile(): Promise<AxiosResponse<AuthUser>> {
     return this.api.getProfile();
   }
 }

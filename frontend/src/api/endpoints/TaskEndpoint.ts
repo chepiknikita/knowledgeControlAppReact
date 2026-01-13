@@ -1,4 +1,5 @@
 import { AxiosInstance, AxiosResponse } from "axios";
+import { PaginationFilterPayload } from "../interfaces/paginationFilterPayload";
 
 export default class TaskEndpoint {
   api: AxiosInstance;
@@ -37,5 +38,9 @@ export default class TaskEndpoint {
 
   async delete<T>(id: number): Promise<AxiosResponse<T>> {
     return this.api.delete(`tasks/${id}`);
+  }
+
+  async getAllFiltered(payload: PaginationFilterPayload): Promise<AxiosResponse<any>> {
+    return this.api.post('tasks/filter', payload);
   }
 }

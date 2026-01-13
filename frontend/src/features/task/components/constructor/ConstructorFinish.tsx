@@ -24,14 +24,21 @@ export default function ConstructorFinish({
         }}
       >
         <DykTypography
-          text="Поздравляю! Тест полностью сформирован."
+          text="Поздравляю! Тест сформирован. Осталось совсем немного!"
           variant="body2"
         />
       </Box>
       <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-        <DykButton title="Назад" disabled={disabled} onClick={handleBack} />
+        <DykButton
+          title="Назад"
+          disabled={disabled}
+          onClick={handleBack}
+        />
         <Box sx={{ flex: "1 1 auto" }} />
-        <DykButton title="Сохранить" onClick={onSave} />
+        <DykButton
+          title="Сохранить"
+          onClick={onSave}
+        />
       </Box>
     </Box>
   );

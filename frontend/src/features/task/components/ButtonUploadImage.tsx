@@ -12,7 +12,10 @@ export default function ButtonUploadImage({ image, uploadImage, uploadImageBase6
   return (
     <>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <ButtonUploadFile uploadFile={uploadImage} uploadImageBase64={uploadImageBase64}>
+        <ButtonUploadFile
+          uploadFile={uploadImage}
+          uploadImageBase64={uploadImageBase64}
+        >
           <Box
             sx={{
               width: 500,

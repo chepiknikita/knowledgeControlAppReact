@@ -17,15 +17,16 @@ import { AnswerResponse, QuestionResponse } from "../../api/interfaces/questions
 interface Props {
   question: QuestionResponse;
   questionProgress: string;
+  currentAnswer: AnswerResponse | null;
   onAnswer: (answer: AnswerResponse | undefined) => void;
-  onBack: <T>(event: React.MouseEvent<T, MouseEvent>) => void;
+  onBack: () => void;
 }
 
-export default function TaskQuestions({ question, questionProgress, onAnswer, onBack }: Props) {
+export default function TaskQuestions({ question, questionProgress, currentAnswer, onAnswer, onBack }: Props) {
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   useEffect(() => {
-    setSelectedId(null);
+    setSelectedId(currentAnswer?.id ?? null);
   }, [question])
   
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,10 +37,6 @@ export default function TaskQuestions({ question, questionProgress, onAnswer, on
   const onNext = () => {
     const selectedAnswer = question.answers?.find(a => a.id === selectedId);
     onAnswer(selectedAnswer);
-  }
-
-  const onPrev = () => {
-    //TODO сохраять пред. ответ при шаге назад
   }
 
   return (

@@ -7,7 +7,7 @@ import {
   ParseFilePipe,
   Put,
   Request,
-  UploadedFiles,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -29,6 +29,7 @@ export class UserController {
 
   @ApiOperation({ summary: 'Update user' })
   @ApiResponse({ status: 200, type: [User] })
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   @UseInterceptors(
     FileInterceptor('image', createFileInterceptorOptions('USER_AVATAR')),
@@ -36,20 +37,22 @@ export class UserController {
   async update(
     @Param('id') id: number,
     @Body() body: { data: string },
-    @UploadedFiles(
+    @UploadedFile(
       new ParseFilePipe({
         fileIsRequired: false,
         validators: createFileValidators('USER_AVATAR'),
       }),
     )
     image: File,
-  ) {
-    const userDto = parseMultipartJson(body.data);
-    return await this.userService.update(id, userDto, image);
+  ): Promise<Partial<User>> {
+    const userDto = parseMultipartJson(body?.data);
+    const user = await this.userService.update(id, image, userDto)
+    return user.getUserResponse();
   }
 
   @ApiOperation({ summary: 'Delete user' })
   @ApiResponse({ status: 200 })
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async delete(@Param('id') id: number) {
     return await this.userService.delete(id);
@@ -57,8 +60,8 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  async getProfile(@Request() req) {
+  async getProfile(@Request() req): Promise<Partial<User>> {
     const user = await this.userService.getUserById(req.user.id);
-    return user;
+    return user.getUserResponse();
   }
 }

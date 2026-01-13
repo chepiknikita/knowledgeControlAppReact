@@ -2,13 +2,21 @@ import { TaskResponse } from "../api/interfaces/tasks";
 import urlService from "../api/serverUrl/urlService";
 import { Question } from "./question";
 
+export interface Author {
+  id: number;
+  login: string;
+  avatar: string;
+  imageUrl?: string;
+}
+
 export interface ITask {
   id?: number;
   name: string;
   description: string;
   image?: File;
   imageBase64: string;
-  userId?: number;
+  user?: Author;
+  createdAt?: string;
   questions: Question[];
 }
 
@@ -18,7 +26,8 @@ export class Task implements ITask {
   description: string;
   image?: File;
   imageBase64: string;
-  userId?: number;
+  user?: Author;
+  createdAt?: string;
   questions: Question[];
 
   constructor(data: Partial<ITask>) {
@@ -27,7 +36,8 @@ export class Task implements ITask {
     this.description = data.description ?? "";
     this.image = data.image;
     this.imageBase64 = data.imageBase64 ?? "";
-    this.userId = data.userId;
+    this.user = data.user;
+    this.createdAt = data.createdAt;
     this.questions = data.questions ?? [];
   }
 
@@ -40,29 +50,29 @@ export class Task implements ITask {
     });
   }
 
-  static fromApi(data: TaskResponse): Task {    
+  static fromApi(data: TaskResponse): Task {
     return new Task({
       id: data.id,
       name: data.name,
       imageBase64: data.image ? urlService.getImageUrl(data.image) : "",
       description: data.description,
-      userId: data.user.id,
-      questions: data.questions.map((v) => Question.fromApi(v)),
+      user: { ...data.user, imageUrl: data.user.avatar ? urlService.getImageUrl(data.user.avatar) : "" },
+      createdAt: data.createdAt,
+      questions: data.questions?.map((v) => Question.fromApi(v)),
     });
   }
 
-  public toApi(): Partial<ITask> {
+  public toApi(): (Partial<ITask> & { userId?: number }) {
     return {
       name: this.name,
       description: this.description,
-      userId: this.userId,
+      userId: this.user?.id,
       questions: this.questions,
     };
   }
 
   public toFormData(): FormData {
     const formData = new FormData();
-    console.log('wweeee', this.image)
     if (this.image) {
       formData.append("image", this.image);
     }

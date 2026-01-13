@@ -8,17 +8,14 @@ import { TaskResponse } from "../../api/interfaces/tasks";
 
 interface Props {
   task: TaskResponse;
+  onStart: () => void;
 }
 
-export default function TaskDescription({ task }: Props) {
+export default function TaskDescription({ task, onStart }: Props) {
   const navigation = useNavigate();
 
   const goBack = () => {
     navigation("/");
-  };
-
-  const onStartTask = () => {
-    navigation(`/task/questions/${task.id}`);
   };
 
   return (
@@ -55,8 +52,8 @@ export default function TaskDescription({ task }: Props) {
         />
       </CardContent>
       <CardActions sx={{ justifyContent: "flex-end", mx: 1, mb: 2 }}>
-        <DykButton title="Начать" onClick={onStartTask} />
-        <DykButton title="Назад" onClick={goBack} />
+        <DykButton title="Начать" onClick={onStart} />
+        <DykButton title="На главную" onClick={goBack} />
       </CardActions>
     </CardWrapper>
   );

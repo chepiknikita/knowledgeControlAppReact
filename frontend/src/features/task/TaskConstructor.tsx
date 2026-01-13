@@ -13,6 +13,7 @@ import ConstructorPreview from "./components/constructor/ConstructorPreview";
 import ConstructorQuestionsWrapper from "./components/constructor/ConstructorQuestionsWrapper";
 import ConstructorMainInfo from "./components/constructor/ConstructorMainInfo";
 import { Question } from "../../entities/question";
+import { useAuth } from "../../context/AuthContext";
 
 const steps = ["Описание", "Редактирование вопросов", "Проверка"];
 
@@ -31,6 +32,7 @@ export default function TaskConstructor({ initialData, loading = false }: Props)
   const navigate = useNavigate();
   const taskService = ApiFactory.createTaskService();
 
+  const { user } = useAuth();
   const [task, setTask] = useState(Task.empty());
   const [activeStep, setActiveStep] = React.useState(0);
   const [isReady, setReady] = useState<boolean>(false);
@@ -38,12 +40,13 @@ export default function TaskConstructor({ initialData, loading = false }: Props)
   useEffect(() => {
     if (initialData) {
       setTask(new Task(initialData));
+    } else {
+      handleChange('user', user);
+      handleChange('createdAt', new Date().toISOString());
     }
-    handleChange('userId', 1);
   }, [initialData]);
 
   const handleChange = (field: keyof Task, value: any) => {
-    console.log('3333',task )
     setTask((prev) => {
       return new Task({ ...prev, [field]: value });
     });

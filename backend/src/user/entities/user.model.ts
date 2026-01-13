@@ -47,4 +47,13 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @HasMany(() => Task)
   tasks: Task[];
+
+  public getUserResponse() {
+    return {
+      id: this.id,
+      login: this.login,
+      avatar: this.avatar,
+      roles: this.roles,
+    };
+  }
 }

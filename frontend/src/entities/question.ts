@@ -29,7 +29,7 @@ export class Question implements IQuestion {
     return new Question({
       id: data.id,
       question: data.question,
-      answers: data.answers.map((v) => Answer.fromApi(v)),
+      answers: data.answers?.map((v) => Answer.fromApi(v)),
     });
   }
 

@@ -30,7 +30,11 @@ export default function ConstructorMainInfo({
   };
   return (
     <>
-      <ButtonUploadImage image={image} uploadImage={uploadImage} uploadImageBase64={uploadImageBase64} />
+      <ButtonUploadImage
+        image={image}
+        uploadImage={uploadImage}
+        uploadImageBase64={uploadImageBase64}
+      />
       <TextField
         placeholder="Название"
         value={name}
