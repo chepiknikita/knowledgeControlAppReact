@@ -1,19 +1,20 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import DykTypography from "../../../../components/UI/typography/DykTypography";
 import PreviewTask from "../PreviewTest";
 import { Box } from "@mui/system";
 import { Task } from "../../../../entities/task";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import TaskProgress from "../../TaskProgress";
 
 interface Props {
   task: Task;
 }
 
 export default function ConstructorPreview({ task }: Props) {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleOpen = () => {
-    setOpen(true);
-  }
+  const handleOpen = useCallback(() => setIsOpen(true), []);
+  const handleClose = useCallback(() => setIsOpen(false), []);
 
   return (
     <Box
@@ -30,13 +31,31 @@ export default function ConstructorPreview({ task }: Props) {
         variant="body2"
       />
       <PreviewTask
-        key={task.id ?? 0}
         task={task}
         showEdit={false}
         handleOpen={handleOpen}
         handleEdit={() => {}}
       />
-      {/* TODO форма в dialog на прохождение теста. */}
+      <Dialog
+        open={isOpen}
+        onClose={handleClose}
+      >
+        <DialogTitle
+          component="div"
+          variant="body1"
+        >
+          Получившийся тест
+        </DialogTitle>
+        <DialogContent
+          dividers
+          sx={{ height: 500 }}
+        >
+          <TaskProgress
+            task={task.toResponse()}
+            showHome={false}
+          />
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }

@@ -1,15 +1,19 @@
-import { Box } from "@mui/material";
+import { Alert, Box } from "@mui/material";
 import React from "react";
 import DykTypography from "../../../../components/UI/typography/DykTypography";
 import DykButton from "../../../../components/UI/buttons/DykButton";
 
 interface Props {
   disabled: boolean;
+  loading: boolean;
+  error: string | null
   onSave: () => void;
   handleBack: () => void;
 }
 export default function ConstructorFinish({
   disabled,
+  loading,
+  error,
   onSave,
   handleBack,
 }: Props) {
@@ -28,6 +32,13 @@ export default function ConstructorFinish({
           variant="body2"
         />
       </Box>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
       <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
         <DykButton
           title="Назад"
@@ -36,8 +47,10 @@ export default function ConstructorFinish({
         />
         <Box sx={{ flex: "1 1 auto" }} />
         <DykButton
-          title="Сохранить"
+          title={loading ? "Сохранение..." : "Сохранить"}
+          disabled={loading}
           onClick={onSave}
+          // endIcon={loading ? <CircularProgress size={16} /> : undefined}
         />
       </Box>
     </Box>

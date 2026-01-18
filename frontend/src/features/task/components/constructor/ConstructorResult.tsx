@@ -19,14 +19,15 @@ export default function ConstructorResult({ title, onHome}: Props) {
       />
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <Button
-          onClick={onHome}
           variant="text"
+          aria-label="go-home"
           sx={{
             mx: 1,
             color: "white",
             textTransform: "none",
             fontSize: 16,
           }}
+          onClick={onHome}
         >
           На главную
         </Button>

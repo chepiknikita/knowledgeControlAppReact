@@ -1,43 +1,36 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, Pagination, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import DykDatePicker from "../components/UI/datePickers/DykDatePicker";
 import PreviewTask from "../features/task/components/PreviewTest";
-import { ApiFactory } from "../api";
-import { Task } from "../entities/task";
+import { DateRange } from "@mui/x-date-pickers-pro";
+import { Dayjs } from "dayjs";
+import { useTaskFilters } from "../features/task/hooks/useTaskFilters";
+import { useDebounce } from "../shared/hooks/useDebounce";
+import { usePaginatedTasks } from "../features/task/hooks/usePaginatedTasks";
 
 export default function Home() {
   const navigate = useNavigate();
-  const taskService = ApiFactory.createTaskService();
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+
   const [search, setSearch] = useState("");
+  const [date, setDate] = useState<DateRange<Dayjs>>([null, null]);
+
+  const [page, setPage] = useState(1);
+  const limit = 10;
+
+  const debouncedSearch = useDebounce(search, 300);
+  const filters = useTaskFilters(debouncedSearch, date);
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        setLoading(true);
-        const data = await taskService.getAll();
-        setTasks(data?.map((v) => Task.fromApi(v)));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    setPage(1);
+  }, [filters]);
 
-    fetchTasks();
-  }, []);
-
-  const onClickNoData = () => {
-    navigate("/constructor");
-  };
-
-  const onSearch = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setSearch(e.target.value);
-  };
+  const { tasks, pagination, loading } = usePaginatedTasks({
+    scope: 'all',
+    filters,
+    page,
+    limit,
+  });
 
   return (
     <Box sx={{}}>
@@ -48,19 +41,25 @@ export default function Home() {
           alignItems: "center",
         }}
       >
-        <DykDatePicker sx={{ width: "300px", mr: 2 }} />
+        <DykDatePicker
+          value={date}
+          sx={{ width: "300px", mr: 2 }}
+          onChange={setDate}
+        />
         <TextField
           placeholder="Поиск"
           value={search}
           name="search"
-          onChange={onSearch}
           size="small"
-          sx={{ width: "300px" }}
           type="text"
+          sx={{ width: "300px" }}
+          onChange={(e) => setSearch(e.target.value)}
         />
       </Box>
       <section>
-        {!tasks.length ? (
+        {loading ? (
+          <Box textAlign="center">Загрузка...</Box>
+        ) : !tasks.length ? (
           <Box
             sx={{
               margin: "16px auto",
@@ -73,7 +72,7 @@ export default function Home() {
             <Box>
               Данных нет! Для создания теста перейдите в
               <Button
-                onClick={onClickNoData}
+                onClick={() => navigate("/constructor")}
                 sx={{
                   textDecoration: "none",
                   textTransform: "none",
@@ -91,18 +90,37 @@ export default function Home() {
             sx={{
               my: 1,
               display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "center",
+              flexDirection: "column",
+              alignItems: "center",
+              height: "100%",
             }}
           >
-            {tasks.map((task) => (
-              <PreviewTask
-                key={task.id}
-                task={task}
-                showEdit={false}
-                handleOpen={() => navigate(`/task/${task.id}`)}
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+              }}
+            >
+              {tasks.map((task) => (
+                <PreviewTask
+                  key={task.id}
+                  task={task}
+                  showEdit={false}
+                  handleOpen={() => navigate(`/task/${task.id}`)}
+                />
+              ))}
+            </Box>
+            {pagination && pagination.totalPages > 1 && (
+              <Pagination
+                page={pagination.currentPage}
+                count={pagination.totalPages}
+                onChange={(_, value) => setPage(value)}
+                variant="outlined"
+                shape="rounded"
+                sx={{ mt: "auto" }}
               />
-            ))}
+            )}
           </Box>
         )}
       </section>

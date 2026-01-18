@@ -1,5 +1,5 @@
 import { Box, IconButton, InputAdornment, TextField } from "@mui/material";
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import ConstructorCreateQuestion from "./ConstructorCreateQuestion";
 import { Question } from "../../../../entities/question";
 import CreateIcon from "@mui/icons-material/Create";
@@ -11,15 +11,22 @@ interface Props {
   onSaveQuestion: (question: Question) => void;
 }
 export default function ConstructorQuestions({ task, onSaveQuestion }: Props) {
-  const [editOpen, setOpenEdit] = useState(false);
+  const [editingQuestionId, setEditingQuestionId] = useState<
+    number | string | null
+  >(null);
 
-  const openEdit = () => {
-    setOpenEdit(true);
-  };
+  const questions = useMemo(() => task.questions ?? [], [task.questions]);
 
-  const handleClose = () => {
-    setOpenEdit(false);
-  };
+  const openEdit = useCallback(
+    (id?: number | string) => setEditingQuestionId(id ?? null),
+    [],
+  );
+  const closeEdit = useCallback(() => setEditingQuestionId(null), []);
+
+  const editingQuestion = useMemo(
+    () => questions.find((q) => q.id === editingQuestionId) ?? null,
+    [questions, editingQuestionId],
+  );
 
   return (
     <Box
@@ -41,7 +48,7 @@ export default function ConstructorQuestions({ task, onSaveQuestion }: Props) {
           flexDirection: "column",
         }}
       >
-        {task.questions.map((item) => (
+        {questions.map((item) => (
           <TextField
             key={item.id}
             id={`${item.id}${item.question}`}
@@ -54,18 +61,13 @@ export default function ConstructorQuestions({ task, onSaveQuestion }: Props) {
                 readOnly: true,
                 endAdornment: task.id ? (
                   <InputAdornment position="end">
-                    <>
-                      <IconButton size="large" onClick={openEdit} disableRipple>
-                        <CreateIcon fontSize="inherit" />
-                      </IconButton>
-                      <ConstructorQuestionDialog
-                        openDialog={editOpen}
-                        header="Редактирование вопроса"
-                        initailData={item}
-                        onSave={onSaveQuestion}
-                        handleClose={handleClose}
-                      />
-                    </>
+                    <IconButton
+                      size="large"
+                      disableRipple
+                      onClick={() => openEdit(item.id)}
+                    >
+                      <CreateIcon fontSize="inherit" />
+                    </IconButton>
                   </InputAdornment>
                 ) : null,
               },
@@ -73,6 +75,16 @@ export default function ConstructorQuestions({ task, onSaveQuestion }: Props) {
           />
         ))}
       </Box>
+
+      {editingQuestion && (
+        <ConstructorQuestionDialog
+          openDialog={Boolean(editingQuestion)}
+          header="Редактирование вопроса"
+          initailData={editingQuestion}
+          onSave={onSaveQuestion}
+          handleClose={closeEdit}
+        />
+      )}
     </Box>
   );
 }

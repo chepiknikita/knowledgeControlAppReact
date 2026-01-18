@@ -7,12 +7,12 @@ export interface Author {
 }
 
 export interface TaskResponse {
-  id: number;
+  id: number | string;
   name: string;
   description: string;
   image: string;
   imageBase64: string;
-  user: Author;
+  user?: Author;
   createdAt: string;
   questions: QuestionResponse[];
 }

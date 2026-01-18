@@ -1,11 +1,11 @@
 export interface QuestionResponse {
-  id: number;
+  id: number | string;
   question: string;
   answers: AnswerResponse[];
 }
 
 export interface AnswerResponse {
-  id: number;
+  id: number | string;
   text: string;
   isCorrect: boolean;
 }

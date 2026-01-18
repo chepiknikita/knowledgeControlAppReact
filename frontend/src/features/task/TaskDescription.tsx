@@ -8,10 +8,39 @@ import { TaskResponse } from "../../api/interfaces/tasks";
 
 interface Props {
   task: TaskResponse;
+  showHome?: boolean;
   onStart: () => void;
 }
 
-export default function TaskDescription({ task, onStart }: Props) {
+const ImageBlock = ({ image }: { image?: string }) => {
+  if (!image) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          height: "100%",
+          bgcolor: "#757575",
+          justifyContent: "center",
+          alignItems: "center",
+          fontSize: 14,
+        }}
+      >
+        Изображение отсутствует
+      </Box>
+    );
+  }
+
+  return (
+    <CardMedia
+      component="img"
+      alt="image-task"
+      image={image}
+      sx={{ height: "100%" }}
+    />
+  );
+};
+
+export default function TaskDescription({ task, showHome = true, onStart }: Props) {
   const navigation = useNavigate();
 
   const goBack = () => {
@@ -21,28 +50,9 @@ export default function TaskDescription({ task, onStart }: Props) {
   return (
     <CardWrapper>
       <Box sx={{ height: "250px" }}>
-        {task.imageBase64 ? (
-          <CardMedia
-            component="img"
-            alt="image-task"
-            image={task.imageBase64}
-            sx={{ height: "100%" }}
-          />
-        ) : (
-          <Box
-            sx={{
-              display: "flex",
-              height: "100%",
-              bgcolor: "#757575",
-              justifyContent: "center",
-              alignItems: "center",
-              fontSize: "14px",
-            }}
-          >
-            Изображение отсутствует
-          </Box>
-        )}
+        <ImageBlock image={task.imageBase64} />
       </Box>
+
       <CardContent>
         <DykTypography text={task.name} variant="body1" />
         <DykTypography text={task.description} variant="body2" />
@@ -51,9 +61,10 @@ export default function TaskDescription({ task, onStart }: Props) {
           variant="body2"
         />
       </CardContent>
+
       <CardActions sx={{ justifyContent: "flex-end", mx: 1, mb: 2 }}>
         <DykButton title="Начать" onClick={onStart} />
-        <DykButton title="На главную" onClick={goBack} />
+        {showHome && <DykButton title="На главную" onClick={goBack} />}
       </CardActions>
     </CardWrapper>
   );

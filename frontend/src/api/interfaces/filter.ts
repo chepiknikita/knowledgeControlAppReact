@@ -27,5 +27,6 @@ export interface Filter {
   field: string;
   operator: FilterOperator;
   value?: FilterValue;
+  value2?: FilterValue;
   valueType: string;
 }

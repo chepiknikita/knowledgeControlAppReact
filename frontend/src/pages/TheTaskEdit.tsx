@@ -1,42 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PageWrapper from "../components/wrappers/PageWrapper";
 import TaskConstructor from "../features/task/TaskConstructor";
-import { ApiFactory } from "../api";
 import { Task } from "../entities/task";
 import { useParams } from "react-router-dom";
+import { useTask } from "../features/task/hooks/useTask";
+import { Box } from "@mui/system";
 
 export default function TheTaskEdit() {
-  const taskService = ApiFactory.createTaskService();
-
   const { id } = useParams();
+  const { task, status } = useTask(id);
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [task, setTask] = useState<Task | undefined>();
+  if (status === "loading") {
+    return <Box>Идет загрузка...</Box>;
+  }
 
-  useEffect(() => {
-    const fetchTask = async () => {
-      try {
-        setLoading(true);
-        const data = await taskService.getById(+(id ?? 0));
-        if (data) {
-          setTask(Task.fromApi(data));
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  if (status === "error") {
+    return <Box>Ошибка загрузки задачи</Box>;
+  }
 
-    fetchTask();
-  }, [id]);
+  if (!task) {
+    return null;
+  }
 
   return (
     <PageWrapper>
-      <TaskConstructor
-        loading={loading}
-        initialData={task}
-      />
+      <TaskConstructor initialData={Task.fromApi(task)} />
     </PageWrapper>
   );
 }

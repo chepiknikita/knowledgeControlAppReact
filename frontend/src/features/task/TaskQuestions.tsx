@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import CardWrapper from "./components/CardWrapper";
 import {
   CardActions,
@@ -12,7 +12,10 @@ import {
 import DykButton from "../../components/UI/buttons/DykButton";
 import DykTypography from "../../components/UI/typography/DykTypography";
 import { Box } from "@mui/system";
-import { AnswerResponse, QuestionResponse } from "../../api/interfaces/questions";
+import {
+  AnswerResponse,
+  QuestionResponse,
+} from "../../api/interfaces/questions";
 
 interface Props {
   question: QuestionResponse;
@@ -22,31 +25,39 @@ interface Props {
   onBack: () => void;
 }
 
-export default function TaskQuestions({ question, questionProgress, currentAnswer, onAnswer, onBack }: Props) {
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+export default function TaskQuestions({
+  question,
+  questionProgress,
+  currentAnswer,
+  onAnswer,
+  onBack,
+}: Props) {
+  const [selectedId, setSelectedId] = useState<string>("");
 
   useEffect(() => {
-    setSelectedId(currentAnswer?.id ?? null);
-  }, [question])
-  
-  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const id = Number(event.target.value);
-    setSelectedId(id);
-  };
+    setSelectedId(currentAnswer?.id?.toString() ?? "");
+  }, [currentAnswer, question.id]);
 
-  const onNext = () => {
-    const selectedAnswer = question.answers?.find(a => a.id === selectedId);
+  const answers = useMemo(() => question.answers ?? [], [question.answers]);
+
+  const handleNext = () => {
+    const selectedAnswer = answers.find((a) => a.id.toString() === selectedId);
     onAnswer(selectedAnswer);
-  }
+  };
 
   return (
     <CardWrapper>
       <CardContent
         sx={{ display: "flex", flexDirection: "column", px: 2, pt: 2, pb: 0 }}
       >
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <TextField
-            id="outlined-required"
             value={question.question}
             size="small"
             slotProps={{
@@ -56,15 +67,19 @@ export default function TaskQuestions({ question, questionProgress, currentAnswe
             }}
             sx={{ mb: 1, ml: 2, flex: 1 }}
           />
-          <DykTypography text={questionProgress} variant="body1" sx={{ mx: 2}} />
+          <DykTypography
+            text={questionProgress}
+            variant="body1"
+            sx={{ mx: 2 }}
+          />
         </Box>
         <RadioGroup
           name="questions"
-          value={selectedId ? selectedId.toString() : ''}
-          onChange={handleRadioChange}
+          value={selectedId}
           sx={{ m: 2 }}
+          onChange={(e) => setSelectedId(e.target.value)}
         >
-          {(question.answers ?? []).map((answer) => (
+          {answers.map((answer) => (
             <React.Fragment key={answer.id}>
               <FormControlLabel
                 value={answer.id.toString()}
@@ -76,9 +91,17 @@ export default function TaskQuestions({ question, questionProgress, currentAnswe
           ))}
         </RadioGroup>
       </CardContent>
+
       <CardActions sx={{ justifyContent: "flex-end", mx: 1, mb: 2 }}>
-        <DykButton title="Ответить" disabled={!selectedId} onClick={onNext} />
-        <DykButton title="Назад" onClick={onBack}/>
+        <DykButton
+          title="Ответить"
+          disabled={!selectedId}
+          onClick={handleNext}
+        />
+        <DykButton
+          title="Назад"
+          onClick={onBack}
+        />
       </CardActions>
     </CardWrapper>
   );

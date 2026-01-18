@@ -10,81 +10,41 @@ import React, { useEffect, useState } from "react";
 import DykTypography from "../components/UI/typography/DykTypography";
 import DykButton from "../components/UI/buttons/DykButton";
 import PreviewTask from "../features/task/components/PreviewTest";
-import { ApiFactory } from "../api";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { User } from "../entities/user";
-import { Task } from "../entities/task";
+import { useAuth } from "../features/auth/context/AuthContext";
+import { useDebounce } from "../shared/hooks/useDebounce";
+import { useTaskFilters } from "../features/task/hooks/useTaskFilters";
+import { useUserProfile } from "../features/profile/hooks/useUserProfile";
+import { usePaginatedTasks } from "../features/task/hooks/usePaginatedTasks";
 
 export default function PersonalProfile() {
-  const taskService = ApiFactory.createTaskService();
-  const userService = ApiFactory.createUserService();
-  const { user, logout } = useAuth();
-
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [profile, setProfile] = useState<User | null>(null);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const limit = 10;
+
+  const debouncedSearch = useDebounce(search, 300);
+  const filters = useTaskFilters(debouncedSearch, [null, null]);
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        setLoading(true);
-        const taskData = (await taskService.getAllByUserId(user?.id ?? 0))?.map((v) => Task.fromApi(v));;
-        const userData = await userService.getProfile()
-        setTasks(taskData);
-        setProfile(User.fromApi(userData));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    setPage(1);
+  }, [filters]);
 
-    fetchTasks();
-  }, []);
+  const { profile, updateAvatar, deleteProfile } = useUserProfile();
 
-  const handleAvatarChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (file && profile?.id) {
-      try {
-        const formData = new FormData();
-        formData.append("image", file);
+  const { tasks, pagination, loading, deleteTask } = usePaginatedTasks({
+    scope: 'profile',
+    filters,
+    page,
+    limit,
+  });
 
-        await userService.update(profile.id, formData);
-        const updatedProfile = await userService.getProfile();
-        setProfile(User.fromApi(updatedProfile));
-      } catch (error) {
-        console.error("Failed to update avatar:", error);
-      }
-    }
+  const handleDeleteAccount = async () => {
+    await logout();
+    await deleteProfile();
   };
-
-  const onSearch = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setSearch(e.target.value);
-  };
-
-  const onDelete = async () => {
-    const id = user?.id;
-    if (id) {
-      await logout();
-      await userService.delete(id);
-    }
-  };
-
-  const onDeleteTask = async (id?: number) => {
-    if (id) {
-      await taskService.delete(id);
-      const taskData = (await taskService.getAllByUserId(user?.id ?? 0))?.map((v) => Task.fromApi(v));;
-      setTasks(taskData);
-    }
-  }
 
   return (
     <Box sx={{ flex: 1, display: "flex", overflow: "hidden" }}>
@@ -121,7 +81,10 @@ export default function PersonalProfile() {
               whiteSpace: "nowrap",
               width: "1px",
             }}
-            onChange={handleAvatarChange}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) updateAvatar(file);
+            }}
           />
         </ButtonBase>
         <Box
@@ -136,77 +99,80 @@ export default function PersonalProfile() {
           <DykButton
             title="Удалить аккаунт"
             sx={{ my: 1 }}
-            onClick={onDelete}
+            onClick={handleDeleteAccount}
           />
           <DykButton title="Выход" sx={{ my: 1 }} onClick={logout} />
         </Box>
       </Box>
+
       <Divider orientation="vertical" flexItem />
+
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <Box>
-          <DykTypography text="Тесты" align="center" />
+        <DykTypography text="Тесты" align="center" />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <TextField
+            placeholder="Поиск"
+            value={search}
+            name="search"
+            onChange={(e) => setSearch(e.target.value)}
+            size="small"
+            type="text"
+            sx={{ my: 1, width: "250px" }}
+          />
+        </Box>
+
+        {loading ? (
+          <Box textAlign="center">Загрузка...</Box>
+        ) : !tasks.length ? (
+          <DykTypography
+            text="Список тестов пуст!"
+            align="center"
+            sx={{ my: 2 }}
+          />
+        ) : (
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
-              justifyContent: "center",
               alignItems: "center",
+              height: "100%",
             }}
           >
-            <TextField
-              placeholder="Поиск"
-              value={search}
-              name="search"
-              onChange={onSearch}
-              size="small"
-              sx={{ my: 1, width: "250px" }}
-              type="text"
-            />
-          </Box>
-        </Box>
-        <Box sx={{ height: "100%" }}>
-          {tasks.length ? (
             <Box
               sx={{
                 display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                height: "100%",
+                flexWrap: "wrap",
+                justifyContent: "center",
               }}
             >
-              <Box
-                sx={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  justifyContent: "center",
-                }}
-              >
-                {tasks.map((task) => (
-                  <PreviewTask
-                    key={task.id}
-                    task={task}
-                    showEdit={true}
-                    handleOpen={() => navigate(`/task/${task.id}`)}
-                    handleEdit={() => navigate(`/task/edit/${task.id}`)}
-                    handleDelete={() => onDeleteTask(task.id)}
-                  />
-                ))}
-              </Box>
+              {tasks.map((task) => (
+                <PreviewTask
+                  key={task.id}
+                  task={task}
+                  showEdit={true}
+                  handleOpen={() => navigate(`/task/${task.id}`)}
+                  handleEdit={() => navigate(`/task/edit/${task.id}`)}
+                  handleDelete={() => deleteTask(task.id as number)}
+                />
+              ))}
+            </Box>
+            {pagination && pagination.totalPages > 1 && (
               <Pagination
-                count={5}
+                page={pagination.currentPage}
+                count={pagination.totalPages}
+                onChange={(_, value) => setPage(value)}
                 variant="outlined"
                 shape="rounded"
                 sx={{ mt: "auto" }}
               />
-            </Box>
-          ) : (
-            <DykTypography
-              text="Список тестов пуст!"
-              align="center"
-              sx={{ my: 2 }}
-            />
-          )}
-        </Box>
+            )}
+          </Box>
+        )}
       </Box>
     </Box>
   );

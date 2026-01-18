@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Dayjs } from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -8,22 +8,18 @@ import "dayjs/locale/ru";
 import { Theme } from "@emotion/react";
 
 interface Props {
+  value: DateRange<Dayjs>;
+  onChange: (e: DateRange<Dayjs>) => void;
   sx?: SxProps<Theme>;
 }
 
-export default function DykDatePicker({ sx }: Props) {
-  const [value, setValue] = useState<DateRange<Dayjs>>([null, null]);
-  const onChangeDate = (e: DateRange<Dayjs>) => {
-    console.log("test", e);
-    setValue(e);
-  };
-
+export default function DykDatePicker({ value, onChange, sx }: Props) {
   return (
     <Box>
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
         <DesktopDateRangePicker
           value={value}
-          onChange={onChangeDate}
+          onChange={onChange}
           format="DD.MM.YYYY"
           slotProps={{ textField: { size: "small" } }}
           sx={sx}

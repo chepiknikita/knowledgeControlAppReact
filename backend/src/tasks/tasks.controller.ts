@@ -9,6 +9,7 @@ import {
   ParseFilePipe,
   Post,
   Put,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -85,5 +86,17 @@ export class TasksController {
     @Body(new ValidationPipe({ transform: true })) request: PaginationFilterDto,
   ) {
     return await this.tasksService.findAllPaginated(request);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('filter/user')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Фильтрация задач пользователя' })
+  @ApiBody({ type: PaginationFilterDto })
+  async getAllFilteredProfile(
+    @Req() req,
+    @Body(new ValidationPipe({ transform: true })) request: PaginationFilterDto,
+  ) {
+    return await this.tasksService.getAllFilteredProfile(req.user.id, request);
   }
 }

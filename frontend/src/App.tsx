@@ -2,7 +2,7 @@ import React from "react";
 import Default from "./layouts/Default";
 import Pages from "./pages";
 import { Container } from "@mui/material";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider } from "./features/auth/context/AuthContext";
 
 function App() {
   return (

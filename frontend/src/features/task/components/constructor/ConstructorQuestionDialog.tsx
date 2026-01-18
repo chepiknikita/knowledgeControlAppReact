@@ -12,7 +12,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import DykTypography from "../../../../components/UI/typography/DykTypography";
 import DykButton from "../../../../components/UI/buttons/DykButton";
 import AddBoxSharpIcon from "@mui/icons-material/AddBoxSharp";
@@ -28,6 +28,9 @@ interface Props {
   handleClose: () => void;
 }
 
+const MAX_ANSWERS = 5;
+const MIN_ANSWERS = 2;
+
 export default function ConstructorQuestionDialog({
   openDialog,
   header,
@@ -35,97 +38,91 @@ export default function ConstructorQuestionDialog({
   onSave,
   handleClose,
 }: Props) {
-  const [open, setOpen] = React.useState(false);
   const [question, setQuestion] = React.useState(Question.empty);
 
-  const isValidAnswers =
-    question.answers.every((v) => v.text) &&
-    question.answers.some((v) => v.isCorrect);
-
-  const disabled =
-    question.question && question.answers.length > 3 && isValidAnswers;
-
-  React.useEffect(() => {
-    if (initailData) {
-      setQuestion(initailData);
-    }
-  }, [initailData]);
-
   useEffect(() => {
-    setOpen(openDialog);
-  }, [openDialog]);
+    setQuestion(initailData ? new Question(initailData) : Question.empty());
+  }, [initailData, openDialog]);
 
-  const handleChange = (field: keyof Question, value: any) => {
-    setQuestion((prev) => {
-      return new Question({ ...prev, [field]: value });
-    });
+  const isValid = useMemo(() => {
+    const hasQuestion = Boolean(question.question.trim());
+    const validAnswersCount = question.answers.filter((a) =>
+      a.text.trim(),
+    ).length;
+    const hasCorrect = question.answers.some((a) => a.isCorrect);
+
+    return (
+      hasQuestion &&
+      validAnswersCount >= MIN_ANSWERS &&
+      validAnswersCount <= MAX_ANSWERS &&
+      hasCorrect
+    );
+  }, [question]);
+
+  const setField = (field: keyof Question, value: any) =>
+    setQuestion((prev) => new Question({ ...prev, [field]: value }));
+
+  const updateAnswerText = (id: Answer["id"], text: string) => {
+    setQuestion(
+      (prev) =>
+        new Question({
+          ...prev,
+          answers: prev.answers.map((answer) =>
+            answer.id === id ? new Answer({ ...answer, text }) : answer,
+          ),
+        }),
+    );
   };
 
-  const handleQuestion = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleChange("question", e.target.value);
-  };
-
-  const handleCheckboxChange = (
-    id: number,
-    value: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const setCorrectAnswer = (id: Answer["id"]) => {
     setQuestion(
       (prev) =>
         new Question({
           ...prev,
           answers: prev.answers.map((answer) =>
             answer.id === id
-              ? new Answer({ ...answer, isCorrect: value.target.checked })
-              : new Answer({ ...answer, isCorrect: false })
+              ? new Answer({ ...answer, isCorrect: true })
+              : new Answer({ ...answer, isCorrect: false }),
           ),
-        })
+        }),
     );
   };
 
-  const handleInputChange = (id: number, value: string) => {
+  const removeAnswer = (id: number | string) =>
     setQuestion(
       (prev) =>
         new Question({
           ...prev,
-          answers: prev.answers.map((answer) =>
-            answer.id === id ? new Answer({ ...answer, text: value }) : answer
-          ),
-        })
+          answers: prev.answers.filter((a) => a.id !== id),
+        }),
     );
-  };
-
-  const deleteAnswer = (id: number) => {
-    handleChange(
-      "answers",
-      question.answers.filter((a) => a.id !== id)
-    );
-  };
 
   const addAnswer = () => {
-    if (question.answers.length < 5) {
-      setQuestion(
-        (prev) =>
-          new Question({
-            ...prev,
-            answers: [...prev.answers, Answer.empty()],
-          })
-      );
-      console.log("e33", question);
-    } else {
-      console.log("max 5 вариантов ответа");
-    }
+    setQuestion(
+      (prev) =>
+        new Question({
+          ...prev,
+          answers: [...prev.answers, Answer.empty()],
+        }),
+    );
   };
 
   const save = () => {
-    onSave(new Question({ ...question, id: Date.now() }));
+    onSave(new Question(question));
     handleClose();
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+    <Dialog
+      open={openDialog}
+      fullWidth
+      maxWidth="sm"
+      onClose={handleClose}
+    >
       <DialogTitle component="div" variant="body1">
         {header}
       </DialogTitle>
+
       <DialogContent
         dividers
         sx={{
@@ -135,10 +132,10 @@ export default function ConstructorQuestionDialog({
         <TextField
           placeholder="Вопрос"
           value={question.question}
-          onChange={handleQuestion}
           fullWidth
           size="small"
           sx={{ my: 1 }}
+          onChange={(e) => setField("question", e.target.value)}
         />
         <Box>
           <DykTypography
@@ -149,17 +146,19 @@ export default function ConstructorQuestionDialog({
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Tooltip title="Добавить ответ">
               <IconButton
-                aria-label="add"
+                aria-label="add-answer"
                 size="large"
-                onClick={addAnswer}
                 disableRipple
                 sx={{ p: 0, my: 1 }}
+                disabled={question.answers.length >= MAX_ANSWERS}
+                onClick={addAnswer}
               >
                 <AddBoxSharpIcon fontSize="inherit" />
               </IconButton>
             </Tooltip>
           </Box>
         </Box>
+
         {question.answers.map((answer) => (
           <Box
             key={answer.id}
@@ -171,14 +170,15 @@ export default function ConstructorQuestionDialog({
                 fullWidth
                 sx={{ my: 1 }}
                 value={answer.text}
-                onChange={(e) => handleInputChange(answer.id, e.target.value)}
+                onChange={(e) => updateAnswerText(answer.id, e.target.value)}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
-                      aria-label="delete"
+                      aria-label="delete-answer"
                       size="large"
-                      onClick={() => deleteAnswer(answer.id)}
                       disableRipple
+                      disabled={question.answers.length <= MIN_ANSWERS}
+                      onClick={() => removeAnswer(answer.id)}
                     >
                       <DeleteIcon fontSize="inherit" />
                     </IconButton>
@@ -189,7 +189,7 @@ export default function ConstructorQuestionDialog({
                     <Radio
                       disableRipple
                       checked={answer.isCorrect}
-                      onChange={(e) => handleCheckboxChange(answer.id, e)}
+                      onChange={(e) => setCorrectAnswer(answer.id)}
                     />
                   </InputAdornment>
                 }
@@ -199,9 +199,15 @@ export default function ConstructorQuestionDialog({
         ))}
       </DialogContent>
       <DialogActions sx={{ m: 1 }}>
-        {/* TODO: autoFocus */}
-        <DykButton title="Сохранить" disabled={!disabled} onClick={save} />
-        <DykButton title="Отмена" onClick={handleClose} />
+        <DykButton
+          title="Сохранить"
+          disabled={!isValid}
+          onClick={save}
+        />
+        <DykButton
+          title="Отмена"
+          onClick={handleClose}
+        />
       </DialogActions>
     </Dialog>
   );

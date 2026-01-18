@@ -6,28 +6,28 @@ interface Props {
   disabledPrev: boolean;
   disabledNext: boolean;
   textApplyBtn: string;
-  handleBack: () => void;
-  handleNext: () => void;
+  onBack: () => void;
+  onNext: () => void;
 }
 export default function ConstructorActions({
   disabledPrev,
   disabledNext,
   textApplyBtn,
-  handleBack,
-  handleNext,
+  onBack,
+  onNext,
 }: Props) {
   return (
     <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
       <DykButton
         title="Назад"
         disabled={disabledPrev}
-        onClick={handleBack}
+        onClick={onBack}
       />
       <Box sx={{ flex: "1 1 auto" }} />
       <DykButton
         title={textApplyBtn}
         disabled={disabledNext}
-        onClick={handleNext}
+        onClick={onNext}
       />
     </Box>
   );

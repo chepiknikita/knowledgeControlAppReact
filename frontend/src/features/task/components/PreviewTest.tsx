@@ -116,8 +116,14 @@ export default function PreviewTask({
             height: "40px",
           }}
         >
-            <EditIcon sx={{ mt: 1, ml: 1, cursor: 'pointer' }} onClick={handleEdit} />
-            <DeleteIcon sx={{ mt: 1, ml: 1, cursor: 'pointer' }} onClick={handleDelete} />
+            <EditIcon
+              sx={{ mt: 1, ml: 1, cursor: 'pointer' }}
+              onClick={handleEdit}
+            />
+            <DeleteIcon
+              sx={{ mt: 1, ml: 1, cursor: 'pointer' }}
+              onClick={handleDelete}
+            />
         </Box>
       )}
     </Card>

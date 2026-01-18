@@ -65,8 +65,17 @@ export class TaskService {
 
   async getAllFiltered(payload: PaginationFilterPayload): Promise<any> {
     try {
-      const tasks = (await this.repository.getAllFiltered(payload)).data;
-      return tasks;
+      const response = (await this.repository.getAllFiltered(payload)).data;
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllFilteredProfile(payload: PaginationFilterPayload): Promise<any> {
+    try {
+      const response = (await this.repository.getAllFilteredProfile(payload)).data;
+      return response;
     } catch (error) {
       throw error;
     }

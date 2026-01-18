@@ -5,8 +5,8 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Auth, AuthUser } from "../api/interfaces/auth";
-import { ApiFactory } from "../api";
+import { ApiFactory } from "../../../api";
+import { Auth, AuthUser } from "../../../api/interfaces/auth";
 
 interface AuthContextType {
   user: AuthUser | null;

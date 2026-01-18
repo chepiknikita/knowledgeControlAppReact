@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useCallback, useState } from "react";
 import { IconButton, Tooltip } from "@mui/material";
 import AddBoxSharpIcon from "@mui/icons-material/AddBoxSharp";
 import { Question } from "../../../../entities/question";
@@ -15,35 +15,31 @@ export default function ConstructorCreateQuestion({
   onSaveQuestion,
   initailData,
 }: Props) {
-  const [open, setOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const openDialog = useCallback(() => setIsOpen(true), []);
+  const closeDialog = useCallback(() => setIsOpen(false), []);
 
   return (
     <>
       <Tooltip title="Добавить вопрос">
         <IconButton
-          aria-label="add"
+          aria-label="add-question"
           size="large"
-          onClick={handleClickOpen}
           disableRipple
           sx={{ p: 0, mx: 0, mb: 1 }}
+          onClick={openDialog}
         >
           <AddBoxSharpIcon fontSize="inherit" />
         </IconButton>
       </Tooltip>
+
       <ConstructorQuestionDialog
-        openDialog={open}
+        openDialog={isOpen}
         header={header}
         initailData={initailData}
         onSave={onSaveQuestion}
-        handleClose={handleClose}
+        handleClose={closeDialog}
       />
     </>
   );

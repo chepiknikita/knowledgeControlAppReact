@@ -7,10 +7,10 @@ import { Task } from "../../../../entities/task";
 
 interface Props {
   task: Task;
-  onSave: (question: Question) => void;
+  onAddQuestion: (question: Question) => void;
 }
 
-export default function ConstructorQuestionsWrapper({ task, onSave }: Props) {
+export default function ConstructorQuestionsWrapper({ task, onAddQuestion }: Props) {
   return (
     <Box>
       <DykTypography
@@ -20,7 +20,7 @@ export default function ConstructorQuestionsWrapper({ task, onSave }: Props) {
       />
       <ConstructorQuestions
         task={task}
-        onSaveQuestion={onSave}
+        onSaveQuestion={onAddQuestion}
       />
     </Box>
   );

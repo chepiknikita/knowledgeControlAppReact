@@ -38,4 +38,8 @@ export default class TaskRepository extends BaseRepository<any> {
   async getAllFiltered(payload: PaginationFilterPayload): Promise<AxiosResponse<any>> {
     return this.api.getAllFiltered(payload);
   }
+
+  async getAllFilteredProfile(payload: PaginationFilterPayload): Promise<AxiosResponse<any>> {
+    return this.api.getAllFilteredProfile(payload);
+  }
 }

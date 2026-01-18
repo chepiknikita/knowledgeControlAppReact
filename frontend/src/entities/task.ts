@@ -10,7 +10,7 @@ export interface Author {
 }
 
 export interface ITask {
-  id?: number;
+  id?: number | string;
   name: string;
   description: string;
   image?: File;
@@ -21,7 +21,7 @@ export interface ITask {
 }
 
 export class Task implements ITask {
-  id?: number;
+  id?: number | string;
   name: string;
   description: string;
   image?: File;
@@ -56,7 +56,12 @@ export class Task implements ITask {
       name: data.name,
       imageBase64: data.image ? urlService.getImageUrl(data.image) : "",
       description: data.description,
-      user: { ...data.user, imageUrl: data.user.avatar ? urlService.getImageUrl(data.user.avatar) : "" },
+      user: data.user && {
+        ...data.user,
+        imageUrl: data.user.avatar
+          ? urlService.getImageUrl(data.user.avatar)
+          : "" 
+      },
       createdAt: data.createdAt,
       questions: data.questions?.map((v) => Question.fromApi(v)),
     });
@@ -78,6 +83,19 @@ export class Task implements ITask {
     }
     formData.append("data", JSON.stringify(this.toApi()));
     return formData;
+  }
+
+  public toResponse(): TaskResponse {
+    return {
+      id: this.id ?? 0,
+      name: this.name,
+      description: this.description,
+      image: "",
+      imageBase64: this.imageBase64,
+      user: this.user,
+      createdAt: this.createdAt ?? new Date().toISOString(),
+      questions: this.questions.map((q) => q.toResponse()),
+    };
   }
 
   public validate(): { isValid: boolean; errors: Record<string, string> } {

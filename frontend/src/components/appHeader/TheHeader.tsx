@@ -13,8 +13,8 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import { NavLink } from "react-router-dom";
 import "./Header.css";
-import { useAuth } from "../../context/AuthContext";
 import urlService from "../../api/serverUrl/urlService";
+import { useAuth } from "../../features/auth/context/AuthContext";
 
 export default function TheHeader() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Model, ModelStatic } from 'sequelize';
+import { Model, ModelStatic, WhereOptions } from 'sequelize';
 import { SequelizeFilterUtil } from 'src/common/utils/sequelize-filter-util';
 import { PaginationFilterDto } from '../dto/pagination-filter.dto';
 
@@ -10,7 +10,7 @@ export abstract class BaseService<T extends Model> {
   /**
    * Универсальный метод для получения данных с пагинацией и фильтрацией
    */
-  async findAllPaginated(query: PaginationFilterDto) {
+  protected async findAllPaginatedInternal(query: PaginationFilterDto, extraWhere: WhereOptions = {}) {
     const {
       page = 1,
       limit = 10,
@@ -21,9 +21,14 @@ export abstract class BaseService<T extends Model> {
     } = query;
 
     const offset = (page - 1) * limit;
+    
+    const whereFromFilters = SequelizeFilterUtil.buildWhereConditions(filters);
 
-    // Строим условия запроса
-    const where = SequelizeFilterUtil.buildWhereConditions(filters);
+    const where = {
+      ...whereFromFilters,
+      ...extraWhere,
+    };
+    
     const order = SequelizeFilterUtil.buildOrderConditions(sorts);
     const includeOptions = SequelizeFilterUtil.buildIncludeConditions(include);
     const attributes = SequelizeFilterUtil.buildAttributesConditions(fields);
@@ -55,5 +60,9 @@ export abstract class BaseService<T extends Model> {
         conditions: filters,
       },
     };
+  }
+
+  public async findAllPaginated(query: PaginationFilterDto) {
+    return await this.findAllPaginatedInternal(query);
   }
 }

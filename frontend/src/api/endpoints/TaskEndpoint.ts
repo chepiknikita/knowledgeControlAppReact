@@ -43,4 +43,8 @@ export default class TaskEndpoint {
   async getAllFiltered(payload: PaginationFilterPayload): Promise<AxiosResponse<any>> {
     return this.api.post('tasks/filter', payload);
   }
+
+  async getAllFilteredProfile(payload: PaginationFilterPayload): Promise<AxiosResponse<any>> {
+    return this.api.post('tasks/filter/user', payload);
+  }
 }

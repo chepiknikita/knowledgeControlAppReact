@@ -4,7 +4,7 @@ import { Alert, Box, Card, CardContent, TextField } from "@mui/material";
 import DykTypography from "../../components/UI/typography/DykTypography";
 import DykButton from "../../components/UI/buttons/DykButton";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "./context/AuthContext";
 
 export default function AuthForm({
   isShowSignUp = false,
