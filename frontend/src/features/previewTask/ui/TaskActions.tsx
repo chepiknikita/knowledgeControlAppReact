@@ -18,7 +18,7 @@ const ACTION_MESSAGES: Record<Action, string> = {
 
 export function TaskActions({ onEdit, onDelete }: Props) {
   const { open, message, openDialog, closeDialog, handleConfirm } =
-    useConfirmAction<Action>({
+    useConfirmAction<Action, undefined>({
       messages: ACTION_MESSAGES,
       onConfirm: (action) => {
         if (action === "delete") onDelete?.();

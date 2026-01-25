@@ -11,23 +11,12 @@ interface Props {
   onDeleteAccount: () => void;
 }
 
-type Action = "delete" | "logout";
-
-const ACTION_MESSAGES: Record<Action, string> = {
-  delete: "Вы уверены, что хотите удалить аккаунт?",
-  logout: "Вы уверены, что хотите выйти?",
-};
-
 export const ProfileActions = memo(
   ({ login, onLogout, onDeleteAccount }: Props): JSX.Element => {
-    const { open, message, openDialog, closeDialog, handleConfirm } =
-      useConfirmAction<Action>({
-        messages: ACTION_MESSAGES,
-        onConfirm: (action) => {
-          if (action === "delete") onDeleteAccount();
-          if (action === "logout") onLogout();
-        },
-      });
+
+    const openEditUser = () => {
+      console.log('open dialog edit user');
+    }
 
     return (
       <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -35,20 +24,19 @@ export const ProfileActions = memo(
         <DykTypography text="Количество тестов: 0" variant="body2" />
 
         <DykButton
+          title="Редактировать"
+          sx={{ my: 1 }}
+          onClick={() => openEditUser()}
+        />
+        <DykButton
           title="Удалить аккаунт"
           sx={{ my: 1 }}
-          onClick={() => openDialog("delete")}
+          onClick={onDeleteAccount}
         />
         <DykButton
           title="Выход"
           sx={{ my: 1 }}
-          onClick={() => openDialog("logout")}
-        />
-        <ConfirmDialog
-          open={open}
-          message={message}
-          onCancel={closeDialog}
-          onConfirm={handleConfirm}
+          onClick={onLogout}
         />
       </Box>
     );
