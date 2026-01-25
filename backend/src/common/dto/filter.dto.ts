@@ -2,14 +2,9 @@ import {
   IsEnum,
   IsOptional,
   IsString,
-  IsNumber,
-  IsArray,
-  ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
-// Типы операций для фильтрации
 export enum FilterOperator {
   EQUALS = 'equals',
   NOT_EQUALS = 'not_equals',

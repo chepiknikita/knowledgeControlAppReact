@@ -1,10 +1,10 @@
 import React from "react";
 import PageWrapper from "../components/wrappers/PageWrapper";
-import TaskConstructor from "../features/task/TaskConstructor";
 import { Task } from "../entities/task";
 import { useParams } from "react-router-dom";
-import { useTask } from "../features/task/hooks/useTask";
+import { useTask } from "../features/constructor/hooks/useTask";
 import { Box } from "@mui/system";
+import TaskConstructor from "../features/constructor/TaskConstructor";
 
 export default function TheTaskEdit() {
   const { id } = useParams();

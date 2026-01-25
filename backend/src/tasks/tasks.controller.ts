@@ -28,18 +28,6 @@ import { parseMultipartJson } from 'src/utils/multipart.utils';
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
-  @ApiOperation({ summary: 'Get tasks' })
-  // @ApiResponse({ status: 200, type: [Task] })
-  @Get()
-  getAll() {
-    return this.tasksService.getAll();
-  }
-
-  @Get('user/:userId')
-  getAllByUserId(@Param('userId') userId: number) {
-    return this.tasksService.getAllByUserId(userId);
-  }
-
   @Get('/:id')
   getTaskById(@Param('id') id: number) {
     return this.tasksService.getTaskById(id);

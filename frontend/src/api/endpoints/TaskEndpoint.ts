@@ -1,19 +1,15 @@
 import { AxiosInstance, AxiosResponse } from "axios";
-import { PaginationFilterPayload } from "../interfaces/paginationFilterPayload";
+import {
+  PagedResult,
+  PaginationFilterPayload,
+} from "../interfaces/paginationFilterPayload";
+import { TaskResponse } from "../interfaces/tasks";
 
 export default class TaskEndpoint {
   api: AxiosInstance;
 
   constructor(api: AxiosInstance) {
     this.api = api;
-  }
-
-  async getAll<T>(): Promise<AxiosResponse<T>> {
-    return this.api.get("tasks");
-  }
-
-  async getAllByUserId<T>(userId: number): Promise<AxiosResponse<T>> {
-    return this.api.get(`tasks/user/${userId}`);
   }
 
   async getById<T>(id: number): Promise<AxiosResponse<T>> {
@@ -40,11 +36,15 @@ export default class TaskEndpoint {
     return this.api.delete(`tasks/${id}`);
   }
 
-  async getAllFiltered(payload: PaginationFilterPayload): Promise<AxiosResponse<any>> {
-    return this.api.post('tasks/filter', payload);
+  async getAllFiltered(
+    payload: PaginationFilterPayload,
+  ): Promise<AxiosResponse<PagedResult<TaskResponse>>> {
+    return this.api.post("tasks/filter", payload);
   }
 
-  async getAllFilteredProfile(payload: PaginationFilterPayload): Promise<AxiosResponse<any>> {
-    return this.api.post('tasks/filter/user', payload);
+  async getAllFilteredProfile(
+    payload: PaginationFilterPayload,
+  ): Promise<AxiosResponse<PagedResult<TaskResponse>>> {
+    return this.api.post("tasks/filter/user", payload);
   }
 }

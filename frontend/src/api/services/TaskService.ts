@@ -1,31 +1,9 @@
 import { PaginationFilterPayload } from "../interfaces/paginationFilterPayload";
 import { TaskResponse } from "../interfaces/tasks";
 import TaskRepository from "../repositories/TaskRepository";
-import urlService from "../serverUrl/urlService";
 
 export class TaskService {
   constructor(private repository: TaskRepository) {}
-
-  async getAll(): Promise<TaskResponse[]> {
-
-    try {
-      const tasks = (await this.repository.getAll()).data;
-      return tasks.map((v) => ({ ...v, imageBase64: v.image ? urlService.getImageUrl(v.image) : '' }));
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
-  }
-
-  async getAllByUserId(userId: number): Promise<TaskResponse[]> {
-    try {
-      const tasks = (await this.repository.getAllByUserId(userId)).data;
-      return tasks.map((v) => ({ ...v, imageBase64: v.image ? urlService.getImageUrl(v.image) : '' }));
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
-  }
 
   async getById(id: number): Promise<TaskResponse | null> {
     try {
@@ -74,7 +52,8 @@ export class TaskService {
 
   async getAllFilteredProfile(payload: PaginationFilterPayload): Promise<any> {
     try {
-      const response = (await this.repository.getAllFilteredProfile(payload)).data;
+      const response = (await this.repository.getAllFilteredProfile(payload))
+        .data;
       return response;
     } catch (error) {
       throw error;

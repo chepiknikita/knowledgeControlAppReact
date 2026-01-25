@@ -11,14 +11,6 @@ export default class TaskRepository extends BaseRepository<any> {
     this.api = api;
   }
 
-  async getAll(): Promise<AxiosResponse<TaskResponse[]>> {
-    return this.api.getAll<TaskResponse[]>();
-  }
-
-  async getAllByUserId(userId: number): Promise<AxiosResponse<TaskResponse[]>> {
-    return this.api.getAllByUserId<TaskResponse[]>(userId);
-  }
-
   async getById(id: number): Promise<AxiosResponse<TaskResponse>> {
     return this.api.getById<TaskResponse>(id);
   }
@@ -35,11 +27,15 @@ export default class TaskRepository extends BaseRepository<any> {
     return this.api.delete<void>(id);
   }
 
-  async getAllFiltered(payload: PaginationFilterPayload): Promise<AxiosResponse<any>> {
+  async getAllFiltered(
+    payload: PaginationFilterPayload,
+  ): Promise<AxiosResponse<any>> {
     return this.api.getAllFiltered(payload);
   }
 
-  async getAllFilteredProfile(payload: PaginationFilterPayload): Promise<AxiosResponse<any>> {
+  async getAllFilteredProfile(
+    payload: PaginationFilterPayload,
+  ): Promise<AxiosResponse<any>> {
     return this.api.getAllFilteredProfile(payload);
   }
 }

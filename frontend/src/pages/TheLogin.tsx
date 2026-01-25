@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import AuthForm from "../features/auth/AuthForm";
 import { useAuth } from "../features/auth/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import AuthController from "../features/auth/AuthController";
 
 export default function Login() {
   const { isAuthenticated, loading } = useAuth();
@@ -16,5 +16,5 @@ export default function Login() {
   if (loading) {
     return <div>Загрузка...</div>;
   }
-  return <AuthForm />;
+  return <AuthController />;
 }

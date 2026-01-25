@@ -1,0 +1,85 @@
+import { useEffect, useMemo, useState } from "react";
+import { Question } from "../../../entities/question";
+import { Answer } from "../../../entities/answer";
+import { MAX_ANSWERS, MIN_ANSWERS } from "../constants";
+
+export function useQuestionState(
+  initailData?: Question,
+  openDialog?: boolean,
+) {
+  const [question, setQuestion] = useState(Question.empty);
+
+  useEffect(() => {
+    setQuestion(initailData ? new Question(initailData) : Question.empty());
+  }, [initailData, openDialog]);
+
+  const isValid = useMemo(() => {
+    const hasQuestion = Boolean(question.question.trim());
+    const validAnswersCount = question.answers.filter((a) =>
+      a.text.trim(),
+    ).length;
+    const hasCorrect = question.answers.some((a) => a.isCorrect);
+
+    return (
+      hasQuestion &&
+      validAnswersCount >= MIN_ANSWERS &&
+      validAnswersCount <= MAX_ANSWERS &&
+      hasCorrect
+    );
+  }, [question]);
+
+  const setField = (field: keyof Question, value: any) =>
+    setQuestion((prev) => new Question({ ...prev, [field]: value }));
+
+  const updateAnswerText = (id: Answer["id"], text: string) =>
+    setQuestion(
+      (prev) =>
+        new Question({
+          ...prev,
+          answers: prev.answers.map((a) =>
+            a.id === id ? new Answer({ ...a, text }) : a,
+          ),
+        }),
+    );
+
+  const setCorrectAnswer = (id: Answer["id"]) =>
+    setQuestion(
+      (prev) =>
+        new Question({
+          ...prev,
+          answers: prev.answers.map((a) =>
+            a.id === id
+              ? new Answer({ ...a, isCorrect: true })
+              : new Answer({ ...a, isCorrect: false }),
+          ),
+        }),
+    );
+
+  const removeAnswer = (id: Answer["id"]) =>
+    setQuestion(
+      (prev) =>
+        new Question({
+          ...prev,
+          answers: prev.answers.filter((a) => a.id !== id),
+        }),
+    );
+
+  const addAnswer = () =>
+    setQuestion(
+      (prev) =>
+        new Question({
+          ...prev,
+          answers: [...prev.answers, Answer.empty()],
+        }),
+    );
+
+  return {
+    question,
+    isValid,
+    setField,
+    updateAnswerText,
+    setCorrectAnswer,
+    removeAnswer,
+    addAnswer,
+  };
+}

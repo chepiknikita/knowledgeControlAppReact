@@ -2,7 +2,8 @@ class UrlService {
   private readonly baseUrl: string;
 
   constructor() {
-    this.baseUrl = process.env.REACT_APP_NEST_SERVER_API_URL || 'http://localhost:3000';
+    this.baseUrl =
+      process.env.REACT_APP_NEST_SERVER_API_URL || "http://localhost:3000";
   }
 
   getServerUrl(): string {
@@ -10,7 +11,7 @@ class UrlService {
   }
 
   getImageUrl(imagePath?: string): string {
-    return imagePath ? `${this.baseUrl}/${imagePath}` : '';
+    return imagePath ? `${this.baseUrl}/${imagePath}` : "";
   }
 }
 

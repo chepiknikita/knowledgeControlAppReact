@@ -1,8 +1,9 @@
 import React from "react";
 import { Box } from "@mui/system";
 import { useParams } from "react-router-dom";
-import TaskProgress from "../features/task/TaskProgress";
-import { useTask } from "../features/task/hooks/useTask";
+import { useTask } from "../features/constructor/hooks/useTask";
+import { Task } from "../entities/task";
+import TaskRunFeature from "../features/taskRun/TaskRunFeature";
 
 export default function TheTaskDescription() {
   const { id } = useParams<{ id: string }>();
@@ -20,5 +21,5 @@ export default function TheTaskDescription() {
     return null;
   }
 
-  return <TaskProgress task={task} />;
+  return <TaskRunFeature task={Task.fromApi(task)}/>;
 }

@@ -1,7 +1,6 @@
 import { AxiosResponse } from "axios";
 
 export interface BaseRepositoryItem<T> {
-  getAll(id?: number): Promise<AxiosResponse<T[]>>;
   getById(id: number): Promise<AxiosResponse<T>>;
   create(item: Omit<T, "id">): Promise<AxiosResponse<T>>;
   update(id: number, item: Partial<T>): Promise<AxiosResponse<T>>;

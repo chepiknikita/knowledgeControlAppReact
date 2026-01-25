@@ -1,12 +1,9 @@
 import { AuthService } from "./services/AuthService";
-import { QuestionService } from "./services/QuestionService";
 import { TaskService } from "./services/TaskService";
 import AuthRepository from "./repositories/AuthRepository";
 import AuthEndpoint from "./endpoints/AuthEndpoint";
 import TaskRepository from "./repositories/TaskRepository";
 import TaskEndpoint from "./endpoints/TaskEndpoint";
-import QuestionRepository from "./repositories/QuestionRepository";
-import QuestionEndpoint from "./endpoints/QuestionEndpoint";
 import ApiClient from "./config/ApiClient";
 import urlService from "./serverUrl/urlService";
 import UserService from "./services/UserService";
@@ -36,14 +33,6 @@ export class ApiFactory {
       new TaskEndpoint(this.apiInstance.api)
     );
     return new TaskService(repository);
-  }
-
-  public static createQuestionService(): QuestionService {
-    this.initialize();
-    const repository = new QuestionRepository(
-      new QuestionEndpoint(this.apiInstance.api)
-    );
-    return new QuestionService(repository);
   }
 
   public static createUserService(): UserService {

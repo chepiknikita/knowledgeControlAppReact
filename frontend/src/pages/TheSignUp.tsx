@@ -1,6 +1,6 @@
 import React from "react";
-import AuthForm from "../features/auth/AuthForm";
+import AuthController from "../features/auth/AuthController";
 
 export default function SignUp() {
-  return <AuthForm isShowSignUp />;
+  return <AuthController isShowSignUp />;
 }

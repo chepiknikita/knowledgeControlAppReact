@@ -28,35 +28,6 @@ export class TasksService extends BaseService<Task> {
 
   protected model = this.taskRepository;
 
-  async getAll() {
-    return await this.taskRepository.findAll({
-      include: [
-        {
-          model: Question,
-        },
-        {
-          model: User,
-          attributes: ['id', 'login', 'avatar'],
-        },
-      ],
-    });
-  }
-
-  async getAllByUserId(userId: number) {
-    return await this.taskRepository.findAll({
-      where: { userId },
-      include: [
-        {
-          model: Question,
-        },
-        {
-          model: User,
-          attributes: ['id', 'login', 'avatar'],
-        },
-      ],
-    });
-  }
-
   async getTaskById(id: number) {
     return await this.taskRepository.findOne({
       where: { id },
@@ -122,7 +93,7 @@ export class TasksService extends BaseService<Task> {
       });
     } catch (error) {
       await transaction.rollback();
-      console.error('Error creating task:', error);
+      console.error('Ошибка при создании задания:', error);
       throw error;
     }
   }
@@ -135,7 +106,7 @@ export class TasksService extends BaseService<Task> {
       const task = await this.taskRepository.findByPk(id, { transaction });
 
       if (!task) {
-        throw new Error('Task not found');
+        throw new Error('Заданиие не найдено');
       }
 
       let fileName = task.image;
@@ -167,7 +138,7 @@ export class TasksService extends BaseService<Task> {
       return await this.getTaskWithRelations(id);
     } catch (error) {
       await transaction.rollback();
-      console.error('Error updating task:', error);
+      console.error('Ошибка при обновлении задания:', error);
       throw error;
     }
   }
@@ -299,7 +270,7 @@ export class TasksService extends BaseService<Task> {
       });
 
       if (!task) {
-        throw new NotFoundException('Task not found');
+        throw new NotFoundException('Задание не найдено');
       }
 
       await this.taskRepository.destroy({
@@ -314,7 +285,7 @@ export class TasksService extends BaseService<Task> {
       await transaction.commit();
 
       return {
-        message: 'Task deleted successfully',
+        message: 'Задание успешно удалено',
         deleted: true,
       };
     } catch (error) {
@@ -324,7 +295,7 @@ export class TasksService extends BaseService<Task> {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new InternalServerErrorException('Failed to delete task');
+      throw new InternalServerErrorException('Ошибка при уделении задания');
     }
   }
 

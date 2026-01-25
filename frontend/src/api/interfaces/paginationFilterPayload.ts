@@ -18,3 +18,8 @@ export interface PaginationFilterPayload {
   include?: string;
   fields?: string;
 }
+
+export interface PagedResult<T> {
+  data: T[];
+  pagination: PaginationResponse;
+}

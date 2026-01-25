@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './entities/user.model';
 import { CreateUserDto } from './dto/create-user.dto';
-import { AddRoleDto } from './dto/add-role.dto';
 import { RoleService } from 'src/role/role.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileService } from 'src/file/file.service';
@@ -24,10 +23,6 @@ export class UserService {
     return user;
   }
 
-  async getAllUsers() {
-    return await this.userRepository.findAll({ include: { all: true } });
-  }
-
   async getUserByLogin(login: string) {
     return await this.userRepository.findOne({
       where: { login },
@@ -37,20 +32,6 @@ export class UserService {
 
   async getUserById(id: string): Promise<User | null> {
     return await this.userRepository.findOne({ where: { id } });
-  }
-
-  async addRole(dto: AddRoleDto) {
-    const user = await this.userRepository.findByPk(dto.userId);
-    const role = await this.roleService.getRoleByName(dto.name);
-    if (role && user) {
-      await user.$add('role', role.id);
-      return dto;
-    }
-
-    throw new HttpException(
-      'Пользователь или роль не найдены',
-      HttpStatus.NOT_FOUND,
-    );
   }
 
   async update(id: number, image: File, dto: UpdateUserDto | null) {

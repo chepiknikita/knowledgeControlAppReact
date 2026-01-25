@@ -1,4 +1,4 @@
-import { Auth, AuthTokens, AuthUser } from "../interfaces/auth";
+import { Auth, AuthTokens } from "../interfaces/auth";
 import AuthRepository from "../repositories/AuthRepository";
 
 export class AuthService {
@@ -7,9 +7,9 @@ export class AuthService {
   async login(payload: Auth): Promise<AuthTokens> {
     try {
       const data = (await this.repository.login(payload)).data;
-      
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
+
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
 
       return data;
     } catch (error) {
@@ -22,8 +22,8 @@ export class AuthService {
     try {
       const data = (await this.repository.signUp(payload)).data;
 
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
 
       return data;
     } catch (error) {

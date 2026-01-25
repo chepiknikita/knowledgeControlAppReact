@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsString, ValidateNested } from 'class-validator';
 import { CreateQuestionDto } from 'src/question/dto/create-question.dto';
 
 export class CreateTaskDto {

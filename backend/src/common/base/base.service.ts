@@ -55,10 +55,6 @@ export abstract class BaseService<T extends Model> {
         hasNextPage: page < totalPages,
         hasPreviousPage: page > 1,
       },
-      filters: {
-        applied: filters.length,
-        conditions: filters,
-      },
     };
   }
 
