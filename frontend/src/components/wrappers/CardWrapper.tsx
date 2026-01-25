@@ -1,6 +1,6 @@
 import { Card } from "@mui/material";
 import React from "react";
-import PageWrapper from "../../../components/wrappers/PageWrapper";
+import PageWrapper from "./PageWrapper";
 
 interface Props {
   children: React.ReactNode;

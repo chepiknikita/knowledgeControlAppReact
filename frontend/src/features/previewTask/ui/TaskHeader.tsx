@@ -17,11 +17,12 @@ export function TaskHeader({ name, createdAt, user }: Props) {
         top: 0,
         left: 0,
         right: 0,
-        bgcolor: "rgba(0,0,0,0.5)",
+        bgcolor: "rgba(0,0,0,0.8)",
         py: 1,
         pl: 2,
         pr: 6,
         display: "flex",
+        zIndex: 0,
         alignItems: "center",
       }}
     >
@@ -32,7 +33,7 @@ export function TaskHeader({ name, createdAt, user }: Props) {
         />
       )}
 
-      <Box sx={{ overflow: "hidden", ml: 2 }}>
+      <Box sx={{ overflow: "hidden", ml: 2, mr: 4 }}>
         <DykTypography
           text={name}
           variant="body1"

@@ -40,6 +40,7 @@ export const TasksSection = memo(
           loading={loading}
           tasks={tasks}
           pagination={pagination}
+          showEdit={true}
           onPageChange={onPageChange}
           onOpen={onOpen}
           onEdit={onEdit}
