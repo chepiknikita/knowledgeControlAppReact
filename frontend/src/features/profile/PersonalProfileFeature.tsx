@@ -9,6 +9,7 @@ import { Box } from "@mui/system";
 import { Divider } from "@mui/material";
 import { ProfileSidebar } from "./ui/ProfileSidebar";
 import { TasksSection } from "./ui/TasksSection";
+import { UserCredentialsUpdate } from "../../entities/user";
 
 export default function PersonalProfileFeature(): JSX.Element {
   const { logout } = useAuth();
@@ -22,7 +23,7 @@ export default function PersonalProfileFeature(): JSX.Element {
 
   useEffect(() => setPage(1), [filters]);
 
-  const { profile, updateAvatar, deleteProfile } = useUserProfile();
+  const { profile, updateAvatar, deleteProfile, updateUserCredentials } = useUserProfile();
 
   const { tasks, pagination, loading, deleteTask } = usePaginatedTasks({
     scope: "profile",
@@ -46,6 +47,10 @@ export default function PersonalProfileFeature(): JSX.Element {
     [navigate]
   );
 
+  const handleUpdateCredentials = useCallback(async (payload: UserCredentialsUpdate) => {
+    await updateUserCredentials(payload)
+  }, [updateUserCredentials]);
+
   return (
     <Box sx={{ flex: 1, display: "flex", overflow: "hidden" }}>
       <ProfileSidebar
@@ -53,6 +58,7 @@ export default function PersonalProfileFeature(): JSX.Element {
         onAvatarChange={updateAvatar}
         onLogout={logout}
         onDeleteAccount={handleDeleteAccount}
+        onUpdateUserCredentials={handleUpdateCredentials}
       />
 
       <Divider orientation="vertical" flexItem />

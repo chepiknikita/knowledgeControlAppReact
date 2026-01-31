@@ -15,28 +15,27 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { User } from './entities/user.model';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { parseMultipartJson } from 'src/utils/multipart.utils';
 import {
   createFileInterceptorOptions,
   createFileValidators,
 } from 'src/utils/file-upload.utils';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
+import { UpdateCredentialsDto } from './dto/update-credentials.dto';
 
 @ApiTags('Пользователи')
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @ApiOperation({ summary: 'Update user' })
+  @ApiOperation({ summary: 'Update user avatar' })
   @ApiResponse({ status: 200, type: [User] })
   @UseGuards(JwtAuthGuard)
-  @Put(':id')
+  @Put(':id/avatar')
   @UseInterceptors(
     FileInterceptor('image', createFileInterceptorOptions('USER_AVATAR')),
   )
-  async update(
+  async updateAvatar(
     @Param('id') id: number,
-    @Body() body: { data: string },
     @UploadedFile(
       new ParseFilePipe({
         fileIsRequired: false,
@@ -45,8 +44,19 @@ export class UserController {
     )
     image: File,
   ): Promise<Partial<User>> {
-    const userDto = parseMultipartJson(body?.data);
-    const user = await this.userService.update(id, image, userDto)
+    const user = await this.userService.updateAvatar(id, image)
+    return user.getUserResponse();
+  }
+
+  @ApiOperation({ summary: 'Update user credentials' })
+  @ApiResponse({ status: 200, type: [User] })
+  @UseGuards(JwtAuthGuard)
+  @Put(':id/credentials')
+  async updateCredentials(
+    @Param('id') id: number,
+    @Body() dto: UpdateCredentialsDto,
+  ): Promise<Partial<User>> {
+    const user = await this.userService.updateCredentials(id, dto);
     return user.getUserResponse();
   }
 

@@ -2,21 +2,16 @@ import { memo } from "react";
 import { Box } from "@mui/system";
 import DykTypography from "../../../components/UI/typography/DykTypography";
 import DykButton from "../../../components/UI/buttons/DykButton";
-import { ConfirmDialog } from "../../../components/UI/dialogs/ConfirmDialog";
-import { useConfirmAction } from "../../../shared/hooks/useConfirmAction";
 
 interface Props {
   login?: string;
+  onEditProfile: () => void;
   onLogout: () => void;
   onDeleteAccount: () => void;
 }
 
 export const ProfileActions = memo(
-  ({ login, onLogout, onDeleteAccount }: Props): JSX.Element => {
-
-    const openEditUser = () => {
-      console.log('open dialog edit user');
-    }
+  ({ login, onLogout, onDeleteAccount, onEditProfile }: Props): JSX.Element => {
 
     return (
       <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -26,7 +21,7 @@ export const ProfileActions = memo(
         <DykButton
           title="Редактировать"
           sx={{ my: 1 }}
-          onClick={() => openEditUser()}
+          onClick={onEditProfile}
         />
         <DykButton
           title="Удалить аккаунт"

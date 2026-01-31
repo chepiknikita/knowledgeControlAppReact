@@ -13,7 +13,7 @@ import { CreateAnswerDto } from 'src/question/dto/create-answer.dto';
 import { User } from 'src/user/entities/user.model';
 import { FileService } from 'src/file/file.service';
 import { BaseService } from 'src/common/base/base.service';
-import { PaginationFilterDto } from 'src/common/dto/pagination-filter.dto';
+import { PaginationFilterDto } from 'src/common/dto/request/pagination-filter.dto';
 
 @Injectable()
 export class TasksService extends BaseService<Task> {

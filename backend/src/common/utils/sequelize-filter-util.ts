@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 import { WhereOptions } from 'sequelize';
-import { SortDto } from '../dto/sort.dto';
-import { FilterDto, FilterOperator } from '../dto/filter.dto';
+import { SortDto } from '../dto/request/sort.dto';
+import { FilterDto, FilterOperator } from '../dto/request/filter.dto';
 
 export class SequelizeFilterUtil {
   static buildWhereConditions(filters: FilterDto[]): WhereOptions {

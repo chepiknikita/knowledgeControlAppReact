@@ -1,23 +1,34 @@
+import { UserCredentialsUpdate } from "../../entities/user";
+import { UserResponse } from "../interfaces/auth";
 import UserRepository from "../repositories/UserRepository";
 
 export default class UserService {
   constructor(private repository: UserRepository) {}
 
-  async update(id: number, payload: FormData): Promise<any> {
+  async updateAvatar(id: number, payload: FormData): Promise<any> {
     try {
-      const data = (await this.repository.update(id, payload)).data;
+      const data = (await this.repository.updateAvatar(id, payload)).data;
       return data;
     } catch (error) {
       console.error(error);
     }
   }
 
-  async delete(id: number) {
+  async updateCredentials(id: number, payload: UserCredentialsUpdate): Promise<UserResponse> {
+     try {
+      const data = (await this.repository.updateCredentials(id, payload)).data;
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async delete(id: number): Promise<{ id: number, message: string }> {
     try {
       const data = (await this.repository.delete(id)).data;
       return data;
     } catch (error) {
-      console.error(error);
+      throw error
     }
   }
 

@@ -14,7 +14,6 @@ import { JwtAuthGuard } from './jwt-auth-guard';
     JwtModule.registerAsync({
       useFactory: async (service: ConfigService) => {
         const secret = service.get<string>('JWT_ACCESS_SECRET');
-        console.log('JWT Secret loaded:', secret ? 'Yes' : 'No');
         
         if (!secret) {
           throw new Error('JWT_ACCESS_SECRET is not defined in environment variables');

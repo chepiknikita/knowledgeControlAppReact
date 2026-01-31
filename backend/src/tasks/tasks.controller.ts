@@ -19,7 +19,7 @@ import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TasksService } from './tasks.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { PaginationFilterDto } from 'src/common/dto/pagination-filter.dto';
+import { PaginationFilterDto } from 'src/common/dto/request/pagination-filter.dto';
 import { createFileInterceptorOptions } from 'src/utils/file-upload.utils';
 import { parseMultipartJson } from 'src/utils/multipart.utils';
 

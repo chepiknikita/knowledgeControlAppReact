@@ -1,4 +1,4 @@
-import { AuthUser } from "../api/interfaces/auth";
+import { UserResponse } from "../api/interfaces/auth";
 import urlService from "../api/serverUrl/urlService";
 
 export interface IUser {
@@ -8,6 +8,12 @@ export interface IUser {
   avatarBase64?: string;
   roles: string[];
   password?: string | null;
+}
+
+export interface UserCredentialsUpdate {
+  login?: string;
+  currentPassword?: string;
+  newPassword?: string;
 }
 
 export class User implements IUser {
@@ -25,28 +31,12 @@ export class User implements IUser {
     this.roles = data.roles ?? [];
   }
 
-  static fromApi(data: AuthUser) {
+  static fromApi(data: UserResponse) {
     return new User({
       id: data.id,
       login: data.login,
       avatarBase64: data.avatar ? urlService.getImageUrl(data.avatar) : '',
       roles: data.roles,
     });
-  }
-
-  public toApi(): Partial<IUser> {
-    return {
-      login: this.login,
-      password: null,
-    };
-  }
-
-  public toFormData(): FormData {
-    const formData = new FormData();
-    if (this.avatar) {
-      formData.append("image", this.avatar);
-    }
-    formData.append("data", JSON.stringify(this.toApi()));
-    return formData;
   }
 }

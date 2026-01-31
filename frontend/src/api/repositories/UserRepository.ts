@@ -1,6 +1,7 @@
 import { AxiosResponse } from "axios";
 import UserEndpoint from "../endpoints/UserEndpoint";
-import { AuthUser } from "../interfaces/auth";
+import { UserCredentialsUpdate } from "../../entities/user";
+import { UserResponse } from "../interfaces/auth";
 
 export default class UserRepository {
   api: UserEndpoint;
@@ -9,15 +10,19 @@ export default class UserRepository {
     this.api = api;
   }
 
-  async update(id: number, payload: FormData): Promise<AxiosResponse> {
-    return this.api.update(id, payload);
+  async updateAvatar(id: number, payload: FormData): Promise<AxiosResponse<UserResponse>> {
+    return this.api.updateAvatar<UserResponse>(id, payload);
   }
 
-  async delete(id: number) {
-    return this.api.delete(id);
+  async updateCredentials(id: number, payload: UserCredentialsUpdate): Promise<AxiosResponse<UserResponse>> {
+    return this.api.updateCredentials<UserResponse>(id, payload);
   }
 
-  async getProfile(): Promise<AxiosResponse<AuthUser>> {
-    return this.api.getProfile();
+  async delete(id: number): Promise<AxiosResponse<{ id: number, message: string }>> {
+    return this.api.delete<{ id: number, message: string }>(id);
+  }
+
+  async getProfile(): Promise<AxiosResponse<UserResponse>> {
+    return this.api.getProfile<UserResponse>();
   }
 }

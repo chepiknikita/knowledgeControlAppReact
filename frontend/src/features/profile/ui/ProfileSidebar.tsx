@@ -1,16 +1,18 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Box } from "@mui/system";
-import { User } from "../../../entities/user";
+import { UserCredentialsUpdate, User } from "../../../entities/user";
 import { AvatarUploader } from "./AvatarUploader";
 import { ProfileActions } from "./ProfileActions";
 import { ConfirmDialog } from "../../../components/UI/dialogs/ConfirmDialog";
 import { useConfirmAction } from "../../../shared/hooks/useConfirmAction";
+import { ProfileCredentialsDialog } from "./ProfileCredentialsDialog";
 
 interface Props {
   profile: User | null;
   onAvatarChange: (file: File) => void;
   onLogout: () => void;
   onDeleteAccount: () => void;
+  onUpdateUserCredentials: (payload: UserCredentialsUpdate) => void;
 }
 
 type Action = "delete" | "logout" | "updateAvatar";
@@ -27,6 +29,7 @@ export const ProfileSidebar = memo(
     onAvatarChange,
     onLogout,
     onDeleteAccount,
+    onUpdateUserCredentials,
   }: Props): JSX.Element => {
     const { open, message, openDialog, closeDialog, handleConfirm } =
       useConfirmAction<Action, File>({
@@ -39,7 +42,17 @@ export const ProfileSidebar = memo(
           onAvatarChange(payload);
         }
       },
-      });
+    });
+
+    const [isCredentialsDialogOpen, setIsCredentialsDialogOpen] = useState(false);
+
+    const openCredentialsDialog = () => setIsCredentialsDialogOpen(true);
+    const closeCredentialsDialog = () => setIsCredentialsDialogOpen(false);
+
+    const handleCredentialsSubmit = (update: UserCredentialsUpdate) => {
+      onUpdateUserCredentials(update);
+      closeCredentialsDialog();
+    };
 
     return (
       <Box sx={{ width: 256, mr: 5, flexShrink: 0 }}>
@@ -50,6 +63,7 @@ export const ProfileSidebar = memo(
 
         <ProfileActions
           login={profile?.login}
+          onEditProfile={openCredentialsDialog}
           onLogout={() => openDialog("logout")}
           onDeleteAccount={() => openDialog("delete")}
         />
@@ -59,6 +73,13 @@ export const ProfileSidebar = memo(
           message={message}
           onCancel={closeDialog}
           onConfirm={handleConfirm}
+        />
+
+        <ProfileCredentialsDialog
+          isOpen={isCredentialsDialogOpen}
+          initialLogin={profile?.login}
+          onClose={closeCredentialsDialog}
+          onSubmit={handleCredentialsSubmit}
         />
       </Box>
     );

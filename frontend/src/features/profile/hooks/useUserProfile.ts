@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { ApiFactory } from "../../../api";
-import { User } from "../../../entities/user";
+import { User, UserCredentialsUpdate } from "../../../entities/user";
 
 export function useUserProfile() {
   const [profile, setProfile] = useState<User | null>(null);
@@ -28,7 +28,19 @@ export function useUserProfile() {
       const formData = new FormData();
       formData.append("image", file);
 
-      await userService.update(profile.id, formData);
+      await userService.updateAvatar(profile.id, formData);
+      await fetchProfile();
+    },
+    [profile?.id, fetchProfile],
+  );
+
+  const updateUserCredentials = useCallback(
+    async (payload: UserCredentialsUpdate) => {
+      if (Object.keys(payload).length === 0 || !profile?.id) return;
+
+      const userService = ApiFactory.createUserService();
+
+      await userService.updateCredentials(profile.id, payload);
       await fetchProfile();
     },
     [profile?.id, fetchProfile],
@@ -50,5 +62,6 @@ export function useUserProfile() {
     loading,
     updateAvatar,
     deleteProfile,
+    updateUserCredentials,
   };
 }

@@ -8,7 +8,7 @@ export interface AuthTokens {
   refreshToken: string;
 }
 
-export interface AuthUser {
+export interface UserResponse {
   id: number;
   login: string;
   avatar: string;

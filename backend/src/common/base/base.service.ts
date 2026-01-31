@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Model, ModelStatic, WhereOptions } from 'sequelize';
 import { SequelizeFilterUtil } from 'src/common/utils/sequelize-filter-util';
-import { PaginationFilterDto } from '../dto/pagination-filter.dto';
+import { PaginationFilterDto } from '../dto/request/pagination-filter.dto';
 
 @Injectable()
 export abstract class BaseService<T extends Model> {
