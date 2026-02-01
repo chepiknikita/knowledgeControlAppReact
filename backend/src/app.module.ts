@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TasksModule } from './tasks/tasks.module';
-import { QuestionModule } from './question/question.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -10,8 +9,8 @@ import { Task } from './tasks/entities/task.model';
 import { RoleModule } from './role/role.module';
 import { Role } from './role/entities/role.model';
 import { UserRoles } from './role/entities/user-roles.model';
-import { Question } from './question/entities/question.model';
-import { Answer } from './question/entities/answer.model';
+import { Question } from './tasks/entities/question.model';
+import { Answer } from './tasks/entities/answer.model';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 
@@ -48,7 +47,6 @@ import { join } from 'path';
     UserModule,
     RoleModule,
     TasksModule,
-    QuestionModule,
     AuthModule,
   ],
 })

@@ -6,13 +6,15 @@ import { RoleService } from 'src/role/role.service';
 import { FileService } from 'src/file/file.service';
 import * as bcrypt from 'bcryptjs';
 import { UpdateCredentialsDto } from './dto/update-credentials.dto';
+import { Sequelize } from 'sequelize-typescript';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(User) private userRepository: typeof User,
-    private roleService: RoleService,
-    private fileService: FileService,
+    @InjectModel(User) private readonly userRepository: typeof User,
+    private readonly roleService: RoleService,
+    private readonly fileService: FileService,
+    private readonly sequelize: Sequelize,
   ) {}
 
   async createUser(dto: CreateUserDto) {
@@ -57,9 +59,7 @@ export class UserService {
 
   async updateCredentials(id: number, dto: UpdateCredentialsDto): Promise<User> {
     const user = await this.getUserOrThrow(id);
-
     await this.validateLogin(dto.login, user.id);
-
     const updateData = await this.buildCredentialsUpdateData(dto, user);
 
     if (!Object.keys(updateData).length) {
@@ -89,19 +89,14 @@ export class UserService {
     );
   }
 
-  async delete(id: number): Promise<{ message: string; id: number }> {
+  async delete(id: number): Promise<void> {
     const user = await this.getUserOrThrow(id);
-
-    await this.userRepository.destroy({ where: { id } });
-
-    if (user.avatar) {
-      await this.fileService.deleteFile(user.avatar);
-    }
-
-    return {
-      message: 'Пользователь успешно удален',
-      id,
-    };
+    await this.sequelize.transaction(async (t) => {
+      if (user.avatar) {
+        await this.fileService.deleteFile(user.avatar);
+      }
+      await this.userRepository.destroy({ where: { id }, transaction: t });
+    });
   }
 
   async validateRefreshToken(id: number, refreshToken: string): Promise<boolean> {

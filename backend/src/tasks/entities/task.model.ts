@@ -8,7 +8,7 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { Question } from 'src/question/entities/question.model';
+import { Question } from 'src/tasks/entities/question.model';
 import { User } from 'src/user/entities/user.model';
 
 interface TaskCreationAttrs {

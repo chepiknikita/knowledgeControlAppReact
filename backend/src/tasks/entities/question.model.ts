@@ -8,7 +8,7 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { Answer } from 'src/question/entities/answer.model';
+import { Answer } from 'src/tasks/entities/answer.model';
 import { Task } from 'src/tasks/entities/task.model';
 
 interface QuestionCreationAttrs {

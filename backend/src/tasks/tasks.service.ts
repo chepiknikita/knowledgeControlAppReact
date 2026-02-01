@@ -1,305 +1,155 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Task } from './entities/task.model';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { Question } from 'src/question/entities/question.model';
-import { Answer } from 'src/question/entities/answer.model';
-import { CreateQuestionDto } from 'src/question/dto/create-question.dto';
-import { CreateAnswerDto } from 'src/question/dto/create-answer.dto';
+import { Question } from 'src/tasks/entities/question.model';
+import { Answer } from 'src/tasks/entities/answer.model';
 import { User } from 'src/user/entities/user.model';
 import { FileService } from 'src/file/file.service';
 import { BaseService } from 'src/common/base/base.service';
 import { PaginationFilterDto } from 'src/common/dto/request/pagination-filter.dto';
+import { QuestionsService } from './questions.service';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class TasksService extends BaseService<Task> {
+  protected model = this.taskRepository;
+
   constructor(
-    @InjectModel(Task) private taskRepository: typeof Task,
-    @InjectModel(Question) private questionRepository: typeof Question,
-    @InjectModel(Answer) private answerModel: typeof Answer,
-    private fileService: FileService,
+    @InjectModel(Task) private readonly taskRepository: typeof Task,
+    private readonly fileService: FileService,
+    private readonly questionsService: QuestionsService,
   ) {
     super();
   }
 
-  protected model = this.taskRepository;
+  async create(dto: CreateTaskDto, image?: File): Promise<Task> {
+    const imageName = image ? await this.fileService.createFile(image) : null;
 
-  async getTaskById(id: number) {
-    return await this.taskRepository.findOne({
-      where: { id },
-      include: [
-        {
-          model: Question,
-          include: [Answer],
-        },
-        {
-          model: User,
-        },
-      ],
-    });
-  }
-
-  async create(dto: CreateTaskDto, image: File): Promise<Task> {
-    const sequelize = this.taskRepository.sequelize;
-    const transaction = await sequelize.transaction();
-
-    try {
-      const fileName = await this.fileService.createFile(image);
+    return this.withTransaction(async (transaction) => {
       const task = await this.taskRepository.create(
         {
           name: dto.name,
           description: dto.description,
-          image: fileName,
+          image: imageName,
           userId: dto.userId,
         },
         { transaction },
       );
 
-      if (dto.questions && dto.questions.length > 0) {
-        for (const questionDto of dto.questions) {
-          const question = await this.questionRepository.create(
-            {
-              question: questionDto.question,
-              taskId: task.id,
-            },
-            { transaction },
-          );
+      await this.questionsService.createForTask(
+        task.id,
+        dto.questions ?? [],
+        transaction,
+      );
 
-          if (questionDto.answers && questionDto.answers.length > 0) {
-            const answersData = questionDto.answers.map((answer) => ({
-              text: answer.text,
-              isCorrect: answer.isCorrect,
-              questionId: question.id,
-            }));
-
-            await this.answerModel.bulkCreate(answersData, { transaction });
-          }
-        }
-      }
-
-      await transaction.commit();
-
-      return await this.taskRepository.findByPk(task.id, {
-        include: [
-          {
-            model: Question,
-            include: [Answer],
-          },
-        ],
-      });
-    } catch (error) {
-      await transaction.rollback();
-      console.error('Ошибка при создании задания:', error);
-      throw error;
-    }
+      return this.findTaskWithRelations(task.id);
+    });
   }
 
-  async edit(id: number, dto: CreateTaskDto, image: File): Promise<Task> {
-    const sequelize = this.taskRepository.sequelize;
-    const transaction = await sequelize.transaction();
+  async edit(id: number, dto: CreateTaskDto, image?: File): Promise<Task> {
+    let newImageName: string | null = null;
 
-    try {
-      const task = await this.taskRepository.findByPk(id, { transaction });
-
-      if (!task) {
-        throw new Error('Заданиие не найдено');
-      }
-
-      let fileName = task.image;
-      if (image) {
-        if (task.image) {
-          await this.fileService.deleteFile(task.image);
-        }
-        fileName = await this.fileService.createFile(image);
-      }
-
-      const updateData: Partial<Task> = {};
-
-      if (dto.name !== undefined) updateData.name = dto.name;
-      if (dto.description !== undefined)
-        updateData.description = dto.description;
-      if (dto.userId !== undefined) updateData.userId = parseInt(dto.userId);
-      if (image) updateData.image = fileName;
-
-      if (Object.keys(updateData).length > 0) {
-        await task.update(updateData, { transaction });
-      }
-
-      if (dto.questions !== undefined) {
-        await this.updateQuestions(task, dto.questions, transaction);
-      }
-
-      await transaction.commit();
-
-      return await this.getTaskWithRelations(id);
-    } catch (error) {
-      await transaction.rollback();
-      console.error('Ошибка при обновлении задания:', error);
-      throw error;
+    if (image) {
+      newImageName = await this.fileService.createFile(image);
     }
-  }
 
-  private async updateQuestions(
-    task: Task,
-    questionsDto: CreateQuestionDto[],
-    transaction: any,
-  ) {
-    const existingQuestions = await task.$get('questions', {
-      include: [Answer],
-      transaction,
+    const task = await this.withTransaction(async (transaction) => {
+      const task = await this.findByIdOrFail(id, transaction);
+
+      const updateData: Partial<Task> = {
+        name: dto.name,
+        description: dto.description,
+        userId: +dto.userId,
+        ...(newImageName && { image: newImageName }),
+      };
+
+      await task.update(updateData, { transaction });
+
+      if (dto.questions) {
+        await this.questionsService.syncForTask(
+          task,
+          dto.questions,
+          transaction,
+        );
+      }
+
+      return task;
     });
 
-    for (const questionDto of questionsDto) {
-      if (questionDto.id) {
-        const existingQuestion = existingQuestions.find(
-          (q) => q.id === questionDto.id,
-        );
-        if (existingQuestion) {
-          await existingQuestion.update(
-            { question: questionDto.question },
-            { transaction },
-          );
-          await this.updateAnswers(
-            existingQuestion,
-            questionDto.answers || [],
-            transaction,
-          );
-        }
-      } else {
-        const newQuestion = await this.questionRepository.create(
-          {
-            question: questionDto.question,
-            taskId: task.id,
-          },
-          { transaction },
-        );
-
-        if (questionDto.answers && questionDto.answers.length > 0) {
-          await this.answerModel.bulkCreate(
-            questionDto.answers.map((answer) => ({
-              text: answer.text,
-              isCorrect: answer.isCorrect,
-              questionId: newQuestion.id,
-            })),
-            { transaction },
-          );
-        }
-      }
+    if (image && task.image) {
+      await this.fileService.deleteFile(task.image);
     }
 
-    const dtoQuestionIds = questionsDto
-      .filter((q) => q.id)
-      .map((q) => q.id as number);
+    return this.findTaskWithRelations(id);
+  }
 
-    for (const existingQuestion of existingQuestions) {
-      if (!dtoQuestionIds.includes(existingQuestion.id)) {
-        await existingQuestion.destroy({ transaction });
-      }
+  async getTaskById(id: number): Promise<Task | null> {
+    return this.findTaskWithRelations(id, true);
+  }
+
+  async delete(id: number): Promise<void> {
+    let imageToDelete: string | null = null;
+
+    await this.withTransaction(async (transaction) => {
+      const task = await this.findByIdOrFail(id, transaction);
+
+      imageToDelete = task.image;
+      await task.destroy({ transaction });
+    });
+
+    if (imageToDelete) {
+      await this.fileService.deleteFile(imageToDelete);
     }
   }
 
-  private async updateAnswers(
-    question: Question,
-    answersDto: CreateAnswerDto[],
-    transaction: any,
-  ) {
-    const existingAnswers = await question.$get('answers', { transaction });
+  private async withTransaction<T>(
+    callback: (transaction: Transaction) => Promise<T>,
+  ): Promise<T> {
+    const transaction = await this.taskRepository.sequelize.transaction();
 
-    for (const answerDto of answersDto) {
-      if (answerDto.id) {
-        const existingAnswer = existingAnswers.find(
-          (a) => a.id === answerDto.id,
-        );
-        if (existingAnswer) {
-          const updateData: Partial<Answer> = {};
-
-          if (answerDto.text !== undefined) updateData.text = answerDto.text;
-          if (answerDto.isCorrect !== undefined)
-            updateData.isCorrect = answerDto.isCorrect;
-
-          if (Object.keys(updateData).length > 0) {
-            await existingAnswer.update(updateData, { transaction });
-          }
-        }
-      } else {
-        await this.answerModel.create(
-          {
-            text: answerDto.text,
-            isCorrect: answerDto.isCorrect ?? false,
-            questionId: question.id,
-          },
-          { transaction },
-        );
-      }
-    }
-
-    const dtoAnswerIds = answersDto
-      .filter((a) => a.id)
-      .map((a) => a.id as number);
-
-    for (const existingAnswer of existingAnswers) {
-      if (!dtoAnswerIds.includes(existingAnswer.id)) {
-        await existingAnswer.destroy({ transaction });
-      }
+    try {
+      const result = await callback(transaction);
+      await transaction.commit();
+      return result;
+    } catch (error) {
+      await transaction.rollback();
+      // this.logger.error(error);
+      throw error;
     }
   }
 
-  private async getTaskWithRelations(taskId: number): Promise<Task> {
-    return await this.taskRepository.findByPk(taskId, {
+  private findTaskWithRelations(
+    taskId: number,
+    withUser = false,
+  ): Promise<Task | null> {
+    return this.taskRepository.findByPk(taskId, {
       include: [
         {
           model: Question,
           include: [Answer],
         },
+        ...(withUser ? [{ model: User }] : []),
       ],
     });
   }
 
-  async delete(id: number) {
-    const sequelize = this.taskRepository.sequelize;
-    const transaction = await sequelize.transaction();
-
-    try {
-      const task = await this.taskRepository.findByPk(id, {
-        include: [Question],
-        transaction,
-      });
-
-      if (!task) {
-        throw new NotFoundException('Задание не найдено');
-      }
-
-      await this.taskRepository.destroy({
-        where: { id },
-        transaction,
-      });
-
-      if (task.image) {
-        await this.fileService.deleteFile(task.image);
-      }
-
-      await transaction.commit();
-
-      return {
-        message: 'Задание успешно удалено',
-        deleted: true,
-      };
-    } catch (error) {
-      await transaction.rollback();
-      console.error('Error deleting task:', error);
-
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Ошибка при уделении задания');
-    }
-  }
-
   async getAllFilteredProfile(userId: number, query: PaginationFilterDto) {
     return this.findAllPaginatedInternal(query, { userId });
+  }
+
+  private async findByIdOrFail(
+    id: number,
+    transaction?: Transaction,
+  ): Promise<Task> {
+    const task = await this.taskRepository.findByPk(id, {
+      transaction,
+    });
+
+    if (!task) {
+      throw new NotFoundException('Задание не найдено');
+    }
+
+    return task;
   }
 }

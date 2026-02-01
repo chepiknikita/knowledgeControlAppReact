@@ -23,10 +23,9 @@ export default class UserService {
     }
   }
 
-  async delete(id: number): Promise<{ id: number, message: string }> {
+  async delete(id: number): Promise<void> {
     try {
-      const data = (await this.repository.delete(id)).data;
-      return data;
+      await this.repository.delete(id);
     } catch (error) {
       throw error
     }

@@ -28,42 +28,46 @@ import { parseMultipartJson } from 'src/utils/multipart.utils';
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
+  @HttpCode(HttpStatus.OK)
   @Get('/:id')
-  getTaskById(@Param('id') id: number) {
-    return this.tasksService.getTaskById(id);
+  async getTaskById(@Param('id') id: number) {
+    return await this.tasksService.getTaskById(id);
   }
 
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
   @Post()
   @UseInterceptors(
     FileInterceptor('image', createFileInterceptorOptions('IMAGE')),
   )
-  create(
+  async create(
     @Body() body: { data: string },
     @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) image: File,
   ) {
     const taskDto = parseMultipartJson(body.data);
-    return this.tasksService.create(taskDto, image);
+    return await this.tasksService.create(taskDto, image);
   }
 
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
   @Put('/:id')
   @UseInterceptors(
     FileInterceptor('image', createFileInterceptorOptions('IMAGE')),
   )
-  edit(
+  async edit(
     @Param('id') id: number,
     @Body() body: { data: string },
     @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) image: File,
   ) {
     const taskDto = parseMultipartJson(body.data);
-    return this.tasksService.edit(id, taskDto, image);
+    return await this.tasksService.edit(id, taskDto, image);
   }
 
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:id')
-  delete(@Param('id') id: number) {
-    return this.tasksService.delete(id);
+  async delete(@Param('id') id: number): Promise<void>  {
+    await this.tasksService.delete(id);
   }
 
   @Post('filter')

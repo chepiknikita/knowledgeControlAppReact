@@ -6,10 +6,10 @@ import {
   useState,
 } from "react";
 import { ApiFactory } from "../../../api";
-import { Auth, AuthUser } from "../../../api/interfaces/auth";
+import { Auth, UserResponse } from "../../../api/interfaces/auth";
 
 interface AuthContextType {
-  user: AuthUser | null;
+  user: UserResponse | null;
   loading: boolean;
   login: (payload: Auth) => Promise<{ success: boolean; error?: string }>;
   signup: (payload: Auth) => Promise<{ success: boolean; error?: string }>;
@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const authService = ApiFactory.createAuthService();
 
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState<UserResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

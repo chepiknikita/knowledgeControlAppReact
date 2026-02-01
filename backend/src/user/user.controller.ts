@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseFilePipe,
   Put,
@@ -21,6 +23,7 @@ import {
 } from 'src/utils/file-upload.utils';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { UpdateCredentialsDto } from './dto/update-credentials.dto';
+import { SelfOnlyGuard } from './self-only-guard';
 
 @ApiTags('Пользователи')
 @Controller('user')
@@ -29,7 +32,8 @@ export class UserController {
 
   @ApiOperation({ summary: 'Update user avatar' })
   @ApiResponse({ status: 200, type: [User] })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, SelfOnlyGuard)
+  @HttpCode(HttpStatus.OK)
   @Put(':id/avatar')
   @UseInterceptors(
     FileInterceptor('image', createFileInterceptorOptions('USER_AVATAR')),
@@ -50,7 +54,8 @@ export class UserController {
 
   @ApiOperation({ summary: 'Update user credentials' })
   @ApiResponse({ status: 200, type: [User] })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, SelfOnlyGuard)
+  @HttpCode(HttpStatus.OK)
   @Put(':id/credentials')
   async updateCredentials(
     @Param('id') id: number,
@@ -61,14 +66,16 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Delete user' })
-  @ApiResponse({ status: 200 })
-  @UseGuards(JwtAuthGuard)
+  @ApiResponse({ status: 204 })
+  @UseGuards(JwtAuthGuard, SelfOnlyGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  async delete(@Param('id') id: number) {
-    return await this.userService.delete(id);
-  }
+  async delete(@Param('id') id: number): Promise<void> {
+    await this.userService.delete(id);
+  } 
 
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
   @Get('profile')
   async getProfile(@Request() req): Promise<Partial<User>> {
     const user = await this.userService.getUserById(req.user.id);

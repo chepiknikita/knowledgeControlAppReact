@@ -18,8 +18,8 @@ export default class UserRepository {
     return this.api.updateCredentials<UserResponse>(id, payload);
   }
 
-  async delete(id: number): Promise<AxiosResponse<{ id: number, message: string }>> {
-    return this.api.delete<{ id: number, message: string }>(id);
+  async delete(id: number): Promise<AxiosResponse<void>> {
+    return this.api.delete<void>(id);
   }
 
   async getProfile(): Promise<AxiosResponse<UserResponse>> {
