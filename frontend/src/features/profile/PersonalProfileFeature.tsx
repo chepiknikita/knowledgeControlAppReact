@@ -6,7 +6,7 @@ import { useTaskFilters } from "../home/hooks/useTaskFilters";
 import { useUserProfile } from "./hooks/useUserProfile";
 import { usePaginatedTasks } from "../home/hooks/usePaginatedTasks";
 import { Box } from "@mui/system";
-import { Divider } from "@mui/material";
+import { Alert, Divider } from "@mui/material";
 import { ProfileSidebar } from "./ui/ProfileSidebar";
 import { TasksSection } from "./ui/TasksSection";
 import { UserCredentialsUpdate } from "../../entities/user";
@@ -23,8 +23,10 @@ export default function PersonalProfileFeature(): JSX.Element {
 
   useEffect(() => setPage(1), [filters]);
 
-  const { profile, updateAvatar, deleteProfile, updateUserCredentials } = useUserProfile();
+   //TODO вывод ошибки.
+  const { profile, error, updateAvatar, deleteProfile, updateUserCredentials } = useUserProfile();
 
+   //TODO вывод ошибки.
   const { tasks, pagination, loading, deleteTask } = usePaginatedTasks({
     scope: "profile",
     filters,
@@ -33,8 +35,8 @@ export default function PersonalProfileFeature(): JSX.Element {
   });
 
   const handleDeleteAccount = useCallback(async () => {
-    await logout();
     await deleteProfile();
+    await logout();
   }, [logout, deleteProfile]);
 
   const handleOpenTask = useCallback(
@@ -74,6 +76,16 @@ export default function PersonalProfileFeature(): JSX.Element {
         onEdit={handleEditTask}
         onDelete={deleteTask}
       />
+      
+        {error &&
+          <Alert
+            variant="outlined"
+            severity="error"
+            color="error"
+            sx={{ my:1 }}
+          >
+            {error}
+          </Alert>}
     </Box>
   );
 }

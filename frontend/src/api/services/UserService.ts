@@ -10,7 +10,7 @@ export default class UserService {
       const data = (await this.repository.updateAvatar(id, payload)).data;
       return data;
     } catch (error) {
-      console.error(error);
+      throw error;
     }
   }
 

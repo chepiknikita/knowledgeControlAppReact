@@ -5,6 +5,7 @@ import { User, UserCredentialsUpdate } from "../../../entities/user";
 export function useUserProfile() {
   const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -14,6 +15,9 @@ export function useUserProfile() {
       const data = await userService.getProfile();
 
       setProfile(User.fromApi(data));
+    } catch(reason) {
+      const err = reason as any;
+      setError(err.response?.data?.message || 'Ошибка загрузки данных пользователя');
     } finally {
       setLoading(false);
     }
@@ -60,6 +64,7 @@ export function useUserProfile() {
   return {
     profile,
     loading,
+    error,
     updateAvatar,
     deleteProfile,
     updateUserCredentials,

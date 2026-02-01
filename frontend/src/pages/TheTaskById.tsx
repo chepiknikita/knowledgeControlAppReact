@@ -1,11 +1,12 @@
 import React from "react";
 import { Box } from "@mui/system";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTask } from "../features/constructor/hooks/useTask";
 import { Task } from "../entities/task";
 import TaskRunFeature from "../features/taskRun/TaskRunFeature";
 
 export default function TheTaskDescription() {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { task, status } = useTask(id);
 
@@ -21,5 +22,10 @@ export default function TheTaskDescription() {
     return null;
   }
 
-  return <TaskRunFeature task={Task.fromApi(task)}/>;
+  return (
+    <TaskRunFeature
+      task={Task.fromApi(task)}
+      onHome={() => navigate("/")}
+    />
+  );
 }

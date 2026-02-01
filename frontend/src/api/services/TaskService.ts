@@ -5,23 +5,21 @@ import TaskRepository from "../repositories/TaskRepository";
 export class TaskService {
   constructor(private repository: TaskRepository) {}
 
-  async getById(id: number): Promise<TaskResponse | null> {
+  async getById(id: number): Promise<TaskResponse> {
     try {
       const task = (await this.repository.getById(id)).data;
       return task;
     } catch (error) {
-      console.error(error);
-      return null;
+      throw error;
     }
   }
 
-  async create(payload: FormData): Promise<TaskResponse | null> {
+  async create(payload: FormData): Promise<TaskResponse> {
     try {
       const task = (await this.repository.create(payload)).data;
       return task;
     } catch (error) {
-      console.error(error);
-      return null;
+      throw error;
     }
   }
 
@@ -29,7 +27,7 @@ export class TaskService {
     try {
       await this.repository.update(id, payload);
     } catch (error) {
-      console.error(error);
+      throw error;
     }
   }
 
@@ -37,7 +35,7 @@ export class TaskService {
     try {
       await this.repository.delete(id);
     } catch (error) {
-      console.error(error);
+      throw error;
     }
   }
 

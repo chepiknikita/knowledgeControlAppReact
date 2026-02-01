@@ -8,6 +8,7 @@ export interface IUser {
   avatarBase64?: string;
   roles: string[];
   password?: string | null;
+  tasksCount?: number;
 }
 
 export interface UserCredentialsUpdate {
@@ -22,6 +23,7 @@ export class User implements IUser {
   avatar?: File;
   avatarBase64: string;
   roles: string[];
+  tasksCount?: number;
 
   constructor(data: Partial<IUser>) {
     this.id = data.id ?? 0;
@@ -29,6 +31,7 @@ export class User implements IUser {
     this.avatar = data.avatar;
     this.avatarBase64 = data.avatarBase64 ?? "";
     this.roles = data.roles ?? [];
+    this.tasksCount = data.tasksCount ?? 0;
   }
 
   static fromApi(data: UserResponse) {
@@ -37,6 +40,7 @@ export class User implements IUser {
       login: data.login,
       avatarBase64: data.avatar ? urlService.getImageUrl(data.avatar) : '',
       roles: data.roles,
+      tasksCount: data.tasksCount,
     });
   }
 }

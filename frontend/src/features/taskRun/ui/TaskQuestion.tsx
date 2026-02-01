@@ -32,7 +32,7 @@ export function TaskQuestion({
 
   return (
     <CardWrapper>
-      <CardContent sx={{ px: 2, pt: 2, pb: 0 }}>
+      <CardContent sx={{ px: 2, pt: 2, pb: 0, minHeight: "200px" }}>
         <TaskHeader
           question={question.question}
           progress={progress}

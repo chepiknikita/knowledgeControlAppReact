@@ -63,6 +63,7 @@ export const ProfileSidebar = memo(
 
         <ProfileActions
           login={profile?.login}
+          taskCount={profile?.tasksCount}
           onEditProfile={openCredentialsDialog}
           onLogout={() => openDialog("logout")}
           onDeleteAccount={() => openDialog("delete")}

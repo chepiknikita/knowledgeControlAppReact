@@ -30,13 +30,13 @@ export function useAuthForm(isSignUp: boolean) {
 
     if (!data.login.trim()) {
       nextErrors.login = "Введите логин";
-    } else if (data.login.length < 3) {
+    } else if (data.login.length < 5) {
       nextErrors.login = "Логин должен быть не менее 3 символов";
     }
 
     if (!data.password) {
       nextErrors.password = "Введите пароль";
-    } else if (data.password.length < 6) {
+    } else if (data.password.length < 5) {
       nextErrors.password = "Пароль должен быть не менее 6 символов";
     }
 

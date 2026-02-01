@@ -45,8 +45,10 @@ export class User extends Model<User, UserCreationAttrs> {
   @BelongsToMany(() => Role, () => UserRoles)
   roles: Role[];
 
-  @HasMany(() => Task)
+  @HasMany(() => Task, { foreignKey: 'userId', onDelete: 'CASCADE' })
   tasks: Task[];
+
+  tasksCount?: number;
 
   public getUserResponse() {
     return {
@@ -54,6 +56,7 @@ export class User extends Model<User, UserCreationAttrs> {
       login: this.login,
       avatar: this.avatar,
       roles: this.roles,
+      tasksCount: Number((this as any).getDataValue('tasksCount')),
     };
   }
 }

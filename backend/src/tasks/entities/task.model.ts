@@ -45,7 +45,7 @@ export class Task extends Model<Task, TaskCreationAttrs> {
   @Column({ type: DataType.INTEGER, allowNull: false })
   userId: number;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { foreignKey: 'userId' })
   user: User;
 
   @HasMany(() => Question, { 

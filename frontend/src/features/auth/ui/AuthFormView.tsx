@@ -1,10 +1,10 @@
 import { memo } from "react";
-import PageWrapper from "../../../components/wrappers/PageWrapper";
-import { Alert, Card, CardContent, TextField } from "@mui/material";
-import DykTypography from "../../../components/UI/typography/DykTypography";
 import { Box } from "@mui/system";
-import DykButton from "../../../components/UI/buttons/DykButton";
+import { Alert, Card, CardContent, TextField } from "@mui/material";
 import { AuthFormData, FormErrors } from "../hooks/useAuthForm";
+import PageWrapper from "../../../components/wrappers/PageWrapper";
+import DykTypography from "../../../components/UI/typography/DykTypography";
+import DykButton from "../../../components/UI/buttons/DykButton";
 
 interface Props {
   title: string;
@@ -33,15 +33,13 @@ export const AuthFormView = memo(function AuthFormView({
 }: Props): JSX.Element {
   return (
     <PageWrapper>
-      <Card sx={{ width: 400 }} component="form" onSubmit={(e) => e.preventDefault()}>
+      <Card sx={{ width: 350 }} component="form" onSubmit={(e) => e.preventDefault()}>
         <CardContent>
           <DykTypography
             text={title}
             variant="h6"
             align="center"
           />
-
-          {error && <Alert severity="error">{error}</Alert>}
 
           <TextField
             placeholder="Логин"
@@ -51,7 +49,14 @@ export const AuthFormView = memo(function AuthFormView({
             helperText={errors.login}
             disabled={loading}
             fullWidth
+            size="small"
+            sx={{ my: 1, fontSize: '14px' }}
             onChange={(e) => onChange("login", e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+               onSubmit();
+              }
+            }}
           />
 
           <TextField
@@ -63,8 +68,24 @@ export const AuthFormView = memo(function AuthFormView({
             helperText={errors.password}
             disabled={loading}
             fullWidth
+            size="small"
             onChange={(e) => onChange("password", e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+               onSubmit();
+              }
+            }}
           />
+
+          {error &&
+            <Alert
+              variant="outlined"
+              severity="error"
+              color="error"
+              sx={{ my:1 }}
+            >
+              {error}
+            </Alert>}
         </CardContent>
 
         <Box sx={{ px: 2, pb: 2 }}>
@@ -72,6 +93,7 @@ export const AuthFormView = memo(function AuthFormView({
             title={submitText}
             disabled={loading}
             fullWidth
+            sx={{ mb: 1 }}
             onClick={onSubmit}
           />
           <DykButton

@@ -23,7 +23,8 @@ export default function HomeFeature(): JSX.Element {
     setPage(1);
   }, [filters]);
 
-  const { tasks, pagination, loading } = usePaginatedTasks({
+  //TODO вывод ошибки.
+  const { tasks, pagination, loading, error } = usePaginatedTasks({
     scope: "all",
     filters,
     page,
@@ -48,7 +49,6 @@ export default function HomeFeature(): JSX.Element {
         onSearchChange={setSearch}
         onDateChange={setDate}
       />
-
       <TaskList
         loading={loading}
         tasks={tasks}

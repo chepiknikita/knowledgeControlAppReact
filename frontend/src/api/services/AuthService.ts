@@ -13,7 +13,6 @@ export class AuthService {
 
       return data;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   }
@@ -27,7 +26,6 @@ export class AuthService {
 
       return data;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   }

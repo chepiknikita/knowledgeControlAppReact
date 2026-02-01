@@ -7,6 +7,8 @@ import { FileService } from 'src/file/file.service';
 import * as bcrypt from 'bcryptjs';
 import { UpdateCredentialsDto } from './dto/update-credentials.dto';
 import { Sequelize } from 'sequelize-typescript';
+import { Task } from 'src/tasks/entities/task.model';
+import { Role } from 'src/role/entities/role.model';
 
 @Injectable()
 export class UserService {
@@ -34,7 +36,28 @@ export class UserService {
   }
 
   async getUserById(id: string): Promise<User | null> {
-    return await this.userRepository.findOne({ where: { id } });
+    return await this.userRepository.findOne({
+      where: { id },
+      include: [
+        { model: Role },
+        {
+          model: Task,
+          attributes: [],
+        },
+      ],
+      attributes: {
+        include: [
+          [
+            this.userRepository.sequelize.literal(`(
+              SELECT COUNT(*)
+              FROM "tasks" AS "task"
+              WHERE "task"."userId" = "User"."id"
+            )`),
+            'tasksCount',
+          ],
+        ],
+      },
+    });
   }
 
   async updateAvatar(id: number, image: File): Promise<User> {

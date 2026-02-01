@@ -108,7 +108,6 @@ export const ProfileCredentialsDialog = ({
       open={isOpen}
       onClose={onClose}
       onClick={(e) => e.stopPropagation()}
-      fullWidth
       maxWidth="sm"
     >
       <DialogTitle component="div" variant="body1">
@@ -117,45 +116,49 @@ export const ProfileCredentialsDialog = ({
 
       <DialogContent dividers sx={{ display: "grid", gap: 2 }}>
         <TextField
-          label="Новый логин"
+          placeholder="Новый логин"
           value={form.login}
           error={!!validationErrors.login}
           helperText={validationErrors.login}
           disabled={loading}
           fullWidth
+          size="small"
           onChange={(e) => handleFieldChange("login", e.target.value)}
         />
 
         <TextField
-          label="Текущий пароль"
+          placeholder="Текущий пароль"
           type="password"
           value={form.currentPassword}
           error={!!validationErrors.currentPassword}
           helperText={validationErrors.currentPassword}
           disabled={loading}
           fullWidth
+          size="small"
           onChange={(e) => handleFieldChange("currentPassword", e.target.value)}
         />
 
         <TextField
-          label="Новый пароль"
+          placeholder="Новый пароль"
           type="password"
           value={form.newPassword}
           error={!!validationErrors.newPassword}
           helperText={validationErrors.newPassword}
           disabled={loading}
           fullWidth
+          size="small"
           onChange={(e) => handleFieldChange("newPassword", e.target.value)}
         />
 
         <TextField
-          label="Повторите новый пароль"
+          placeholder="Повторите новый пароль"
           type="password"
           value={form.repeatPassword}
           error={!!validationErrors.repeatPassword}
           helperText={validationErrors.repeatPassword}
           disabled={loading}
           fullWidth
+          size="small"
           onChange={(e) => handleFieldChange("repeatPassword", e.target.value)}
         />
       </DialogContent>
@@ -171,7 +174,7 @@ export const ProfileCredentialsDialog = ({
         </Button>
 
         <Button
-          variant="contained"
+          variant="outlined"
           sx={{ textTransform: "none" }}
           onClick={handleSubmit}
           disabled={loading}

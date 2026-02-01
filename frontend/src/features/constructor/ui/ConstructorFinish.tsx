@@ -40,7 +40,7 @@ export default function ConstructorFinish({
       )}
       <ConstructorActions
         textApplyBtn={loading ? "Сохранение..." : "Сохранить"}
-        disabledPrev={disabled}
+        disabledPrev={disabled || loading}
         disabledNext={loading}
         onBack={handleBack}
         onNext={onSave}

@@ -21,6 +21,8 @@ export class QuestionsService {
     transaction: Transaction,
   ): Promise<void> {
     for (const dto of questions) {
+      if (!dto.question) continue;
+
       const question = await this.questionRepository.create(
         {
           question: dto.question,
@@ -30,11 +32,7 @@ export class QuestionsService {
       );
 
       if (dto.answers?.length) {
-        await this.answersService.sync(
-          question,
-          dto.answers,
-          transaction,
-        );
+        await this.answersService.sync(question, dto.answers, transaction);
       }
     }
   }
@@ -44,28 +42,18 @@ export class QuestionsService {
     dtoQuestions: CreateQuestionDto[],
     transaction: Transaction,
   ): Promise<void> {
-    const existing = await task.$get('questions', {
-      include: [Answer],
-      transaction,
-    });
-
-    const dtoIds = dtoQuestions.filter(q => q.id).map(q => q.id!);
+    const existing = await task.$get('questions', { include: [Answer], transaction });
+    const dtoIds = dtoQuestions
+      .map(q => (q.id ? Number(q.id) : null))
+      .filter(q => q !== null) as number[];
 
     for (const dto of dtoQuestions) {
-      if (dto.id) {
-        const question = existing.find(q => q.id === dto.id);
-        if (!question) continue;
+      const questionId = dto.id ? Number(dto.id) : null;
+      const existingQuestion = questionId ? existing.find(q => q.id === questionId) : null;
 
-        await question.update(
-          { question: dto.question },
-          { transaction },
-        );
-
-        await this.answersService.sync(
-          question,
-          dto.answers ?? [],
-          transaction,
-        );
+      if (existingQuestion) {
+        await existingQuestion.update({ question: dto.question }, { transaction });
+        await this.answersService.sync(existingQuestion, dto.answers ?? [], transaction);
       } else {
         await this.createForTask(task.id, [dto], transaction);
       }

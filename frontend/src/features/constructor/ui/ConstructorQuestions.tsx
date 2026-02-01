@@ -16,7 +16,7 @@ export default function ConstructorQuestions({
   onEditQuestion,
 }: Props) {
   return (
-    <Box>
+    <Box sx={{ height: "100%", overflowY: "scroll" }}>
       <DykTypography
         text="Cоздайте вопросы для теста"
         align="center"

@@ -23,6 +23,10 @@ export class TasksService extends BaseService<Task> {
     super();
   }
 
+  async getTaskById(id: number): Promise<Task | null> {
+    return this.findTaskWithRelations(id, true);
+  }
+
   async create(dto: CreateTaskDto, image?: File): Promise<Task> {
     const imageName = image ? await this.fileService.createFile(image) : null;
 
@@ -37,11 +41,9 @@ export class TasksService extends BaseService<Task> {
         { transaction },
       );
 
-      await this.questionsService.createForTask(
-        task.id,
-        dto.questions ?? [],
-        transaction,
-      );
+      if (dto.questions?.length) {
+        await this.questionsService.createForTask(task.id, dto.questions, transaction);
+      }
 
       return this.findTaskWithRelations(task.id);
     });
@@ -66,12 +68,8 @@ export class TasksService extends BaseService<Task> {
 
       await task.update(updateData, { transaction });
 
-      if (dto.questions) {
-        await this.questionsService.syncForTask(
-          task,
-          dto.questions,
-          transaction,
-        );
+      if (dto.questions?.length) {
+        await this.questionsService.syncForTask(task, dto.questions, transaction);
       }
 
       return task;
@@ -82,10 +80,6 @@ export class TasksService extends BaseService<Task> {
     }
 
     return this.findTaskWithRelations(id);
-  }
-
-  async getTaskById(id: number): Promise<Task | null> {
-    return this.findTaskWithRelations(id, true);
   }
 
   async delete(id: number): Promise<void> {
@@ -142,9 +136,7 @@ export class TasksService extends BaseService<Task> {
     id: number,
     transaction?: Transaction,
   ): Promise<Task> {
-    const task = await this.taskRepository.findByPk(id, {
-      transaction,
-    });
+    const task = await this.taskRepository.findByPk(id, { transaction });
 
     if (!task) {
       throw new NotFoundException('Задание не найдено');

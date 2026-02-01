@@ -13,4 +13,5 @@ export interface UserResponse {
   login: string;
   avatar: string;
   roles: string[];
+  tasksCount?: number;
 }
