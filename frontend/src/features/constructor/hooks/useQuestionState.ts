@@ -15,15 +15,15 @@ export function useQuestionState(
 
   const isValid = useMemo(() => {
     const hasQuestion = Boolean(question.question.trim());
-    const validAnswersCount = question.answers.filter((a) =>
-      a.text.trim(),
-    ).length;
+    const allAnswersHaveText = question.answers.every((a) => a.text.trim());
+    const answersCount = question.answers.length;
     const hasCorrect = question.answers.some((a) => a.isCorrect);
 
     return (
       hasQuestion &&
-      validAnswersCount >= MIN_ANSWERS &&
-      validAnswersCount <= MAX_ANSWERS &&
+      allAnswersHaveText && 
+      answersCount >= MIN_ANSWERS &&
+      answersCount <= MAX_ANSWERS &&
       hasCorrect
     );
   }, [question]);

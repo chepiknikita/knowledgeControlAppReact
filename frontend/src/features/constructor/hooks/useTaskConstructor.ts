@@ -3,6 +3,7 @@ import { useAuth } from "../../auth/context/AuthContext";
 import { ITask, Task } from "../../../entities/task";
 import { Question } from "../../../entities/question";
 import { ApiFactory } from "../../../api";
+import { useAsync } from "../../../shared/hooks/useAsync";
 
 export enum ConstructorStep {
   Description,
@@ -43,9 +44,13 @@ export function useTaskConstructor(initialData?: Partial<ITask>) {
   const [task, dispatch] = useReducer(taskReducer, Task.empty());
 
   const [step, setStep] = useState(ConstructorStep.Description);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  const {
+    run,
+    loading,
+    error,
+  } = useAsync();
 
   useEffect(() => {
     if (initialData) {
@@ -94,18 +99,13 @@ export function useTaskConstructor(initialData?: Partial<ITask>) {
   );
 
   const saveTask = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      await taskService.create(task.toFormData());
+    await run(async () => {
+      task.id
+        ? await taskService.update(+task.id, task.toFormData())
+        : await taskService.create(task.toFormData());
       setSuccess(true);
-    } catch (e: any) {
-      setError(e?.message ?? "Ошибка сохранения теста");
-    } finally {
-      setLoading(false);
-    }
-  }, [task, taskService]);
+    });
+  }, [task, run, taskService]);
 
   return {
     task,

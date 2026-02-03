@@ -133,7 +133,7 @@ export class SequelizeFilterUtil {
   /**
    * Преобразует строку include в массив ассоциаций
    */
-  static buildIncludeConditions(includeString?: string): any[] {
+  static buildIncludeConditions(includeString?: string, fieldsString?: string): any[] {
     if (!includeString) {
       return [];
     }
@@ -141,40 +141,52 @@ export class SequelizeFilterUtil {
     const includes = includeString.split(',').map((field) => field.trim());
     const result = [];
 
+    const fieldsMap: Record<string, string[]> = {};
+    if (fieldsString) {
+      fieldsString.split(',').forEach((field) => {
+        const parts = field.split('.');
+        if (parts.length > 1) {
+          const assoc = parts[0];
+          const attr = parts.slice(1).join('.');
+          if (!fieldsMap[assoc]) fieldsMap[assoc] = [];
+          fieldsMap[assoc].push(attr);
+        }
+      });
+    }
+
     for (const includePath of includes) {
       const pathParts = includePath.split('.');
       let currentInclude = result;
-      let currentPath = '';
 
       for (let i = 0; i < pathParts.length; i++) {
         const part = pathParts[i];
-        currentPath = currentPath ? `${currentPath}.${part}` : part;
-
-        let existingInclude = currentInclude.find(
-          (inc) => inc.association === part,
-        );
+        let existingInclude = currentInclude.find((inc) => inc.association === part);
 
         if (!existingInclude) {
-          existingInclude = {
-            association: part,
-            include: [],
-          };
+          existingInclude = { association: part, include: [] };
+
+          if (fieldsMap[part]) {
+            existingInclude.attributes = fieldsMap[part];
+          }
+
           currentInclude.push(existingInclude);
         }
 
         currentInclude = existingInclude.include;
       }
     }
+
+    return result;
   }
 
-  /**
-   * Преобразует строку fields в массив атрибутов
-   */
-  static buildAttributesConditions(fieldsString?: string): string[] {
-    if (!fieldsString) {
-      return undefined;
-    }
+  static buildRootAttributes(fieldsString?: string): string[] | undefined {
+    if (!fieldsString) return undefined;
 
-    return fieldsString.split(',').map((field) => field.trim());
+    const rootAttrs = fieldsString
+      .split(',')
+      .map(f => f.trim())
+      .filter(f => !f.includes('.'));
+
+    return rootAttrs.length ? rootAttrs : undefined;
   }
 }

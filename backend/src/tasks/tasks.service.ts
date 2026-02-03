@@ -50,34 +50,31 @@ export class TasksService extends BaseService<Task> {
   }
 
   async edit(id: number, dto: CreateTaskDto, image?: File): Promise<Task> {
-    let newImageName: string | null = null;
+    const task = await this.findByIdOrFail(id);
 
+    let newImageName: string | null = null;
     if (image) {
       newImageName = await this.fileService.createFile(image);
+
+      if (task.image) {
+        await this.fileService.deleteFile(task.image);
+      }
     }
 
-    const task = await this.withTransaction(async (transaction) => {
-      const task = await this.findByIdOrFail(id, transaction);
+    const updateData: Partial<Task> = {
+      name: dto.name,
+      description: dto.description,
+      userId: +dto.userId,
+      ...(newImageName ? { image: newImageName } : {}),
+    };
 
-      const updateData: Partial<Task> = {
-        name: dto.name,
-        description: dto.description,
-        userId: +dto.userId,
-        ...(newImageName && { image: newImageName }),
-      };
-
+    await this.withTransaction(async (transaction) => {
       await task.update(updateData, { transaction });
 
       if (dto.questions?.length) {
         await this.questionsService.syncForTask(task, dto.questions, transaction);
       }
-
-      return task;
     });
-
-    if (image && task.image) {
-      await this.fileService.deleteFile(task.image);
-    }
 
     return this.findTaskWithRelations(id);
   }
@@ -108,7 +105,6 @@ export class TasksService extends BaseService<Task> {
       return result;
     } catch (error) {
       await transaction.rollback();
-      // this.logger.error(error);
       throw error;
     }
   }

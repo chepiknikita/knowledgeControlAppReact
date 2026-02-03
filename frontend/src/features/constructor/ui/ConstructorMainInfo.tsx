@@ -1,6 +1,7 @@
 import { TextField } from "@mui/material";
 import React, { useCallback } from "react";
 import UploadImageButton from "./image/UploadImageButton";
+import { Box } from "@mui/system";
 
 interface Props {
   name: string;
@@ -33,7 +34,7 @@ export default function ConstructorMainInfo({
   );
 
   return (
-    <>
+    <Box sx={{ px: 4 }}>
       <UploadImageButton
         image={image}
         onUploadFile={onUploadImage}
@@ -58,6 +59,6 @@ export default function ConstructorMainInfo({
         sx={{ my: 1 }}
         onChange={handleDescriptionChange}
       />
-    </>
+    </Box>
   );
 }

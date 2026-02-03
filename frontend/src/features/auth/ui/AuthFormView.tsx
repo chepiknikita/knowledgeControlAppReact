@@ -1,10 +1,11 @@
 import { memo } from "react";
 import { Box } from "@mui/system";
-import { Alert, Card, CardContent, TextField } from "@mui/material";
+import { Card, CardContent, TextField } from "@mui/material";
 import { AuthFormData, FormErrors } from "../hooks/useAuthForm";
 import PageWrapper from "../../../components/wrappers/PageWrapper";
 import DykTypography from "../../../components/UI/typography/DykTypography";
 import DykButton from "../../../components/UI/buttons/DykButton";
+import { ErrorAlert } from "../../../components/UI/alerts/ErrorAlert";
 
 interface Props {
   title: string;
@@ -77,15 +78,7 @@ export const AuthFormView = memo(function AuthFormView({
             }}
           />
 
-          {error &&
-            <Alert
-              variant="outlined"
-              severity="error"
-              color="error"
-              sx={{ my:1 }}
-            >
-              {error}
-            </Alert>}
+          <ErrorAlert error={error} />
         </CardContent>
 
         <Box sx={{ px: 2, pb: 2 }}>

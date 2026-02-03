@@ -10,24 +10,24 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('/login')
-  login(@Body() userDto: CreateUserDto) {
-    return this.authService.login(userDto);
+  async login(@Body() userDto: CreateUserDto) {
+    return await this.authService.login(userDto);
   }
 
   @UsePipes(ValidationPipe)
   @Post('/sign-up')
-  signUp(@Body() userDto: CreateUserDto) {
-    return this.authService.signUp(userDto);
+  async signUp(@Body() userDto: CreateUserDto) {
+    return await this.authService.signUp(userDto);
   }
 
   @Post('refresh')
   async refresh(@Body() body: { refreshToken: string }) {
-    return this.authService.refreshTokens(body.refreshToken);
+    return await this.authService.refreshTokens(body.refreshToken);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   async logout(@Request() req) {
-    return this.authService.logout(req.user.id);
+    return await this.authService.logout(req.user.id);
   }
 }

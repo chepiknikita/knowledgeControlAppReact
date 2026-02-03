@@ -38,7 +38,10 @@ export default function QuestionsManager({
         onSaveQuestion={onCreateQuestion}
       />
 
-      <QuestionsList questions={questions} onEdit={openEdit} />
+      <QuestionsList
+        questions={questions}
+        onEdit={openEdit}
+      />
 
       <EditQuestionDialog
         question={editingQuestion}

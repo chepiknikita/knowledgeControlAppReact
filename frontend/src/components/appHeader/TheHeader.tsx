@@ -188,7 +188,10 @@ export default function TheHeader() {
               <>
                 <Tooltip title="Меню">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar alt="user-avatart" src={user?.avatar ? urlService.getImageUrl(user.avatar) : ''} />
+                    <Avatar
+                      alt="user-avatart"
+                      src={urlService.getImageUrl(user?.avatar ?? '')}
+                    />
                   </IconButton>
                 </Tooltip>
                 <Menu

@@ -27,6 +27,18 @@ export const useAuth = () => {
   return context;
 };
 
+function parseJwt(token: string) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split('')
+      .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+      .join('')
+  );
+  return JSON.parse(jsonPayload);
+}
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
@@ -64,7 +76,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const login = async (payload: Auth) => {
     try {
       const response = await authService.login(payload);
-      const data = JSON.parse(atob(response.accessToken.split(".")[1]));
+      const data = parseJwt(response.accessToken);
       setUser({
         id: data.id,
         login: data.login,
@@ -85,7 +97,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const signup = async (payload: Auth) => {
     try {
       const response = await authService.signUp(payload);
-      const data = JSON.parse(atob(response.accessToken.split(".")[1]));
+      const data = parseJwt(response.accessToken);
       setUser({
         id: data.id,
         login: data.login,

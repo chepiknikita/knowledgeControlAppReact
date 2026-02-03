@@ -5,7 +5,7 @@ import UserRepository from "../repositories/UserRepository";
 export default class UserService {
   constructor(private repository: UserRepository) {}
 
-  async updateAvatar(id: number, payload: FormData): Promise<any> {
+  async updateAvatar(id: number, payload: FormData): Promise<UserResponse> {
     try {
       const data = (await this.repository.updateAvatar(id, payload)).data;
       return data;

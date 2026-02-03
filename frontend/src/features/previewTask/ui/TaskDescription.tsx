@@ -16,10 +16,18 @@ export function TaskDescription({ description }: Props) {
         bottom: 0,
         left: 0,
         right: 0,
-        bgcolor: "rgba(0,0,0,0.5)",
+        bgcolor: "rgba(0,0,0,0.8)",
       }}
     >
-      <Typography variant="body2" component="div">
+      <Typography
+        variant="body2"
+        component="div"
+        sx={{
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap"
+        }}
+      >
         {description}
       </Typography>
     </CardContent>

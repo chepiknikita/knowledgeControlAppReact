@@ -6,10 +6,11 @@ import DykTypography from "../../../components/UI/typography/DykTypography";
 type Props = {
   name: string;
   createdAt?: string;
+  showEdit: boolean;
   user?: Task["user"];
 };
 
-export function TaskHeader({ name, createdAt, user }: Props) {
+export function TaskHeader({ name, showEdit, createdAt, user }: Props) {
   return (
     <Box
       sx={{
@@ -33,10 +34,10 @@ export function TaskHeader({ name, createdAt, user }: Props) {
         />
       )}
 
-      <Box sx={{ overflow: "hidden", ml: 2, mr: 4 }}>
+      <Box sx={{ overflow: "hidden", ml: 1, mr: showEdit ? 4 : 0 }}>
         <DykTypography
           text={name}
-          variant="body1"
+          variant="body2"
           sx={{
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
@@ -46,7 +47,7 @@ export function TaskHeader({ name, createdAt, user }: Props) {
         {createdAt && (
           <DykTypography
             text={new Date(createdAt).toLocaleString()}
-            variant="body2"
+            variant="caption"
           />
         )}
       </Box>

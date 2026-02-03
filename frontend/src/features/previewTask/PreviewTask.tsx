@@ -26,6 +26,7 @@ export default function PreviewTask({
       <TaskHeader
         name={task.name}
         user={task.user}
+        showEdit={showEdit}
         createdAt={task.createdAt}
       />
 

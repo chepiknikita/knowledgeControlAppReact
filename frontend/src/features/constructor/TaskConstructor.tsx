@@ -22,7 +22,6 @@ interface Props {
 export default function TaskConstructor({ initialData }: Props) {
   const navigate = useNavigate();
 
-   //TODO вывод ошибки.
   const { task, step, loading, error, success, canGoNext, actions } =
     useTaskConstructor(initialData);
 
@@ -61,7 +60,7 @@ export default function TaskConstructor({ initialData }: Props) {
           />
         ) : (
           <Box sx={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <Box sx={{ flex: 1, overflow: "hidden" }}>
+            <Box sx={{ flex: 1, overflowY: "scroll", height: "100%" }}>
               {step === ConstructorStep.Description && (
                 <ConstructorMainInfo
                   name={task.name}

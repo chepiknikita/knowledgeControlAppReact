@@ -5,13 +5,15 @@ import DykTypography from "../../../components/UI/typography/DykTypography";
 import { TasksSearch } from "./TasksSearch";
 import { PaginationResponse } from "../../../api/interfaces/paginationFilterPayload";
 import { TaskList } from "../../taskList/TaskList";
+import { ErrorAlert } from "../../../components/UI/alerts/ErrorAlert";
 
 interface Props {
   search: string;
-  onSearchChange: (value: string) => void;
   loading: boolean;
+  error: string | null;
   tasks: Task[];
   pagination: PaginationResponse | null;
+  onSearchChange: (value: string) => void;
   onPageChange: (page: number) => void;
   onOpen: (taskId: number) => void;
   onEdit: (taskId: number) => void;
@@ -21,10 +23,11 @@ interface Props {
 export const TasksSection = memo(
   ({
     search,
-    onSearchChange,
     loading,
+    error,
     tasks,
     pagination,
+    onSearchChange,
     onPageChange,
     onOpen,
     onEdit,
@@ -33,8 +36,8 @@ export const TasksSection = memo(
     return (
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <DykTypography text="Тесты" align="center" />
-
         <TasksSearch value={search} onChange={onSearchChange} />
+        <ErrorAlert error={error} sx={{ mx: 2 }} />
 
         <TaskList
           loading={loading}

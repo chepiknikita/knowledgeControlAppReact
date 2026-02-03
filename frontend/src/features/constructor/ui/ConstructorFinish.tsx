@@ -1,7 +1,8 @@
-import { Alert, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import React from "react";
 import DykTypography from "../../../components/UI/typography/DykTypography";
 import ConstructorActions from "./ConstructorActions";
+import { ErrorAlert } from "../../../components/UI/alerts/ErrorAlert";
 
 interface Props {
   disabled: boolean;
@@ -33,11 +34,8 @@ export default function ConstructorFinish({
         />
       </Box>
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
+      <ErrorAlert error={error} />
+
       <ConstructorActions
         textApplyBtn={loading ? "Сохранение..." : "Сохранить"}
         disabledPrev={disabled || loading}

@@ -43,21 +43,21 @@ export const ConfirmDialog = ({
           sx={{ textTransform: "none" }}
           onClick={(e) => {
             e.stopPropagation();
-            onCancel();
+            onConfirm();
           }}
+          autoFocus
         >
-          {cancelText}
+          {confirmText}
         </Button>
         <Button
           variant="outlined"
           sx={{ textTransform: "none" }}
           onClick={(e) => {
             e.stopPropagation();
-            onConfirm();
+            onCancel();
           }}
-          autoFocus
         >
-          {confirmText}
+          {cancelText}
         </Button>
       </DialogActions>
     </Dialog>

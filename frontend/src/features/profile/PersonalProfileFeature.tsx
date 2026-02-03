@@ -6,7 +6,7 @@ import { useTaskFilters } from "../home/hooks/useTaskFilters";
 import { useUserProfile } from "./hooks/useUserProfile";
 import { usePaginatedTasks } from "../home/hooks/usePaginatedTasks";
 import { Box } from "@mui/system";
-import { Alert, Divider } from "@mui/material";
+import { Divider } from "@mui/material";
 import { ProfileSidebar } from "./ui/ProfileSidebar";
 import { TasksSection } from "./ui/TasksSection";
 import { UserCredentialsUpdate } from "../../entities/user";
@@ -23,11 +23,21 @@ export default function PersonalProfileFeature(): JSX.Element {
 
   useEffect(() => setPage(1), [filters]);
 
-   //TODO вывод ошибки.
-  const { profile, error, updateAvatar, deleteProfile, updateUserCredentials } = useUserProfile();
+  const {
+    profile,
+    error: profileError,
+    updateAvatar,
+    deleteProfile,
+    updateUserCredentials,
+  } = useUserProfile();
 
-   //TODO вывод ошибки.
-  const { tasks, pagination, loading, deleteTask } = usePaginatedTasks({
+  const {
+    tasks,
+    pagination,
+    loading,
+    error: tasksError,
+    deleteTask,
+  } = usePaginatedTasks({
     scope: "profile",
     filters,
     page,
@@ -41,17 +51,22 @@ export default function PersonalProfileFeature(): JSX.Element {
 
   const handleOpenTask = useCallback(
     (id: number) => navigate(`/task/${id}`),
-    [navigate]
+    [navigate],
   );
 
   const handleEditTask = useCallback(
     (id: number) => navigate(`/task/edit/${id}`),
-    [navigate]
+    [navigate],
   );
 
-  const handleUpdateCredentials = useCallback(async (payload: UserCredentialsUpdate) => {
-    await updateUserCredentials(payload)
-  }, [updateUserCredentials]);
+  const handleUpdateCredentials = useCallback(
+    async (payload: UserCredentialsUpdate) => {
+      await updateUserCredentials(payload);
+    },
+    [updateUserCredentials],
+  );
+
+  const pageError = profileError || tasksError;
 
   return (
     <Box sx={{ flex: 1, display: "flex", overflow: "hidden" }}>
@@ -67,25 +82,16 @@ export default function PersonalProfileFeature(): JSX.Element {
 
       <TasksSection
         search={search}
-        onSearchChange={setSearch}
         loading={loading}
+        error={pageError}
         tasks={tasks}
         pagination={pagination}
+        onSearchChange={setSearch}
         onPageChange={setPage}
         onOpen={handleOpenTask}
         onEdit={handleEditTask}
         onDelete={deleteTask}
       />
-      
-        {error &&
-          <Alert
-            variant="outlined"
-            severity="error"
-            color="error"
-            sx={{ my:1 }}
-          >
-            {error}
-          </Alert>}
     </Box>
   );
 }

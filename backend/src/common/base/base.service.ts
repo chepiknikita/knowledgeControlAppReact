@@ -30,8 +30,8 @@ export abstract class BaseService<T extends Model> {
     };
     
     const order = SequelizeFilterUtil.buildOrderConditions(sorts);
-    const includeOptions = SequelizeFilterUtil.buildIncludeConditions(include);
-    const attributes = SequelizeFilterUtil.buildAttributesConditions(fields);
+    const includeOptions = SequelizeFilterUtil.buildIncludeConditions(include, fields);
+    const attributes = SequelizeFilterUtil.buildRootAttributes(fields);
 
     const { count, rows } = await this.model.findAndCountAll({
       where,

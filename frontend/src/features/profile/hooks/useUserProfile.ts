@@ -1,61 +1,74 @@
 import { useCallback, useEffect, useState } from "react";
 import { ApiFactory } from "../../../api";
 import { User, UserCredentialsUpdate } from "../../../entities/user";
+import { useAsync } from "../../../shared/hooks/useAsync";
 
 export function useUserProfile() {
   const [profile, setProfile] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  const {
+    run,
+    loading,
+    error,
+  } = useAsync();
 
   const fetchProfile = useCallback(async () => {
-    try {
-      setLoading(true);
-
+    return run(async () => {
       const userService = ApiFactory.createUserService();
       const data = await userService.getProfile();
-
       setProfile(User.fromApi(data));
-    } catch(reason) {
-      const err = reason as any;
-      setError(err.response?.data?.message || 'Ошибка загрузки данных пользователя');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    });
+  }, [run]);
 
   const updateAvatar = useCallback(
     async (file: File) => {
       if (!profile?.id) return;
 
-      const userService = ApiFactory.createUserService();
+      await run(async () => {
+        const userService = ApiFactory.createUserService();
 
-      const formData = new FormData();
-      formData.append("image", file);
+        const formData = new FormData();
+        formData.append('image', file);
 
-      await userService.updateAvatar(profile.id, formData);
-      await fetchProfile();
+        const data = await userService.updateAvatar(profile.id, formData);
+        setProfile(User.fromApi(data));
+      },
+      { withLoading: false },
+      );
     },
-    [profile?.id, fetchProfile],
+    [profile?.id, run]
   );
 
   const updateUserCredentials = useCallback(
     async (payload: UserCredentialsUpdate) => {
-      if (Object.keys(payload).length === 0 || !profile?.id) return;
+      if (!profile?.id || Object.keys(payload).length === 0) return;
 
-      const userService = ApiFactory.createUserService();
+      await run(async () => {
+        const userService = ApiFactory.createUserService();
 
-      await userService.updateCredentials(profile.id, payload);
-      await fetchProfile();
+        const data = await userService.updateCredentials(profile.id, payload);
+        setProfile(User.fromApi(data));
+      },
+      { withLoading: false },
+      );
     },
-    [profile?.id, fetchProfile],
+    [profile?.id, run]
   );
 
-  const deleteProfile = useCallback(async () => {
-    if (!profile?.id) return;
+  const deleteProfile = useCallback(
+    async () => {
+      if (!profile?.id) return;
 
-    const userService = ApiFactory.createUserService();
-    await userService.delete(profile.id);
-  }, [profile?.id]);
+      await run(async () => {
+        const userService = ApiFactory.createUserService();
+        await userService.delete(profile.id);
+        setProfile(null);
+      },
+      { withLoading: false },      
+      );
+    },
+    [profile?.id, run]
+  );
 
   useEffect(() => {
     fetchProfile();

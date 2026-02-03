@@ -1,6 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { UserCredentialsUpdate } from "../../../entities/user";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
 
 type ProfileCredentialsForm = {
   login: string;
@@ -56,7 +63,6 @@ export const ProfileCredentialsDialog = ({
     newPassword: "",
     repeatPassword: "",
   });
-
   const [validationErrors, setValidationErrors] = useState<FormErrors>({});
 
   useEffect(() => {
@@ -68,15 +74,37 @@ export const ProfileCredentialsDialog = ({
       newPassword: "",
       repeatPassword: "",
     });
-
     setValidationErrors({});
   }, [isOpen, initialLogin]);
 
-  const handleFieldChange = (field: keyof ProfileCredentialsForm, value: string) => {
+  const handleFieldChange = (
+    field: keyof ProfileCredentialsForm,
+    value: string,
+  ) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  const { isLoginChanged, isPasswordValidInput, isSaveDisabled } =
+    useMemo(() => {
+      const isLoginChanged = Boolean(form.login) && form.login !== initialLogin;
+
+      const isPasswordValidInput =
+        Boolean(form.currentPassword) &&
+        Boolean(form.newPassword) &&
+        Boolean(form.repeatPassword);
+
+      const canSave = isLoginChanged || isPasswordValidInput;
+
+      return {
+        isLoginChanged,
+        isPasswordValidInput,
+        isSaveDisabled: loading || !canSave,
+      };
+    }, [form, initialLogin, loading]);
+
   const handleSubmit = () => {
+    if (isSaveDisabled) return;
+
     const errors = validateProfileCredentials(form);
     setValidationErrors(errors);
 
@@ -86,11 +114,11 @@ export const ProfileCredentialsDialog = ({
 
     const payload: UserCredentialsUpdate = {};
 
-    if (form.login && form.login !== initialLogin) {
+    if (isLoginChanged) {
       payload.login = form.login;
     }
 
-    if (form.newPassword) {
+    if (isPasswordValidInput) {
       payload.currentPassword = form.currentPassword;
       payload.newPassword = form.newPassword;
     }
@@ -167,19 +195,19 @@ export const ProfileCredentialsDialog = ({
         <Button
           variant="outlined"
           sx={{ textTransform: "none" }}
-          onClick={onClose}
-          disabled={loading}
+          onClick={handleSubmit}
+          disabled={isSaveDisabled}
         >
-          Отмена
+          Сохранить
         </Button>
 
         <Button
           variant="outlined"
           sx={{ textTransform: "none" }}
-          onClick={handleSubmit}
+          onClick={onClose}
           disabled={loading}
         >
-          Сохранить
+          Отмена
         </Button>
       </DialogActions>
     </Dialog>

@@ -8,6 +8,7 @@ import { useTaskFilters } from "./hooks/useTaskFilters";
 import { usePaginatedTasks } from "./hooks/usePaginatedTasks";
 import { TasksFilters } from "./ui/TaskFilters";
 import { TaskList } from "../taskList/TaskList";
+import { ErrorAlert } from "../../components/UI/alerts/ErrorAlert";
 
 export default function HomeFeature(): JSX.Element {
   const navigate = useNavigate();
@@ -23,7 +24,6 @@ export default function HomeFeature(): JSX.Element {
     setPage(1);
   }, [filters]);
 
-  //TODO вывод ошибки.
   const { tasks, pagination, loading, error } = usePaginatedTasks({
     scope: "all",
     filters,
@@ -33,12 +33,12 @@ export default function HomeFeature(): JSX.Element {
 
   const handleOpenTask = useCallback(
     (id: number) => navigate(`/task/${id}`),
-    [navigate]
+    [navigate],
   );
 
   const handleCreateTask = useCallback(
     () => navigate("/constructor"),
-    [navigate]
+    [navigate],
   );
 
   return (
@@ -49,6 +49,8 @@ export default function HomeFeature(): JSX.Element {
         onSearchChange={setSearch}
         onDateChange={setDate}
       />
+      <ErrorAlert error={error} />
+
       <TaskList
         loading={loading}
         tasks={tasks}

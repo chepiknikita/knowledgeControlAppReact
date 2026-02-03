@@ -20,7 +20,6 @@ export function useTask(taskId?: string) {
         setTask(data);
         setStatus("success");
       } catch (err) {
-         //TODO вывод ошибки.
         console.error(err);
         setStatus("error");
       }
