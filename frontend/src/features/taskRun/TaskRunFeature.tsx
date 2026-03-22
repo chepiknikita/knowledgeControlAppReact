@@ -35,7 +35,7 @@ export default function TaskRunFeature({
       <TaskIntro
         name={task.name}
         description={task.description}
-        image={task.imageBase64}
+        image={task.imageUrl}
         questionsCount={task.questions.length}
         showHome={showHome}
         onStart={start}

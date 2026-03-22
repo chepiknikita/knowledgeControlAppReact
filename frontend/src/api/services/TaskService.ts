@@ -1,4 +1,4 @@
-import { PaginationFilterPayload } from "../interfaces/paginationFilterPayload";
+import { PagedResult, PaginationFilterPayload } from "../interfaces/paginationFilterPayload";
 import { TaskResponse } from "../interfaces/tasks";
 import TaskRepository from "../repositories/TaskRepository";
 
@@ -6,55 +6,26 @@ export class TaskService {
   constructor(private repository: TaskRepository) {}
 
   async getById(id: number): Promise<TaskResponse> {
-    try {
-      const task = (await this.repository.getById(id)).data;
-      return task;
-    } catch (error) {
-      throw error;
-    }
+    return (await this.repository.getById(id)).data;
   }
 
   async create(payload: FormData): Promise<TaskResponse> {
-    try {
-      const task = (await this.repository.create(payload)).data;
-      return task;
-    } catch (error) {
-      throw error;
-    }
+    return (await this.repository.create(payload)).data;
   }
 
   async update(id: number, payload: FormData): Promise<void> {
-    try {
-      await this.repository.update(id, payload);
-    } catch (error) {
-      throw error;
-    }
+    await this.repository.update(id, payload);
   }
 
   async delete(id: number): Promise<void> {
-    try {
-      await this.repository.delete(id);
-    } catch (error) {
-      throw error;
-    }
+    await this.repository.delete(id);
   }
 
-  async getAllFiltered(payload: PaginationFilterPayload): Promise<any> {
-    try {
-      const response = (await this.repository.getAllFiltered(payload)).data;
-      return response;
-    } catch (error) {
-      throw error;
-    }
+  async getAllFiltered(payload: PaginationFilterPayload): Promise<PagedResult<TaskResponse>> {
+    return (await this.repository.getAllFiltered(payload)).data;
   }
 
-  async getAllFilteredProfile(payload: PaginationFilterPayload): Promise<any> {
-    try {
-      const response = (await this.repository.getAllFilteredProfile(payload))
-        .data;
-      return response;
-    } catch (error) {
-      throw error;
-    }
+  async getAllFilteredProfile(payload: PaginationFilterPayload): Promise<PagedResult<TaskResponse>> {
+    return (await this.repository.getAllFilteredProfile(payload)).data;
   }
 }

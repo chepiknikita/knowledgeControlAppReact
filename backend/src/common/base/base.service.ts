@@ -10,7 +10,7 @@ export abstract class BaseService<T extends Model> {
   /**
    * Универсальный метод для получения данных с пагинацией и фильтрацией
    */
-  protected async findAllPaginatedInternal(query: PaginationFilterDto, extraWhere: WhereOptions = {}) {
+  protected async findAllPaginatedInternal(query: PaginationFilterDto, extraWhere: WhereOptions = {}, allowedFields?: string[]) {
     const {
       page = 1,
       limit = 10,
@@ -22,7 +22,7 @@ export abstract class BaseService<T extends Model> {
 
     const offset = (page - 1) * limit;
     
-    const whereFromFilters = SequelizeFilterUtil.buildWhereConditions(filters);
+    const whereFromFilters = SequelizeFilterUtil.buildWhereConditions(filters, allowedFields);
 
     const where = {
       ...whereFromFilters,

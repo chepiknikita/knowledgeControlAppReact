@@ -1,14 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class PaginatedResponse<T> {
-  @ApiProperty({ description: 'Элементы текущей страницы' })
-  data: T[];
-
+export class PaginationMeta {
   @ApiProperty({ description: 'Текущая страница' })
   currentPage: number;
 
   @ApiProperty({ description: 'Количество элементов на странице' })
-  limit: number;
+  itemsPerPage: number;
 
   @ApiProperty({ description: 'Общее количество элементов' })
   totalItems: number;
@@ -17,8 +14,16 @@ export class PaginatedResponse<T> {
   totalPages: number;
 
   @ApiProperty({ description: 'Есть ли следующая страница' })
-  hasNext: boolean;
+  hasNextPage: boolean;
 
   @ApiProperty({ description: 'Есть ли предыдущая страница' })
-  hasPrev: boolean;
+  hasPreviousPage: boolean;
+}
+
+export class PaginatedResponse<T> {
+  @ApiProperty({ description: 'Элементы текущей страницы' })
+  data: T[];
+
+  @ApiProperty({ type: () => PaginationMeta })
+  pagination: PaginationMeta;
 }

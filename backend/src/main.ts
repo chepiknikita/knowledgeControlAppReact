@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { json, urlencoded } from 'express';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   try {
@@ -12,6 +13,10 @@ async function bootstrap() {
     app.use(json({ limit: '50mb' }));
     app.use(urlencoded({ extended: true, limit: '50mb' }));
 
+    app.useGlobalPipes(
+      new ValidationPipe({ transform: true, whitelist: true }),
+    );
+
     const config = new DocumentBuilder()
       .setTitle('Knowledge-control-backend')
       .setDescription('Документация API')
@@ -19,8 +24,9 @@ async function bootstrap() {
       .addTag('DYK')
       .build();
 
+    const allowedOrigin = process.env.CLIENT_URL || 'http://localhost:3000';
     app.enableCors({
-      origin: '*',
+      origin: allowedOrigin,
       credentials: true,
     });
 

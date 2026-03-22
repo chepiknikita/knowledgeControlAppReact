@@ -4,7 +4,7 @@ import { SortDto } from '../dto/request/sort.dto';
 import { FilterDto, FilterOperator } from '../dto/request/filter.dto';
 
 export class SequelizeFilterUtil {
-  static buildWhereConditions(filters: FilterDto[]): WhereOptions {
+  static buildWhereConditions(filters: FilterDto[], allowedFields?: string[]): WhereOptions {
     if (!filters || filters.length === 0) {
       return {};
     }
@@ -12,6 +12,9 @@ export class SequelizeFilterUtil {
     const where: WhereOptions = {};
 
     filters.forEach((filter) => {
+      if (allowedFields && !allowedFields.includes(filter.field)) {
+        return;
+      }
       const value = this.convertValue(filter.value, filter.valueType);
       const value2 = filter.value2
         ? this.convertValue(filter.value2, filter.valueType)

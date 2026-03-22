@@ -37,7 +37,7 @@ export class Question implements IQuestion {
   public toApi(): Partial<IQuestion> {
     return {
       question: this.question,
-      answers: this.answers,
+      answers: this.answers.map((a) => a.toApi()) as Answer[],
     };
   }
 
@@ -51,6 +51,23 @@ export class Question implements IQuestion {
 
   public validate(): { isValid: boolean; errors: Record<string, string> } {
     const errors: Record<string, string> = {};
+
+    if (!this.question.trim()) {
+      errors.question = "Текст вопроса не может быть пустым";
+    }
+
+    if (this.answers.length < 2) {
+      errors.answers = "Вопрос должен содержать минимум 2 ответа";
+    }
+
+    if (!this.answers.some((a) => a.isCorrect)) {
+      errors.correctAnswer = "Необходимо выбрать правильный ответ";
+    }
+
+    const answerErrors = this.answers.filter((a) => !a.validate().isValid);
+    if (answerErrors.length > 0) {
+      errors.answerTexts = "Все ответы должны содержать текст";
+    }
 
     return {
       isValid: Object.keys(errors).length === 0,

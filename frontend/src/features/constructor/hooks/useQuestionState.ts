@@ -4,14 +4,14 @@ import { Answer } from "../../../entities/answer";
 import { MAX_ANSWERS, MIN_ANSWERS } from "../constants";
 
 export function useQuestionState(
-  initailData?: Question,
+  initialData?: Question,
   openDialog?: boolean,
 ) {
   const [question, setQuestion] = useState(Question.empty);
 
   useEffect(() => {
-    setQuestion(initailData ? new Question(initailData) : Question.empty());
-  }, [initailData, openDialog]);
+    setQuestion(initialData ? new Question(initialData) : Question.empty());
+  }, [initialData, openDialog]);
 
   const isValid = useMemo(() => {
     const hasQuestion = Boolean(question.question.trim());
@@ -28,7 +28,7 @@ export function useQuestionState(
     );
   }, [question]);
 
-  const setField = (field: keyof Question, value: any) =>
+  const setField = (field: keyof Question, value: Question[keyof Question]) =>
     setQuestion((prev) => new Question({ ...prev, [field]: value }));
 
   const updateAnswerText = (id: Answer["id"], text: string) =>

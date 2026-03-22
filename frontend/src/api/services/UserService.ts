@@ -6,37 +6,18 @@ export default class UserService {
   constructor(private repository: UserRepository) {}
 
   async updateAvatar(id: number, payload: FormData): Promise<UserResponse> {
-    try {
-      const data = (await this.repository.updateAvatar(id, payload)).data;
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    return (await this.repository.updateAvatar(id, payload)).data;
   }
 
   async updateCredentials(id: number, payload: UserCredentialsUpdate): Promise<UserResponse> {
-     try {
-      const data = (await this.repository.updateCredentials(id, payload)).data;
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    return (await this.repository.updateCredentials(id, payload)).data;
   }
 
   async delete(id: number): Promise<void> {
-    try {
-      await this.repository.delete(id);
-    } catch (error) {
-      throw error
-    }
+    await this.repository.delete(id);
   }
 
-  async getProfile() {
-    try {
-      const data = (await this.repository.getProfile()).data;
-      return data;
-    } catch (error) {
-      throw error;
-    }
+  async getProfile(): Promise<UserResponse> {
+    return (await this.repository.getProfile()).data;
   }
 }

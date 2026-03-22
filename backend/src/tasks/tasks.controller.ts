@@ -5,8 +5,10 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   ParseFilePipe,
+  ParseIntPipe,
   Post,
   Put,
   Req,
@@ -30,8 +32,10 @@ export class TasksController {
 
   @HttpCode(HttpStatus.OK)
   @Get('/:id')
-  async getTaskById(@Param('id') id: number) {
-    return await this.tasksService.getTaskById(id);
+  async getTaskById(@Param('id', ParseIntPipe) id: number) {
+    const task = await this.tasksService.getTaskById(id);
+    if (!task) throw new NotFoundException('Задание не найдено');
+    return task;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -55,7 +59,7 @@ export class TasksController {
     FileInterceptor('image', createFileInterceptorOptions('IMAGE')),
   )
   async edit(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() body: { data: string },
     @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) image: File,
   ) {
@@ -66,7 +70,7 @@ export class TasksController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:id')
-  async delete(@Param('id') id: number): Promise<void>  {
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.tasksService.delete(id);
   }
 
@@ -86,7 +90,7 @@ export class TasksController {
   @ApiOperation({ summary: 'Фильтрация задач пользователя' })
   @ApiBody({ type: PaginationFilterDto })
   async getAllFilteredProfile(
-    @Req() req,
+    @Req() req: { user: { id: number } },
     @Body(new ValidationPipe({ transform: true })) request: PaginationFilterDto,
   ) {
     return await this.tasksService.getAllFilteredProfile(req.user.id, request);

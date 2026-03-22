@@ -15,7 +15,7 @@ interface TaskCreationAttrs {
   name: string;
   description: string;
   image: string;
-  userId: string;
+  userId: number;
 }
 
 @Table({ tableName: 'tasks' })

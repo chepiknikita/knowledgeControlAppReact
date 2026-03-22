@@ -21,7 +21,9 @@ export class QuestionsService {
     transaction: Transaction,
   ): Promise<void> {
     for (const dto of questions) {
-      if (!dto.question) continue;
+      if (!dto.question) {
+        throw new Error(`Вопрос не может быть пустым`);
+      }
 
       const question = await this.questionRepository.create(
         {

@@ -13,7 +13,7 @@ export enum ConstructorStep {
 
 type TaskAction =
   | { type: "INIT"; payload: Partial<ITask> }
-  | { type: "SET_FIELD"; field: keyof Task; value: any }
+  | { type: "SET_FIELD"; field: keyof Task; value: Task[keyof Task] }
   | { type: "ADD_QUESTION"; question: Question };
 
 function taskReducer(state: Task, action: TaskAction): Task {
@@ -66,8 +66,6 @@ export function useTaskConstructor(initialData?: Partial<ITask>) {
   }, [initialData, user]);
 
   const canGoNext = useMemo(() => {
-    if (task.id) return true;
-
     switch (step) {
       case ConstructorStep.Description:
         return Boolean(task.name && task.description);
@@ -87,7 +85,7 @@ export function useTaskConstructor(initialData?: Partial<ITask>) {
   const prevStep = useCallback(() => setStep((s) => s - 1), []);
 
   const setField = useCallback(
-    (field: keyof Task, value: any) =>
+    (field: keyof Task, value: Task[keyof Task]) =>
       dispatch({ type: "SET_FIELD", field, value }),
     []
   );

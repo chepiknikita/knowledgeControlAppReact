@@ -3,6 +3,7 @@ import {
   ReactNode,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { ApiFactory } from "../../../api";
@@ -27,22 +28,40 @@ export const useAuth = () => {
   return context;
 };
 
-function parseJwt(token: string) {
-  const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const jsonPayload = decodeURIComponent(
-    atob(base64)
-      .split('')
-      .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-      .join('')
-  );
-  return JSON.parse(jsonPayload);
+function parseJwt(token: string): Record<string, unknown> {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    throw new Error('Невозможно декодировать токен');
+  }
+}
+
+function extractErrorMessage(error: unknown, fallback: string): string {
+  if (
+    error !== null &&
+    typeof error === "object" &&
+    "response" in error
+  ) {
+    const response = (error as { response?: { data?: { message?: string } } })
+      .response;
+    if (response?.data?.message) return response.data.message;
+  }
+  return fallback;
 }
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const authService = ApiFactory.createAuthService();
+  const authServiceRef = useRef(ApiFactory.createAuthService());
+  const authService = authServiceRef.current;
 
   const [user, setUser] = useState<UserResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,7 +72,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
       if (token) {
         try {
-          const payload = JSON.parse(atob(token.split(".")[1]));
+          const payload = parseJwt(token);
           setUser({
             id: payload.id,
             login: payload.login,
@@ -86,10 +105,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
       return { success: true };
     } catch (error) {
-      const err = error as any;
       return {
         success: false,
-        error: err.response?.data?.message || "Ошибка авторизации",
+        error: extractErrorMessage(error, "Ошибка авторизации"),
       };
     }
   };
@@ -107,10 +125,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
       return { success: true };
     } catch (error) {
-      const err = error as any;
       return {
         success: false,
-        error: err.response?.data?.message || "Ошибка регистрации",
+        error: extractErrorMessage(error, "Ошибка регистрации"),
       };
     }
   };

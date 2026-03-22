@@ -29,8 +29,14 @@ export class RolesGuard implements CanActivate {
       }
       const req = context.switchToHttp().getRequest();
       const authHeader = req.headers.authorization;
-      const bearer = authHeader.split(' ')[0];
-      const token = authHeader.split(' ')[1];
+
+      if (!authHeader) {
+        throw new UnauthorizedException({
+          message: 'Пользователь не авторизован',
+        });
+      }
+
+      const [bearer, token] = authHeader.split(' ');
 
       if (bearer !== 'Bearer' || !token) {
         throw new UnauthorizedException({
@@ -39,7 +45,7 @@ export class RolesGuard implements CanActivate {
       }
       const user = this.jwtService.verify(token);
       req.user = user;
-      return user.roles.some((v) => requiredRoles.includes(v.name));
+      return user.roles.some((v: { name: string }) => requiredRoles.includes(v.name));
     } catch (e) {
       throw new HttpException('Нет доступа', HttpStatus.FORBIDDEN);
     }

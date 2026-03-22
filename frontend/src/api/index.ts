@@ -12,6 +12,9 @@ import UserEndpoint from "./endpoints/UserEndpoint";
 
 export class ApiFactory {
   private static apiInstance: ApiClient;
+  private static authServiceInstance: AuthService;
+  private static taskServiceInstance: TaskService;
+  private static userServiceInstance: UserService;
 
   private static initialize() {
     if (!this.apiInstance) {
@@ -21,25 +24,31 @@ export class ApiFactory {
 
   public static createAuthService(): AuthService {
     this.initialize();
-    const repository = new AuthRepository(
-      new AuthEndpoint(this.apiInstance.api)
-    );
-    return new AuthService(repository);
+    if (!this.authServiceInstance) {
+      this.authServiceInstance = new AuthService(
+        new AuthRepository(new AuthEndpoint(this.apiInstance.api))
+      );
+    }
+    return this.authServiceInstance;
   }
 
   public static createTaskService(): TaskService {
     this.initialize();
-    const repository = new TaskRepository(
-      new TaskEndpoint(this.apiInstance.api)
-    );
-    return new TaskService(repository);
+    if (!this.taskServiceInstance) {
+      this.taskServiceInstance = new TaskService(
+        new TaskRepository(new TaskEndpoint(this.apiInstance.api))
+      );
+    }
+    return this.taskServiceInstance;
   }
 
   public static createUserService(): UserService {
     this.initialize();
-    const repository = new UserRepository(
-      new UserEndpoint(this.apiInstance.api)
-    );
-    return new UserService(repository);
+    if (!this.userServiceInstance) {
+      this.userServiceInstance = new UserService(
+        new UserRepository(new UserEndpoint(this.apiInstance.api))
+      );
+    }
+    return this.userServiceInstance;
   }
 }

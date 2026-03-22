@@ -64,7 +64,7 @@ export class TasksService extends BaseService<Task> {
     const updateData: Partial<Task> = {
       name: dto.name,
       description: dto.description,
-      userId: +dto.userId,
+      userId: dto.userId,
       ...(newImageName ? { image: newImageName } : {}),
     };
 
@@ -124,8 +124,14 @@ export class TasksService extends BaseService<Task> {
     });
   }
 
+  private static readonly ALLOWED_FILTER_FIELDS = ['name', 'description', 'createdAt', 'userId'];
+
   async getAllFilteredProfile(userId: number, query: PaginationFilterDto) {
-    return this.findAllPaginatedInternal(query, { userId });
+    return this.findAllPaginatedInternal(query, { userId }, TasksService.ALLOWED_FILTER_FIELDS);
+  }
+
+  public async findAllPaginated(query: PaginationFilterDto) {
+    return this.findAllPaginatedInternal(query, {}, TasksService.ALLOWED_FILTER_FIELDS);
   }
 
   private async findByIdOrFail(

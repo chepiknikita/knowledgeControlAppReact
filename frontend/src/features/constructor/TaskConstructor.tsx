@@ -65,14 +65,14 @@ export default function TaskConstructor({ initialData }: Props) {
                 <ConstructorMainInfo
                   name={task.name}
                   description={task.description}
-                  image={task.imageBase64}
+                  image={task.imageUrl}
                   onChangeName={(v) => actions.setField("name", v)}
                   onChangeDescription={(v) =>
                     actions.setField("description", v)
                   }
                   onUploadImage={(v) => actions.setField("image", v)}
                   onUploadImageBase64={(v) =>
-                    actions.setField("imageBase64", v)
+                    actions.setField("imageUrl", v)
                   }
                 />
               )}

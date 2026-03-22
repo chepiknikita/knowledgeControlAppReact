@@ -6,14 +6,14 @@ import QuestionCreateDialog from "./QuestionCreateDialog";
 
 interface Props {
   header: string;
-  initailData?: Question;
+  initialData?: Question;
   onSaveQuestion: (question: Question) => void;
 }
 
 export default function QuestionCreateButton({
   header,
   onSaveQuestion,
-  initailData,
+  initialData,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -37,7 +37,7 @@ export default function QuestionCreateButton({
       <QuestionCreateDialog
         openDialog={isOpen}
         header={header}
-        initailData={initailData}
+        initialData={initialData}
         onSave={onSaveQuestion}
         handleClose={closeDialog}
       />

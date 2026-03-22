@@ -4,7 +4,6 @@ import urlService from "../api/serverUrl/urlService";
 export interface IUser {
   id: number;
   login: string;
-  avatar?: File;
   avatarBase64?: string;
   roles: string[];
   password?: string | null;
@@ -20,7 +19,6 @@ export interface UserCredentialsUpdate {
 export class User implements IUser {
   id: number;
   login: string;
-  avatar?: File;
   avatarBase64: string;
   roles: string[];
   tasksCount?: number;
@@ -28,7 +26,6 @@ export class User implements IUser {
   constructor(data: Partial<IUser>) {
     this.id = data.id ?? 0;
     this.login = data.login ?? "";
-    this.avatar = data.avatar;
     this.avatarBase64 = data.avatarBase64 ?? "";
     this.roles = data.roles ?? [];
     this.tasksCount = data.tasksCount ?? 0;
