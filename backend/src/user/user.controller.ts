@@ -48,7 +48,7 @@ export class UserController {
         validators: createFileValidators('USER_AVATAR'),
       }),
     )
-    image: File,
+    image: Express.Multer.File,
   ): Promise<Partial<User>> {
     const user = await this.userService.updateAvatar(id, image)
     return user.getUserResponse();
@@ -79,7 +79,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get('profile')
-  async getProfile(@Request() req): Promise<Partial<User>> {
+  async getProfile(@Request() req: { user: { id: number } }): Promise<Partial<User>> {
     const user = await this.userService.getUserById(req.user.id);
     if (!user) throw new NotFoundException('Пользователь не найден');
     return user.getUserResponse();

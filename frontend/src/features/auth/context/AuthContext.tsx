@@ -28,7 +28,14 @@ export const useAuth = () => {
   return context;
 };
 
-function parseJwt(token: string): Record<string, unknown> {
+interface JwtPayload {
+  id: number;
+  login: string;
+  avatar: string;
+  roles: string[];
+}
+
+function parseJwt(token: string): JwtPayload {
   try {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -38,7 +45,7 @@ function parseJwt(token: string): Record<string, unknown> {
         .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
         .join('')
     );
-    return JSON.parse(jsonPayload);
+    return JSON.parse(jsonPayload) as JwtPayload;
   } catch {
     throw new Error('Невозможно декодировать токен');
   }

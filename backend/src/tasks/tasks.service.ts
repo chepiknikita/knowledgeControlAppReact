@@ -27,7 +27,7 @@ export class TasksService extends BaseService<Task> {
     return this.findTaskWithRelations(id, true);
   }
 
-  async create(dto: CreateTaskDto, image?: File): Promise<Task> {
+  async create(dto: CreateTaskDto, image?: Express.Multer.File): Promise<Task> {
     const imageName = image ? await this.fileService.createFile(image) : null;
 
     return this.withTransaction(async (transaction) => {
@@ -49,7 +49,7 @@ export class TasksService extends BaseService<Task> {
     });
   }
 
-  async edit(id: number, dto: CreateTaskDto, image?: File): Promise<Task> {
+  async edit(id: number, dto: CreateTaskDto, image?: Express.Multer.File): Promise<Task> {
     const task = await this.findByIdOrFail(id);
 
     let newImageName: string | null = null;

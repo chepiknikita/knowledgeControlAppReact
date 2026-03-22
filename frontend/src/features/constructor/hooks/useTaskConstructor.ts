@@ -56,7 +56,7 @@ export function useTaskConstructor(initialData?: Partial<ITask>) {
     if (initialData) {
       dispatch({ type: "INIT", payload: initialData });
     } else {
-      dispatch({ type: "SET_FIELD", field: "user", value: user });
+      dispatch({ type: "SET_FIELD", field: "user", value: user ?? undefined });
       dispatch({
         type: "SET_FIELD",
         field: "createdAt",

@@ -46,7 +46,7 @@ export class TasksController {
   )
   async create(
     @Body() body: { data: string },
-    @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) image: File,
+    @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) image: Express.Multer.File,
   ) {
     const taskDto = parseMultipartJson(body.data);
     return await this.tasksService.create(taskDto, image);
@@ -61,7 +61,7 @@ export class TasksController {
   async edit(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: { data: string },
-    @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) image: File,
+    @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) image: Express.Multer.File,
   ) {
     const taskDto = parseMultipartJson(body.data);
     return await this.tasksService.edit(id, taskDto, image);

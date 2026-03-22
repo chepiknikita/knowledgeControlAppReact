@@ -65,7 +65,7 @@ export class UserService {
     });
   }
 
-  async updateAvatar(id: number, image: File): Promise<User> {
+  async updateAvatar(id: number, image: Express.Multer.File): Promise<User> {
     if (!image) {
       return this.getUserOrThrow(id);
     }
