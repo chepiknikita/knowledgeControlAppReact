@@ -11,7 +11,7 @@ class UrlService {
   }
 
   getImageUrl(imagePath?: string): string {
-    return imagePath ? `${this.baseUrl}/${imagePath}` : "";
+    return imagePath ? `${this.baseUrl}/${imagePath.replace(/^\//, "")}` : "";
   }
 }
 

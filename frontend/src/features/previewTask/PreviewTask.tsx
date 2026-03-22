@@ -30,7 +30,7 @@ export default function PreviewTask({
         createdAt={task.createdAt}
       />
 
-      <TaskImage image={task.imageBase64} />
+      <TaskImage image={task.imageUrl} />
 
       <TaskDescription description={task.description} />
 

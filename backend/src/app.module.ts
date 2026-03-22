@@ -38,10 +38,10 @@ import { join } from 'path';
       database: process.env.POSTGRES_DB,
       models: [User, Role, UserRoles, Task, Question, Answer],
       autoLoadModels: true,
-      logging: console.log, // Показывает детали ошибок
+      logging: process.env.NODE_ENV !== 'production' ? console.log : false,
       sync: {
-        force: false, // Не использовать true в production
-        alter: true, // Аккуратно обновляет структуру
+        force: false,
+        alter: process.env.NODE_ENV !== 'production',
       },
     }),
     UserModule,

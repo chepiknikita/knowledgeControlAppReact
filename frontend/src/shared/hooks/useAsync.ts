@@ -12,7 +12,7 @@ export function useAsync() {
   const run = useCallback(
     async (
       fn: () => Promise<void>,
-      options: AsyncOptions = { withLoading: true }
+      options: AsyncOptions = {}
     ) => {
       const { withLoading = true } = options;
 

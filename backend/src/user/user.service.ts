@@ -21,6 +21,11 @@ export class UserService {
 
   async createUser(dto: CreateUserDto) {
     const role = await this.roleService.getRoleByName('USER');
+
+    if (!role) {
+      throw new HttpException('Роль USER не найдена', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     const user = await this.userRepository.create(dto);
 
     await user.$set('roles', [role.id]);
@@ -35,7 +40,7 @@ export class UserService {
     });
   }
 
-  async getUserById(id: string): Promise<User | null> {
+  async getUserById(id: number): Promise<User | null> {
     return await this.userRepository.findOne({
       where: { id },
       include: [
@@ -60,20 +65,18 @@ export class UserService {
     });
   }
 
-  async updateAvatar(id: number, image: File): Promise<User> {
+  async updateAvatar(id: number, image: Express.Multer.File): Promise<User> {
+    if (!image) {
+      return this.getUserOrThrow(id);
+    }
+
     const user = await this.getUserOrThrow(id);
-
     const oldAvatar = user.avatar;
-    const newAvatar = image
-      ? await this.fileService.createFile(image)
-      : null;
+    const newAvatar = await this.fileService.createFile(image);
 
-    await this.userRepository.update(
-      { avatar: newAvatar },
-      { where: { id } },
-    );
+    await this.userRepository.update({ avatar: newAvatar }, { where: { id } });
 
-    if (oldAvatar && newAvatar) {
+    if (oldAvatar) {
       await this.fileService.deleteFile(oldAvatar);
     }
 
@@ -98,7 +101,7 @@ export class UserService {
     await this.userRepository.update(
       {
         refreshToken: refreshToken
-          ? await bcrypt.hash(refreshToken, 5)
+          ? await bcrypt.hash(refreshToken, 10)
           : null,
       },
       { where: { id } },
@@ -113,13 +116,27 @@ export class UserService {
   }
 
   async delete(id: number): Promise<void> {
-    const user = await this.getUserOrThrow(id);
+    const user = await this.userRepository.findByPk(id, {
+      include: [{ model: Task, attributes: ['image'] }],
+    });
+
+    if (!user) {
+      throw new HttpException('Пользователь не найден', HttpStatus.NOT_FOUND);
+    }
+
     await this.sequelize.transaction(async (t) => {
-      if (user.avatar) {
-        await this.fileService.deleteFile(user.avatar);
-      }
       await this.userRepository.destroy({ where: { id }, transaction: t });
     });
+
+    if (user.avatar) {
+      await this.fileService.deleteFile(user.avatar);
+    }
+
+    for (const task of user.tasks ?? []) {
+      if (task.image) {
+        await this.fileService.deleteFile(task.image);
+      }
+    }
   }
 
   async validateRefreshToken(id: number, refreshToken: string): Promise<boolean> {
@@ -175,7 +192,7 @@ export class UserService {
         throw new HttpException('Неверный текущий пароль', HttpStatus.BAD_REQUEST);
       }
 
-      updateData.password = await bcrypt.hash(dto.newPassword, 5);
+      updateData.password = await bcrypt.hash(dto.newPassword, 10);
     }
 
     return updateData;

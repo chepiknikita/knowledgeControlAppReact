@@ -28,7 +28,7 @@ export const ConfirmDialog = ({
   return (
     <Dialog
       open={open}
-      onClose={() => onCancel}
+      onClose={onCancel}
       onClick={(e) => e.stopPropagation()}
     >
       <DialogTitle component="div" variant="body1">

@@ -52,6 +52,10 @@ export class Answer implements IAnswer {
   public validate(): { isValid: boolean; errors: Record<string, string> } {
     const errors: Record<string, string> = {};
 
+    if (!this.text.trim()) {
+      errors.text = "Текст ответа не может быть пустым";
+    }
+
     return {
       isValid: Object.keys(errors).length === 0,
       errors,

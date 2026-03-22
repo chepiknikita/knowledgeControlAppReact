@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { CreateQuestionDto } from 'src/tasks/dto/create-question.dto';
 
 export class CreateTaskDto {
@@ -7,13 +7,14 @@ export class CreateTaskDto {
   readonly name: string;
 
   @IsString()
-  readonly image: string;
+  @IsOptional()
+  readonly image?: string;
 
   @IsString()
   readonly description: string;
 
-  @IsString()
-  readonly userId: string;
+  @IsInt()
+  readonly userId: number;
 
   @IsArray()
   @ValidateNested({ each: true })

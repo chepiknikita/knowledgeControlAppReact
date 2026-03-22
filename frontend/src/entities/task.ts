@@ -1,11 +1,8 @@
-import { TaskResponse } from "../api/interfaces/tasks";
+import { Author as ApiAuthor, TaskResponse } from "../api/interfaces/tasks";
 import urlService from "../api/serverUrl/urlService";
 import { Question } from "./question";
 
-export interface Author {
-  id: number;
-  login: string;
-  avatar: string;
+export interface Author extends ApiAuthor {
   imageUrl?: string;
 }
 
@@ -14,7 +11,7 @@ export interface ITask {
   name: string;
   description: string;
   image?: File;
-  imageBase64: string;
+  imageUrl: string;
   user?: Author;
   createdAt?: string;
   questions: Question[];
@@ -25,7 +22,7 @@ export class Task implements ITask {
   name: string;
   description: string;
   image?: File;
-  imageBase64: string;
+  imageUrl: string;
   user?: Author;
   createdAt?: string;
   questions: Question[];
@@ -35,7 +32,7 @@ export class Task implements ITask {
     this.name = data.name ?? "";
     this.description = data.description ?? "";
     this.image = data.image;
-    this.imageBase64 = data.imageBase64 ?? "";
+    this.imageUrl = data.imageUrl ?? "";
     this.user = data.user;
     this.createdAt = data.createdAt;
     this.questions = data.questions ?? [];
@@ -45,7 +42,7 @@ export class Task implements ITask {
     return new Task({
       name: "",
       description: "",
-      imageBase64: "",
+      imageUrl: "",
       questions: [],
     });
   }
@@ -54,7 +51,7 @@ export class Task implements ITask {
     return new Task({
       id: data.id,
       name: data.name,
-      imageBase64: data.image ? urlService.getImageUrl(data.image) : "",
+      imageUrl: data.image ? urlService.getImageUrl(data.image) : "",
       description: data.description,
       user: data.user && {
         ...data.user,
@@ -90,8 +87,7 @@ export class Task implements ITask {
       id: this.id ?? 0,
       name: this.name,
       description: this.description,
-      image: "",
-      imageBase64: this.imageBase64,
+      image: this.imageUrl,
       user: this.user,
       createdAt: this.createdAt ?? new Date().toISOString(),
       questions: this.questions.map((q) => q.toResponse()),
@@ -100,6 +96,25 @@ export class Task implements ITask {
 
   public validate(): { isValid: boolean; errors: Record<string, string> } {
     const errors: Record<string, string> = {};
+
+    if (!this.name.trim()) {
+      errors.name = "Название задания не может быть пустым";
+    }
+
+    if (!this.description.trim()) {
+      errors.description = "Описание задания не может быть пустым";
+    }
+
+    if (this.questions.length === 0) {
+      errors.questions = "Задание должно содержать хотя бы один вопрос";
+    }
+
+    const invalidQuestions = this.questions.filter(
+      (q) => !q.validate().isValid
+    );
+    if (invalidQuestions.length > 0) {
+      errors.invalidQuestions = `${invalidQuestions.length} вопрос(а) содержат ошибки`;
+    }
 
     return {
       isValid: Object.keys(errors).length === 0,

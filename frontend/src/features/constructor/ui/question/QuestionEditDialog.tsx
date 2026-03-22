@@ -14,7 +14,7 @@ export function EditQuestionDialog({ question, onSave, onClose }: Props) {
     <QuestionCreateDialog
       openDialog
       header="Редактирование вопроса"
-      initailData={question}
+      initialData={question}
       onSave={onSave}
       handleClose={onClose}
     />

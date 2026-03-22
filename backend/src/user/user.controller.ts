@@ -5,8 +5,10 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   ParseFilePipe,
+  ParseIntPipe,
   Put,
   Request,
   UploadedFile,
@@ -39,14 +41,14 @@ export class UserController {
     FileInterceptor('image', createFileInterceptorOptions('USER_AVATAR')),
   )
   async updateAvatar(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @UploadedFile(
       new ParseFilePipe({
         fileIsRequired: false,
         validators: createFileValidators('USER_AVATAR'),
       }),
     )
-    image: File,
+    image: Express.Multer.File,
   ): Promise<Partial<User>> {
     const user = await this.userService.updateAvatar(id, image)
     return user.getUserResponse();
@@ -58,7 +60,7 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @Put(':id/credentials')
   async updateCredentials(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateCredentialsDto,
   ): Promise<Partial<User>> {
     const user = await this.userService.updateCredentials(id, dto);
@@ -70,15 +72,16 @@ export class UserController {
   @UseGuards(JwtAuthGuard, SelfOnlyGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<void> {
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.userService.delete(id);
   } 
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get('profile')
-  async getProfile(@Request() req): Promise<Partial<User>> {
+  async getProfile(@Request() req: { user: { id: number } }): Promise<Partial<User>> {
     const user = await this.userService.getUserById(req.user.id);
+    if (!user) throw new NotFoundException('Пользователь не найден');
     return user.getUserResponse();
   }
 }

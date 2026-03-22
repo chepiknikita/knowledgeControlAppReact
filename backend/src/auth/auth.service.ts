@@ -20,21 +20,24 @@ export class AuthService {
   ) {}
 
   private generateTokens(user: User) {
-    const payload = {
+    const basePayload = {
       login: user.login,
       id: user.id,
       roles: user.roles,
       avatar: user.avatar,
     };
 
-    const accessToken = this.jwtService.sign(payload, {
+    const accessToken = this.jwtService.sign(basePayload, {
       expiresIn: this.configService.get('JWT_ACCESS_EXPIRES') || '15m',
     });
 
-    const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.get('JWT_REFRESH_EXPIRES') || '7d',
-      secret: this.configService.get('JWT_REFRESH_SECRET'),
-    });
+    const refreshToken = this.jwtService.sign(
+      { ...basePayload, type: 'refresh' },
+      {
+        expiresIn: this.configService.get('JWT_REFRESH_EXPIRES') || '7d',
+        secret: this.configService.get('JWT_REFRESH_SECRET'),
+      },
+    );
 
     return {
       accessToken,
@@ -74,7 +77,7 @@ export class AuthService {
       );
     }
 
-    const hashPasswd = await bcrypt.hash(userDto.password, 5);
+    const hashPasswd = await bcrypt.hash(userDto.password, 10);
     const user = await this.userService.createUser({
       login: userDto.login,
       password: hashPasswd,

@@ -2,9 +2,9 @@ import { AxiosResponse } from "axios";
 import { BaseRepository } from "../core/BaseRepository";
 import TaskEndpoint from "../endpoints/TaskEndpoint";
 import { TaskResponse } from "../interfaces/tasks";
-import { PaginationFilterPayload } from "../interfaces/paginationFilterPayload";
+import { PagedResult, PaginationFilterPayload } from "../interfaces/paginationFilterPayload";
 
-export default class TaskRepository extends BaseRepository<any> {
+export default class TaskRepository extends BaseRepository<TaskResponse> {
   api: TaskEndpoint;
   constructor(api: TaskEndpoint) {
     super();
@@ -29,13 +29,13 @@ export default class TaskRepository extends BaseRepository<any> {
 
   async getAllFiltered(
     payload: PaginationFilterPayload,
-  ): Promise<AxiosResponse<any>> {
+  ): Promise<AxiosResponse<PagedResult<TaskResponse>>> {
     return this.api.getAllFiltered(payload);
   }
 
   async getAllFilteredProfile(
     payload: PaginationFilterPayload,
-  ): Promise<AxiosResponse<any>> {
+  ): Promise<AxiosResponse<PagedResult<TaskResponse>>> {
     return this.api.getAllFilteredProfile(payload);
   }
 }

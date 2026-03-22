@@ -9,7 +9,7 @@ import { QuestionActions } from "./QuestionActions";
 interface Props {
   openDialog: boolean;
   header: string;
-  initailData?: Question;
+  initialData?: Question;
   onSave: (question: Question) => void;
   handleClose: () => void;
 }
@@ -17,7 +17,7 @@ interface Props {
 export default function QuestionCreateDialog({
   openDialog,
   header,
-  initailData,
+  initialData,
   onSave,
   handleClose,
 }: Props) {
@@ -29,7 +29,7 @@ export default function QuestionCreateDialog({
     setCorrectAnswer,
     removeAnswer,
     addAnswer,
-  } = useQuestionState(initailData, openDialog);
+  } = useQuestionState(initialData, openDialog);
 
   const save = () => {
     onSave(new Question(question));

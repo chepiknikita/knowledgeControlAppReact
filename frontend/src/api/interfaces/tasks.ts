@@ -11,7 +11,6 @@ export interface TaskResponse {
   name: string;
   description: string;
   image: string;
-  imageBase64: string;
   user?: Author;
   createdAt: string;
   questions: QuestionResponse[];

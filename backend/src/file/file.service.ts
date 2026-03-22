@@ -14,7 +14,7 @@ export class FileService {
     }
   }
 
-  async createFile(file: any): Promise<string> {
+  async createFile(file: Express.Multer.File): Promise<string> {
     try {
       const extension = file.mimetype.split('/')[1];
       const fileName = `${uuid.v4()}.${extension}`;
@@ -32,8 +32,13 @@ export class FileService {
 
   async deleteFile(filePath: string): Promise<boolean> {
     try {
-      const fileName = filePath.replace('static/', '');
-      const fullPath = path.join(this.staticPath, fileName);
+      const fileName = path.basename(filePath.replace(/^static\//, ''));
+      const fullPath = path.resolve(this.staticPath, fileName);
+
+      if (!fullPath.startsWith(this.staticPath)) {
+        console.warn(`Отклонён небезопасный путь: ${filePath}`);
+        return false;
+      }
       
       if (!fs.existsSync(fullPath)) {
         console.warn(`Файл не найден: ${fullPath}`);

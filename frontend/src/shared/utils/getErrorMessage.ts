@@ -1,9 +1,12 @@
-export function getErrorMessage(error: unknown): string {
-  const err = error as any;
+interface ApiError {
+  response?: { data?: { message?: string } };
+  message?: string;
+}
 
-  return (
-    err?.response?.data?.message ||
-    err?.message ||
-    'Ошибка выполнения запроса'
-  );
+export function getErrorMessage(error: unknown): string {
+  if (typeof error === 'object' && error !== null) {
+    const err = error as ApiError;
+    return err.response?.data?.message ?? err.message ?? 'Ошибка выполнения запроса';
+  }
+  return 'Ошибка выполнения запроса';
 }
