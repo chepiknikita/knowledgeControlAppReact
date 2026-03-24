@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Question } from "src/tasks/entities/question.model";
 import { AnswersService } from "./answers.service";
@@ -22,7 +22,7 @@ export class QuestionsService {
   ): Promise<void> {
     for (const dto of questions) {
       if (!dto.question) {
-        throw new Error(`Вопрос не может быть пустым`);
+        throw new BadRequestException(`Вопрос не может быть пустым`);
       }
 
       const question = await this.questionRepository.create(
@@ -55,7 +55,7 @@ export class QuestionsService {
 
       if (existingQuestion) {
         await existingQuestion.update({ question: dto.question }, { transaction });
-        await this.answersService.sync(existingQuestion, dto.answers ?? [], transaction);
+        await this.answersService.sync(existingQuestion, dto.answers ?? [], transaction, existingQuestion.answers);
       } else {
         await this.createForTask(task.id, [dto], transaction);
       }

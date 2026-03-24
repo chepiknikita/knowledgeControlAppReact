@@ -3,7 +3,7 @@ import { Filter } from "../../../api/interfaces/filter";
 import { PaginationResponse } from "../../../api/interfaces/paginationFilterPayload";
 import { Task } from "../../../entities/task";
 import { ApiFactory } from "../../../api";
-import { useAsync } from "../../../shared/hooks/useAsync";
+import { useAsyncAction } from "../../../shared/hooks/useAsync";
 
 type TaskScope = "all" | "profile";
 
@@ -36,7 +36,7 @@ export function usePaginatedTasks({
     run,
     loading,
     error,
-  } = useAsync();
+  } = useAsyncAction();
 
   const fetchTasks = useCallback(() => {
     return run(async () => {

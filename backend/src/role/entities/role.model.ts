@@ -16,7 +16,7 @@ interface RoleCreation {
 
 @Table({ tableName: 'roles', createdAt: false, updatedAt: false })
 export class Role extends Model<Role, RoleCreation> {
-  @ApiProperty({ example: '1', description: 'Indentificator' })
+  @ApiProperty({ example: '1', description: 'Identifier' })
   @Column({
     type: DataType.INTEGER,
     unique: true,

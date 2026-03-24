@@ -1,7 +1,7 @@
 export const FILE_UPLOAD_CONFIG = {
   IMAGE: {
     limits: {
-      fileSize: 50 * 1024 * 1024,
+      fileSize: 10 * 1024 * 1024,
       files: 1,
     },
     allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],

@@ -12,8 +12,8 @@ export default class TaskEndpoint {
     this.api = api;
   }
 
-  async getById<T>(id: number): Promise<AxiosResponse<T>> {
-    return this.api.get<T>(`tasks/${id}`);
+  async getById<T>(id: number, signal?: AbortSignal): Promise<AxiosResponse<T>> {
+    return this.api.get<T>(`tasks/${id}`, { signal });
   }
 
   async create<T>(payload: FormData): Promise<AxiosResponse<T>> {

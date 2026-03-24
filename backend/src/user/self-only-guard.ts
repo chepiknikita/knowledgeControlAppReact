@@ -11,7 +11,10 @@ export class SelfOnlyGuard implements CanActivate {
       throw new ForbiddenException(SELF_ONLY_MESSAGE);
     }
 
-    if (Number(req.user.id) !== Number(req.params.id)) {
+    const userId = Number(req.user.id);
+    const paramId = Number(req.params.id);
+
+    if (isNaN(userId) || isNaN(paramId) || userId !== paramId) {
       throw new ForbiddenException(SELF_ONLY_MESSAGE);
     }
 

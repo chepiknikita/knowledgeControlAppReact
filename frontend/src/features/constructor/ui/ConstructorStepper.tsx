@@ -1,5 +1,5 @@
 import { Box, Step, StepLabel, Stepper } from "@mui/material";
-import React, { useMemo } from "react";
+import React from "react";
 import DykTypography from "../../../components/UI/typography/DykTypography";
 
 interface Props {
@@ -13,8 +13,6 @@ export default function ConstructorStepper({
   activeStep,
   title,
 }: Props) {
-  const memoSteps = useMemo(() => steps, [steps]);
-
   return (
     <Box>
       <DykTypography
@@ -27,7 +25,7 @@ export default function ConstructorStepper({
         sx={{ my: 2 }}
         aria-label="task-stepper"
       >
-        {memoSteps.map((label) => (
+        {steps.map((label: string) => (
           <Step key={label}>
             <StepLabel>{label}</StepLabel>
           </Step>

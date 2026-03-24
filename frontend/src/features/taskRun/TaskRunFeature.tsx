@@ -49,7 +49,7 @@ export default function TaskRunFeature({
       <TaskQuestion
         question={currentQuestion}
         progress={questionProgress}
-        currentAnswer={currentAnswer as Answer}
+        currentAnswer={currentAnswer ?? undefined}
         onAnswer={handleAnswer}
         onBack={handleBack}
       />
@@ -58,7 +58,7 @@ export default function TaskRunFeature({
 
   return (
     <TaskFinish
-      answers={answers.filter(Boolean) as Answer[]}
+      answers={answers.filter((a): a is Answer => a !== null)}
       showHome={showHome}
       onRepeat={handleRepeat}
       onHome={onHome}

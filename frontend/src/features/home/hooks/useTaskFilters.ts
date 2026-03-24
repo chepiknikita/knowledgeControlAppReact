@@ -28,6 +28,20 @@ export function useTaskFilters(
         value2: end.endOf("day").toISOString(),
         valueType: "date",
       });
+    } else if (start) {
+      filters.push({
+        field: "createdAt",
+        operator: FilterOperator.GREATER_THAN_OR_EQUAL,
+        value: start.startOf("day").toISOString(),
+        valueType: "date",
+      });
+    } else if (end) {
+      filters.push({
+        field: "createdAt",
+        operator: FilterOperator.LESS_THAN_OR_EQUAL,
+        value: end.endOf("day").toISOString(),
+        valueType: "date",
+      });
     }
 
     return filters;

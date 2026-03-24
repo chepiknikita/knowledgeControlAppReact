@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { ApiFactory } from "../../../api";
 import { User, UserCredentialsUpdate } from "../../../entities/user";
-import { useAsync } from "../../../shared/hooks/useAsync";
+import { useAsyncAction } from "../../../shared/hooks/useAsync";
 
 export function useUserProfile() {
   const [profile, setProfile] = useState<User | null>(null);
@@ -10,7 +10,7 @@ export function useUserProfile() {
     run,
     loading,
     error,
-  } = useAsync();
+  } = useAsyncAction();
 
   const fetchProfile = useCallback(async () => {
     return run(async () => {
@@ -22,9 +22,9 @@ export function useUserProfile() {
 
   const updateAvatar = useCallback(
     async (file: File) => {
-      if (!profile?.id) return;
-
       await run(async () => {
+        if (!profile?.id) throw new Error('Профиль не загружен');
+
         const userService = ApiFactory.createUserService();
 
         const formData = new FormData();
@@ -41,9 +41,10 @@ export function useUserProfile() {
 
   const updateUserCredentials = useCallback(
     async (payload: UserCredentialsUpdate) => {
-      if (!profile?.id || Object.keys(payload).length === 0) return;
-
       await run(async () => {
+        if (!profile?.id) throw new Error('Профиль не загружен');
+        if (Object.keys(payload).length === 0) return;
+
         const userService = ApiFactory.createUserService();
 
         const data = await userService.updateCredentials(profile.id, payload);
@@ -57,14 +58,14 @@ export function useUserProfile() {
 
   const deleteProfile = useCallback(
     async () => {
-      if (!profile?.id) return;
-
       await run(async () => {
+        if (!profile?.id) throw new Error('Профиль не загружен');
+
         const userService = ApiFactory.createUserService();
         await userService.delete(profile.id);
         setProfile(null);
       },
-      { withLoading: false },      
+      { withLoading: false },
       );
     },
     [profile?.id, run]

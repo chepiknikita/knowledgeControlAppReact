@@ -11,7 +11,7 @@ import { Box } from "@mui/system";
 type Props = {
   question: Question;
   number: number;
-  onEdit: () => void;
+  onEdit: (question: Question) => void;
 };
 
 export function QuestionItem({ question, number, onEdit }: Props) {
@@ -27,7 +27,7 @@ export function QuestionItem({ question, number, onEdit }: Props) {
             readOnly: true,
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton size="large" disableRipple onClick={onEdit}>
+                <IconButton size="large" disableRipple onClick={() => onEdit(question)}>
                   <CreateIcon fontSize="inherit" />
                 </IconButton>
               </InputAdornment>

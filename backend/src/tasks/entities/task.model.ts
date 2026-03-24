@@ -20,7 +20,7 @@ interface TaskCreationAttrs {
 
 @Table({ tableName: 'tasks' })
 export class Task extends Model<Task, TaskCreationAttrs> {
-  @ApiProperty({ example: '1', description: 'Indentificator' })
+  @ApiProperty({ example: '1', description: 'Identifier' })
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -30,7 +30,7 @@ export class Task extends Model<Task, TaskCreationAttrs> {
   id: number;
 
   @ApiProperty({ example: 'Имя задания', description: 'Name task' })
-  @Column({ type: DataType.STRING, unique: true, allowNull: false })
+  @Column({ type: DataType.STRING, allowNull: false })
   name: string;
 
   @ApiProperty({ example: 'Описание задания', description: 'description task' })

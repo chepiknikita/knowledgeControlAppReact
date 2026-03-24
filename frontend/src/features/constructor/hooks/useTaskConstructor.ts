@@ -3,7 +3,7 @@ import { useAuth } from "../../auth/context/AuthContext";
 import { ITask, Task } from "../../../entities/task";
 import { Question } from "../../../entities/question";
 import { ApiFactory } from "../../../api";
-import { useAsync } from "../../../shared/hooks/useAsync";
+import { useAsyncAction } from "../../../shared/hooks/useAsync";
 
 export enum ConstructorStep {
   Description,
@@ -14,7 +14,8 @@ export enum ConstructorStep {
 type TaskAction =
   | { type: "INIT"; payload: Partial<ITask> }
   | { type: "SET_FIELD"; field: keyof Task; value: Task[keyof Task] }
-  | { type: "ADD_QUESTION"; question: Question };
+  | { type: "ADD_QUESTION"; question: Question }
+  | { type: "EDIT_QUESTION"; question: Question };
 
 function taskReducer(state: Task, action: TaskAction): Task {
   switch (action.type) {
@@ -28,6 +29,14 @@ function taskReducer(state: Task, action: TaskAction): Task {
       return new Task({
         ...state,
         questions: [...state.questions, action.question],
+      });
+
+    case "EDIT_QUESTION":
+      return new Task({
+        ...state,
+        questions: state.questions.map((q) =>
+          q.id === action.question.id ? action.question : q
+        ),
       });
 
     default:
@@ -50,7 +59,7 @@ export function useTaskConstructor(initialData?: Partial<ITask>) {
     run,
     loading,
     error,
-  } = useAsync();
+  } = useAsyncAction();
 
   useEffect(() => {
     if (initialData) {
@@ -68,7 +77,7 @@ export function useTaskConstructor(initialData?: Partial<ITask>) {
   const canGoNext = useMemo(() => {
     switch (step) {
       case ConstructorStep.Description:
-        return Boolean(task.name && task.description);
+        return Boolean(task.name.trim() && task.description.trim());
 
       case ConstructorStep.Questions:
         return task.questions.length > 0;
@@ -96,6 +105,12 @@ export function useTaskConstructor(initialData?: Partial<ITask>) {
     []
   );
 
+  const editQuestion = useCallback(
+    (question: Question) =>
+      dispatch({ type: "EDIT_QUESTION", question }),
+    []
+  );
+
   const saveTask = useCallback(async () => {
     await run(async () => {
       task.id
@@ -118,6 +133,7 @@ export function useTaskConstructor(initialData?: Partial<ITask>) {
       prevStep,
       setField,
       addQuestion,
+      editQuestion,
       saveTask,
     },
   };

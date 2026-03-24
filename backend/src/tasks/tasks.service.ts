@@ -30,35 +30,39 @@ export class TasksService extends BaseService<Task> {
   async create(dto: CreateTaskDto, image?: Express.Multer.File): Promise<Task> {
     const imageName = image ? await this.fileService.createFile(image) : null;
 
-    return this.withTransaction(async (transaction) => {
-      const task = await this.taskRepository.create(
-        {
-          name: dto.name,
-          description: dto.description,
-          image: imageName,
-          userId: dto.userId,
-        },
-        { transaction },
-      );
+    try {
+      return await this.withTransaction(async (transaction) => {
+        const task = await this.taskRepository.create(
+          {
+            name: dto.name,
+            description: dto.description,
+            image: imageName,
+            userId: dto.userId,
+          },
+          { transaction },
+        );
 
-      if (dto.questions?.length) {
-        await this.questionsService.createForTask(task.id, dto.questions, transaction);
+        if (dto.questions?.length) {
+          await this.questionsService.createForTask(task.id, dto.questions, transaction);
+        }
+
+        return this.findTaskWithRelations(task.id);
+      });
+    } catch (error) {
+      if (imageName) {
+        await this.fileService.deleteFile(imageName).catch(() => {});
       }
-
-      return this.findTaskWithRelations(task.id);
-    });
+      throw error;
+    }
   }
 
-  async edit(id: number, dto: CreateTaskDto, image?: Express.Multer.File): Promise<Task> {
+  async update(id: number, dto: CreateTaskDto, image?: Express.Multer.File): Promise<Task> {
     const task = await this.findByIdOrFail(id);
+    const oldImageName = task.image;
 
     let newImageName: string | null = null;
     if (image) {
       newImageName = await this.fileService.createFile(image);
-
-      if (task.image) {
-        await this.fileService.deleteFile(task.image);
-      }
     }
 
     const updateData: Partial<Task> = {
@@ -68,13 +72,24 @@ export class TasksService extends BaseService<Task> {
       ...(newImageName ? { image: newImageName } : {}),
     };
 
-    await this.withTransaction(async (transaction) => {
-      await task.update(updateData, { transaction });
+    try {
+      await this.withTransaction(async (transaction) => {
+        await task.update(updateData, { transaction });
 
-      if (dto.questions?.length) {
-        await this.questionsService.syncForTask(task, dto.questions, transaction);
+        if (dto.questions?.length) {
+          await this.questionsService.syncForTask(task, dto.questions, transaction);
+        }
+      });
+    } catch (error) {
+      if (newImageName) {
+        await this.fileService.deleteFile(newImageName).catch(() => {});
       }
-    });
+      throw error;
+    }
+
+    if (newImageName && oldImageName) {
+      await this.fileService.deleteFile(oldImageName).catch(() => {});
+    }
 
     return this.findTaskWithRelations(id);
   }

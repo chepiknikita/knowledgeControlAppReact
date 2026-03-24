@@ -18,7 +18,7 @@ interface QuestionCreationAttrs {
 
 @Table({ tableName: 'questions' })
 export class Question extends Model<Question, QuestionCreationAttrs> {
-  @ApiProperty({ example: '1', description: 'Indentificator' })
+  @ApiProperty({ example: '1', description: 'Identifier' })
   @Column({
     type: DataType.INTEGER,
     unique: true,

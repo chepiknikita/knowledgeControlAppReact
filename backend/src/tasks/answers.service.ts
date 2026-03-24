@@ -16,8 +16,9 @@ export class AnswersService {
     question: Question,
     dtoAnswers: CreateAnswerDto[],
     transaction: Transaction,
+    preloadedAnswers?: Answer[],
   ): Promise<void> {
-    const existing = await question.$get('answers', { transaction });
+    const existing = preloadedAnswers ?? await question.$get('answers', { transaction });
     const dtoIds = dtoAnswers
       .map(a => (a.id ? Number(a.id) : null))
       .filter(a => a !== null) as number[];

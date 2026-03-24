@@ -3,18 +3,18 @@ import React, { useCallback } from "react";
 import QuestionCreateButton from "./QuestionCreateButton";
 import { Question } from "../../../../entities/question";
 import { useQuestionEditing } from "../../hooks/useQuestionEditing";
-import { QuestionsList } from "./QuestionList";
+import { QuestionList } from "./QuestionList";
 import { EditQuestionDialog } from "./QuestionEditDialog";
 
 interface Props {
   questions: Question[];
-  onCreateQuestion: (question: Question) => void;
+  onAddQuestion: (question: Question) => void;
   onEditQuestion: (question: Question) => void;
 }
 
 export default function QuestionsManager({
   questions,
-  onCreateQuestion,
+  onAddQuestion,
   onEditQuestion,
 }: Props) {
   const { editingQuestion, openEdit, closeEdit } = useQuestionEditing();
@@ -35,10 +35,10 @@ export default function QuestionsManager({
     >
       <QuestionCreateButton
         header="Создание вопроса"
-        onSaveQuestion={onCreateQuestion}
+        onSaveQuestion={onAddQuestion}
       />
 
-      <QuestionsList
+      <QuestionList
         questions={questions}
         onEdit={openEdit}
       />

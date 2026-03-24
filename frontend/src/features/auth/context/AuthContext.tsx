@@ -8,6 +8,7 @@ import {
 } from "react";
 import { ApiFactory } from "../../../api";
 import { Auth, UserResponse } from "../../../api/interfaces/auth";
+import { getErrorMessage } from "../../../shared/utils/getErrorMessage";
 
 interface AuthContextType {
   user: UserResponse | null;
@@ -33,9 +34,10 @@ interface JwtPayload {
   login: string;
   avatar: string;
   roles: string[];
+  exp: number;
 }
 
-function parseJwt(token: string): JwtPayload {
+function parseJwt(token: string): JwtPayload | null {
   try {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -45,23 +47,14 @@ function parseJwt(token: string): JwtPayload {
         .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
         .join('')
     );
-    return JSON.parse(jsonPayload) as JwtPayload;
+    const payload = JSON.parse(jsonPayload) as JwtPayload;
+    if (payload.exp && Date.now() / 1000 > payload.exp) {
+      return null;
+    }
+    return payload;
   } catch {
-    throw new Error('Невозможно декодировать токен');
+    return null;
   }
-}
-
-function extractErrorMessage(error: unknown, fallback: string): string {
-  if (
-    error !== null &&
-    typeof error === "object" &&
-    "response" in error
-  ) {
-    const response = (error as { response?: { data?: { message?: string } } })
-      .response;
-    if (response?.data?.message) return response.data.message;
-  }
-  return fallback;
 }
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
@@ -78,16 +71,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       const token = localStorage.getItem("accessToken");
 
       if (token) {
-        try {
-          const payload = parseJwt(token);
+        const payload = parseJwt(token);
+        if (payload) {
           setUser({
             id: payload.id,
             login: payload.login,
             avatar: payload.avatar,
             roles: payload.roles || [],
           });
-        } catch (error) {
-          console.error("Ошибка декодирования токена:", error);
+        } else {
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
         }
@@ -103,18 +95,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     try {
       const response = await authService.login(payload);
       const data = parseJwt(response.accessToken);
+      if (!data) throw new Error("Ошибка авторизации");
       setUser({
         id: data.id,
         login: data.login,
         avatar: data.avatar,
         roles: data.roles || [],
       });
-
       return { success: true };
     } catch (error) {
       return {
         success: false,
-        error: extractErrorMessage(error, "Ошибка авторизации"),
+        error: getErrorMessage(error),
       };
     }
   };
@@ -123,18 +115,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     try {
       const response = await authService.signUp(payload);
       const data = parseJwt(response.accessToken);
+      if (!data) throw new Error("Ошибка регистрации");
       setUser({
         id: data.id,
         login: data.login,
         avatar: data.avatar,
         roles: data.roles || [],
       });
-
       return { success: true };
     } catch (error) {
       return {
         success: false,
-        error: extractErrorMessage(error, "Ошибка регистрации"),
+        error: getErrorMessage(error),
       };
     }
   };

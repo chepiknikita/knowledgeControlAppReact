@@ -14,7 +14,8 @@ export class CreateTaskDto {
   readonly description: string;
 
   @IsInt()
-  readonly userId: number;
+  @IsOptional()
+  userId: number;
 
   @IsArray()
   @ValidateNested({ each: true })

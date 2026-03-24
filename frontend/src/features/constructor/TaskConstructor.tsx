@@ -52,11 +52,10 @@ export default function TaskConstructor({ initialData }: Props) {
         />
         {step === steps.length ? (
           <ConstructorFinish
-            disabled={step === 0}
             loading={loading}
             error={error}
             onSave={actions.saveTask}
-            handleBack={actions.prevStep}
+            onBack={actions.prevStep}
           />
         ) : (
           <Box sx={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
@@ -81,7 +80,7 @@ export default function TaskConstructor({ initialData }: Props) {
                 <ConstructorQuestions
                   questions={task.questions}
                   onAddQuestion={actions.addQuestion}
-                  onEditQuestion={actions.addQuestion}
+                  onEditQuestion={actions.editQuestion}
                 />
               )}
 
