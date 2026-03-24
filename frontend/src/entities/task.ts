@@ -1,6 +1,7 @@
-import { Author as ApiAuthor } from "../api/interfaces/tasks";
+import { Author as ApiAuthor, TaskResponse } from "../api/interfaces/tasks";
 import urlService from "../api/serverUrl/urlService";
 import { Question } from "./question";
+import { QuestionResponse } from "../api/interfaces/questions";
 
 export interface Author extends ApiAuthor {
   imageUrl?: string;
@@ -60,7 +61,7 @@ export class Task implements ITask {
           : "" 
       },
       createdAt: data.createdAt,
-      questions: data.questions?.map((v) => Question.fromApi(v)),
+      questions: data.questions?.map((v: QuestionResponse) => Question.fromApi(v)),
     });
   }
 
