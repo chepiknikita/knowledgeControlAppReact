@@ -56,7 +56,7 @@ export class User extends Model<User, UserCreationAttrs> {
       login: this.login,
       avatar: this.avatar,
       roles: this.roles,
-      tasksCount: Number((this as any).getDataValue('tasksCount')),
+      tasksCount: Number(this.tasksCount),
     };
   }
 }

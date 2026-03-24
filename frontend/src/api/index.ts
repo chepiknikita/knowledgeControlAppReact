@@ -26,7 +26,7 @@ export class ApiFactory {
     this.initialize();
     if (!this.authServiceInstance) {
       this.authServiceInstance = new AuthService(
-        new AuthRepository(new AuthEndpoint(this.apiInstance.api))
+        new AuthRepository(new AuthEndpoint(this.apiInstance.instance))
       );
     }
     return this.authServiceInstance;
@@ -36,7 +36,7 @@ export class ApiFactory {
     this.initialize();
     if (!this.taskServiceInstance) {
       this.taskServiceInstance = new TaskService(
-        new TaskRepository(new TaskEndpoint(this.apiInstance.api))
+        new TaskRepository(new TaskEndpoint(this.apiInstance.instance))
       );
     }
     return this.taskServiceInstance;
@@ -46,7 +46,7 @@ export class ApiFactory {
     this.initialize();
     if (!this.userServiceInstance) {
       this.userServiceInstance = new UserService(
-        new UserRepository(new UserEndpoint(this.apiInstance.api))
+        new UserRepository(new UserEndpoint(this.apiInstance.instance))
       );
     }
     return this.userServiceInstance;

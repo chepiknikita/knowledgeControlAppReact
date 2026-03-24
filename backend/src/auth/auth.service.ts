@@ -2,6 +2,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -50,22 +51,18 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Неверный логин или пароль');
     }
-    const passwdEquals = await bcrypt.compare(userDto.password, user.password);
-    if (!passwdEquals) {
+    const isPasswordValid = await bcrypt.compare(userDto.password, user.password);
+    if (!isPasswordValid) {
       throw new UnauthorizedException('Неверный логин или пароль');
     }
     return user;
   }
 
   async login(userDto: CreateUserDto) {
-    try {
-      const user = await this.validateUser(userDto);
-      const tokens = this.generateTokens(user);
-      await this.userService.updateRefreshToken(user.id, tokens.refreshToken);
-      return tokens;
-    } catch (error) {
-      throw error;
-    }
+    const user = await this.validateUser(userDto);
+    const tokens = this.generateTokens(user);
+    await this.userService.updateRefreshToken(user.id, tokens.refreshToken);
+    return tokens;
   }
 
   async signUp(userDto: CreateUserDto) {
@@ -77,10 +74,10 @@ export class AuthService {
       );
     }
 
-    const hashPasswd = await bcrypt.hash(userDto.password, 10);
+    const hashedPassword = await bcrypt.hash(userDto.password, 10);
     const user = await this.userService.createUser({
       login: userDto.login,
-      password: hashPasswd,
+      password: hashedPassword,
     });
 
     const tokens = this.generateTokens(user);
@@ -119,7 +116,14 @@ export class AuthService {
 
       return tokens;
     } catch (error) {
-      throw new UnauthorizedException('Недействительный токен');
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      const isJwtError = error?.name === 'JsonWebTokenError' || error?.name === 'TokenExpiredError';
+      if (isJwtError) {
+        throw new UnauthorizedException('Недействительный токен');
+      }
+      throw new InternalServerErrorException();
     }
   }
 

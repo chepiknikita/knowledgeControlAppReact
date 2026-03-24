@@ -15,7 +15,9 @@ export default function ButtonUploadFile({ children,  uploadFile, uploadImageBas
       uploadFile(file);
       const reader = new FileReader();
       reader.onload = () => {
-        uploadImageBase64(reader.result as string);
+        if (typeof reader.result === "string") {
+          uploadImageBase64(reader.result);
+        }
       };
       reader.readAsDataURL(file);
     }

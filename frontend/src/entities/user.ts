@@ -2,9 +2,9 @@ import { UserResponse } from "../api/interfaces/auth";
 import urlService from "../api/serverUrl/urlService";
 
 export interface IUser {
-  id: number;
+  id?: number;
   login: string;
-  avatarBase64?: string;
+  avatarUrl?: string;
   roles: string[];
   password?: string | null;
   tasksCount?: number;
@@ -17,16 +17,16 @@ export interface UserCredentialsUpdate {
 }
 
 export class User implements IUser {
-  id: number;
+  id?: number;
   login: string;
-  avatarBase64: string;
+  avatarUrl: string;
   roles: string[];
   tasksCount?: number;
 
   constructor(data: Partial<IUser>) {
-    this.id = data.id ?? 0;
+    this.id = data.id;
     this.login = data.login ?? "";
-    this.avatarBase64 = data.avatarBase64 ?? "";
+    this.avatarUrl = data.avatarUrl ?? "";
     this.roles = data.roles ?? [];
     this.tasksCount = data.tasksCount ?? 0;
   }
@@ -35,7 +35,7 @@ export class User implements IUser {
     return new User({
       id: data.id,
       login: data.login,
-      avatarBase64: data.avatar ? urlService.getImageUrl(data.avatar) : '',
+      avatarUrl: data.avatar ? urlService.getImageUrl(data.avatar) : '',
       roles: data.roles,
       tasksCount: data.tasksCount,
     });

@@ -1,5 +1,5 @@
 import { QuestionResponse } from "../api/interfaces/questions";
-import { Answer } from "./answer";
+import { Answer, IAnswer } from "./answer";
 import { v4 as uuidv4 } from 'uuid';
 
 export interface IQuestion {
@@ -34,18 +34,10 @@ export class Question implements IQuestion {
     });
   }
 
-  public toApi(): Partial<IQuestion> {
+  public toApi(): { question: string; answers: Partial<IAnswer>[] } {
     return {
       question: this.question,
-      answers: this.answers.map((a) => a.toApi()) as Answer[],
-    };
-  }
-
-  public toResponse() {
-    return {
-      id: this.id ?? uuidv4(),
-      question: this.question,
-      answers: this.answers.map((a) => a.toResponse()),
+      answers: this.answers.map((a) => a.toApi()),
     };
   }
 

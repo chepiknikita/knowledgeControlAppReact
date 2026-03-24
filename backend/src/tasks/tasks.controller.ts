@@ -45,10 +45,12 @@ export class TasksController {
     FileInterceptor('image', createFileInterceptorOptions('IMAGE')),
   )
   async create(
+    @Req() req: { user: { id: number } },
     @Body() body: { data: string },
     @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) image: Express.Multer.File,
   ) {
     const taskDto = parseMultipartJson(body.data);
+    taskDto.userId = req.user.id;
     return await this.tasksService.create(taskDto, image);
   }
 
@@ -59,12 +61,14 @@ export class TasksController {
     FileInterceptor('image', createFileInterceptorOptions('IMAGE')),
   )
   async edit(
+    @Req() req: { user: { id: number } },
     @Param('id', ParseIntPipe) id: number,
     @Body() body: { data: string },
     @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) image: Express.Multer.File,
   ) {
     const taskDto = parseMultipartJson(body.data);
-    return await this.tasksService.edit(id, taskDto, image);
+    taskDto.userId = req.user.id;
+    return await this.tasksService.update(id, taskDto, image);
   }
 
   @UseGuards(JwtAuthGuard)

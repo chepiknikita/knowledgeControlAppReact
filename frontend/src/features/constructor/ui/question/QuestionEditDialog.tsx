@@ -16,7 +16,7 @@ export function EditQuestionDialog({ question, onSave, onClose }: Props) {
       header="Редактирование вопроса"
       initialData={question}
       onSave={onSave}
-      handleClose={onClose}
+      onClose={onClose}
     />
   );
 }

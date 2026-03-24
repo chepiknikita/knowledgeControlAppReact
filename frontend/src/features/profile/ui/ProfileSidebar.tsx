@@ -57,7 +57,7 @@ export const ProfileSidebar = memo(
     return (
       <Box sx={{ width: 256, mr: 5, flexShrink: 0 }}>
         <AvatarUploader
-          src={profile?.avatarBase64}
+          src={profile?.avatarUrl}
           onChange={(file) => openDialog("updateAvatar", file)}
         />
 

@@ -11,8 +11,8 @@ export default class TaskRepository extends BaseRepository<TaskResponse> {
     this.api = api;
   }
 
-  async getById(id: number): Promise<AxiosResponse<TaskResponse>> {
-    return this.api.getById<TaskResponse>(id);
+  async getById(id: number, signal?: AbortSignal): Promise<AxiosResponse<TaskResponse>> {
+    return this.api.getById<TaskResponse>(id, signal);
   }
 
   async create(payload: FormData): Promise<AxiosResponse<TaskResponse>> {

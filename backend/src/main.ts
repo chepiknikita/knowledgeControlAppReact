@@ -3,15 +3,17 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { json, urlencoded } from 'express';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
+
+const logger = new Logger('Bootstrap');
 
 async function bootstrap() {
   try {
     const PORT = process.env.PORT || 8082;
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-    app.use(json({ limit: '50mb' }));
-    app.use(urlencoded({ extended: true, limit: '50mb' }));
+    app.use(json({ limit: '10mb' }));
+    app.use(urlencoded({ extended: true, limit: '10mb' }));
 
     app.useGlobalPipes(
       new ValidationPipe({ transform: true, whitelist: true }),
@@ -32,9 +34,9 @@ async function bootstrap() {
 
     const documentFactory = () => SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('/api/docs', app, documentFactory);
-    await app.listen(PORT, () => console.log(`server started on port ${PORT}`));
+    await app.listen(PORT, () => logger.log(`Server started on port ${PORT}`));
   } catch (error) {
-    console.error(error);
+    logger.error('Failed to start server', error);
   }
 }
 bootstrap();

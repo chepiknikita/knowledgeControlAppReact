@@ -7,7 +7,7 @@ type Props = {
   onEdit: (question: Question) => void;
 };
 
-export function QuestionsList({ questions, onEdit }: Props) {
+export function QuestionList({ questions, onEdit }: Props) {
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       {questions.map((question, index) => (
@@ -15,7 +15,7 @@ export function QuestionsList({ questions, onEdit }: Props) {
           key={question.id}
           question={question}
           number={index + 1}
-          onEdit={() => onEdit(question)}
+          onEdit={onEdit}
         />
       ))}
     </Box>

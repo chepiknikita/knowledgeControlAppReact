@@ -24,7 +24,7 @@ export default function ConstructorQuestions({
       />
       <QuestionsManager
         questions={questions}
-        onCreateQuestion={onAddQuestion}
+        onAddQuestion={onAddQuestion}
         onEditQuestion={onEditQuestion}
       />
     </Box>

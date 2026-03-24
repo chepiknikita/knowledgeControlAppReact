@@ -5,7 +5,7 @@ type AsyncOptions = {
   withLoading?: boolean;
 };
 
-export function useAsync() {
+export function useAsyncAction() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

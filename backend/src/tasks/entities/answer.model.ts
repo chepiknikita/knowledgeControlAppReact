@@ -17,7 +17,7 @@ interface AnswerCreation {
 
 @Table({ tableName: 'answers' })
 export class Answer extends Model<Answer, AnswerCreation> {
-  @ApiProperty({ example: '1', description: 'Indentificator' })
+  @ApiProperty({ example: '1', description: 'Identifier' })
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -26,7 +26,7 @@ export class Answer extends Model<Answer, AnswerCreation> {
   })
   id: number;
 
-  @ApiProperty({ example: 'Текс ответа', description: 'Answer text' })
+  @ApiProperty({ example: 'Текст ответа', description: 'Answer text' })
   @Column({ type: DataType.STRING, allowNull: false })
   text: string;
 

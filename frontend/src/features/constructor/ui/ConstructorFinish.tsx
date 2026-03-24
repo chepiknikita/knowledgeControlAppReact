@@ -5,18 +5,17 @@ import ConstructorActions from "./ConstructorActions";
 import { ErrorAlert } from "../../../components/UI/alerts/ErrorAlert";
 
 interface Props {
-  disabled: boolean;
   loading: boolean;
-  error: string | null
+  error: string | null;
   onSave: () => void;
-  handleBack: () => void;
+  onBack: () => void;
 }
+
 export default function ConstructorFinish({
-  disabled,
   loading,
   error,
   onSave,
-  handleBack,
+  onBack,
 }: Props) {
   return (
     <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -38,9 +37,9 @@ export default function ConstructorFinish({
 
       <ConstructorActions
         textApplyBtn={loading ? "Сохранение..." : "Сохранить"}
-        disabledPrev={disabled || loading}
+        disabledPrev={loading}
         disabledNext={loading}
-        onBack={handleBack}
+        onBack={onBack}
         onNext={onSave}
       />
     </Box>

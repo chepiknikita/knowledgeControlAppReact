@@ -33,7 +33,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @ApiOperation({ summary: 'Update user avatar' })
-  @ApiResponse({ status: 200, type: [User] })
+  @ApiResponse({ status: 200, type: User })
   @UseGuards(JwtAuthGuard, SelfOnlyGuard)
   @HttpCode(HttpStatus.OK)
   @Put(':id/avatar')
@@ -55,7 +55,7 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Update user credentials' })
-  @ApiResponse({ status: 200, type: [User] })
+  @ApiResponse({ status: 200, type: User })
   @UseGuards(JwtAuthGuard, SelfOnlyGuard)
   @HttpCode(HttpStatus.OK)
   @Put(':id/credentials')

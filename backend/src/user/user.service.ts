@@ -36,7 +36,7 @@ export class UserService {
   async getUserByLogin(login: string) {
     return await this.userRepository.findOne({
       where: { login },
-      include: { all: true },
+      include: [{ model: Role }],
     });
   }
 

@@ -21,8 +21,8 @@ type FormErrors = Partial<Record<keyof ProfileCredentialsForm, string>>;
 function validateProfileCredentials(data: ProfileCredentialsForm): FormErrors {
   const errors: FormErrors = {};
 
-  if (data.login && data.login.length < 3) {
-    errors.login = "Логин должен быть не короче 3 символов";
+  if (data.login && data.login.length < 5) {
+    errors.login = "Логин должен быть не короче 5 символов";
   }
 
   if (data.newPassword || data.repeatPassword) {
@@ -30,8 +30,10 @@ function validateProfileCredentials(data: ProfileCredentialsForm): FormErrors {
       errors.currentPassword = "Введите текущий пароль";
     }
 
-    if (data.newPassword.length < 6) {
-      errors.newPassword = "Пароль должен быть не короче 6 символов";
+    if (!data.newPassword) {
+      errors.newPassword = "Введите новый пароль";
+    } else if (data.newPassword.length < 8) {
+      errors.newPassword = "Пароль должен быть не короче 8 символов";
     }
 
     if (data.newPassword !== data.repeatPassword) {

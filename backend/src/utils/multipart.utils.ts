@@ -5,7 +5,7 @@ export function parseMultipartJson<T = any>(
   errorMessage: string = 'Неверный формат данных',
 ): T {
   if (!data) {
-    return null;
+    throw new BadRequestException(errorMessage);
   }
 
   try {

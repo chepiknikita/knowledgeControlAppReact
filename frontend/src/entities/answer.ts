@@ -41,14 +41,6 @@ export class Answer implements IAnswer {
     };
   }
 
-  public toResponse() {
-    return {
-      id: this.id ?? uuidv4(),
-      text: this.text,
-      isCorrect: this.isCorrect,
-    };
-  }
-
   public validate(): { isValid: boolean; errors: Record<string, string> } {
     const errors: Record<string, string> = {};
 

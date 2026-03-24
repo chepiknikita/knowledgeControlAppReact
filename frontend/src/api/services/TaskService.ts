@@ -5,8 +5,8 @@ import TaskRepository from "../repositories/TaskRepository";
 export class TaskService {
   constructor(private repository: TaskRepository) {}
 
-  async getById(id: number): Promise<TaskResponse> {
-    return (await this.repository.getById(id)).data;
+  async getById(id: number, signal?: AbortSignal): Promise<TaskResponse> {
+    return (await this.repository.getById(id, signal)).data;
   }
 
   async create(payload: FormData): Promise<TaskResponse> {

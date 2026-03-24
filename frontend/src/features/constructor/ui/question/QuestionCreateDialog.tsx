@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { Question } from "../../../../entities/question";
 import { useQuestionState } from "../../hooks/useQuestionState";
@@ -11,7 +11,7 @@ interface Props {
   header: string;
   initialData?: Question;
   onSave: (question: Question) => void;
-  handleClose: () => void;
+  onClose: () => void;
 }
 
 export default function QuestionCreateDialog({
@@ -19,7 +19,7 @@ export default function QuestionCreateDialog({
   header,
   initialData,
   onSave,
-  handleClose,
+  onClose,
 }: Props) {
   const {
     question,
@@ -31,13 +31,13 @@ export default function QuestionCreateDialog({
     addAnswer,
   } = useQuestionState(initialData, openDialog);
 
-  const save = () => {
+  const save = useCallback(() => {
     onSave(new Question(question));
-    handleClose();
-  };
+    onClose();
+  }, [question, onSave, onClose]);
 
   return (
-    <Dialog open={openDialog} fullWidth maxWidth="sm" onClose={handleClose}>
+    <Dialog open={openDialog} fullWidth maxWidth="sm" onClose={onClose}>
       <DialogTitle component="div" variant="body1">
         {header}
       </DialogTitle>
@@ -45,7 +45,9 @@ export default function QuestionCreateDialog({
       <DialogContent
         dividers
         sx={{
-          height: 400,
+          minHeight: 300,
+          maxHeight: "70vh",
+          overflowY: "auto",
         }}
       >
         <QuestionEdit
@@ -65,7 +67,7 @@ export default function QuestionCreateDialog({
       <QuestionActions
         isValid={isValid}
         onSave={save}
-        onCancel={handleClose}
+        onCancel={onClose}
       />
     </Dialog>
   );

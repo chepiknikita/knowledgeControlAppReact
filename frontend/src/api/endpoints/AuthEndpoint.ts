@@ -13,7 +13,7 @@ export default class AuthEndpoint {
   }
 
   async signUp(payload: Auth): Promise<AxiosResponse<AuthTokens>> {
-    return this.api.post("auth/sign-up/", payload);
+    return this.api.post("auth/sign-up", payload);
   }
 
   async logout(): Promise<AxiosResponse<void>> {

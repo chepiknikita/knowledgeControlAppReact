@@ -1,10 +1,12 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as fsp from 'fs/promises';
 import * as uuid from 'uuid';
 
 @Injectable()
 export class FileService {
+  private readonly logger = new Logger(FileService.name);
   private readonly staticPath: string;
 
   constructor() {
@@ -15,14 +17,21 @@ export class FileService {
   }
 
   async createFile(file: Express.Multer.File): Promise<string> {
-    try {
-      const extension = file.mimetype.split('/')[1];
-      const fileName = `${uuid.v4()}.${extension}`;
-      const filePath = path.join(this.staticPath, fileName);
+    const extension = file.mimetype.split('/').pop();
+    if (!extension) {
+      throw new HttpException(
+        'Неверный тип файла',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
-      fs.writeFileSync(filePath, file.buffer);
+    const fileName = `${uuid.v4()}.${extension}`;
+    const filePath = path.join(this.staticPath, fileName);
+
+    try {
+      await fsp.writeFile(filePath, file.buffer);
       return `static/${fileName}`;
-    } catch (e) {
+    } catch {
       throw new HttpException(
         'Произошла ошибка при обработке файла',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -31,25 +40,23 @@ export class FileService {
   }
 
   async deleteFile(filePath: string): Promise<boolean> {
+    const fileName = path.basename(filePath.replace(/^static\//, ''));
+    const fullPath = path.resolve(this.staticPath, fileName);
+
+    if (!fullPath.startsWith(this.staticPath)) {
+      this.logger.warn(`Отклонён небезопасный путь: ${filePath}`);
+      return false;
+    }
+
     try {
-      const fileName = path.basename(filePath.replace(/^static\//, ''));
-      const fullPath = path.resolve(this.staticPath, fileName);
-
-      if (!fullPath.startsWith(this.staticPath)) {
-        console.warn(`Отклонён небезопасный путь: ${filePath}`);
-        return false;
-      }
-      
-      if (!fs.existsSync(fullPath)) {
-        console.warn(`Файл не найден: ${fullPath}`);
-        return false;
-      }
-
-      fs.unlinkSync(fullPath);
+      await fsp.unlink(fullPath);
       return true;
-      
-    } catch (error) {
-      console.error(`Ошибка при удалении файла ${filePath}:`, error);
+    } catch (error: any) {
+      if (error.code === 'ENOENT') {
+        this.logger.warn(`Файл не найден: ${fullPath}`);
+        return false;
+      }
+      this.logger.error(`Ошибка при удалении файла ${filePath}`, error);
       return false;
     }
   }

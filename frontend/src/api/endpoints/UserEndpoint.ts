@@ -17,7 +17,7 @@ export default class UserEndpoint {
   }
 
   async updateCredentials<T>(id: number, payload: UserCredentialsUpdate): Promise<AxiosResponse<T>> {
-    return this.api.post(`user/${id}/credentials`, payload);
+    return this.api.put(`user/${id}/credentials`, payload);
   }
 
   async delete<T>(id: number): Promise<AxiosResponse<T>> {

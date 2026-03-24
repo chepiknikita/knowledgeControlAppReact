@@ -1,6 +1,7 @@
 import { Author as ApiAuthor, TaskResponse } from "../api/interfaces/tasks";
 import urlService from "../api/serverUrl/urlService";
 import { Question } from "./question";
+import { QuestionResponse } from "../api/interfaces/questions";
 
 export interface Author extends ApiAuthor {
   imageUrl?: string;
@@ -60,7 +61,7 @@ export class Task implements ITask {
           : "" 
       },
       createdAt: data.createdAt,
-      questions: data.questions?.map((v) => Question.fromApi(v)),
+      questions: data.questions?.map((v: QuestionResponse) => Question.fromApi(v)),
     });
   }
 
@@ -80,18 +81,6 @@ export class Task implements ITask {
     }
     formData.append("data", JSON.stringify(this.toApi()));
     return formData;
-  }
-
-  public toResponse(): TaskResponse {
-    return {
-      id: this.id ?? 0,
-      name: this.name,
-      description: this.description,
-      image: this.imageUrl,
-      user: this.user,
-      createdAt: this.createdAt ?? new Date().toISOString(),
-      questions: this.questions.map((q) => q.toResponse()),
-    };
   }
 
   public validate(): { isValid: boolean; errors: Record<string, string> } {
