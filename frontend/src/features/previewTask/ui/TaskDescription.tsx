@@ -25,7 +25,8 @@ export function TaskDescription({ description }: Props) {
         sx={{
           overflow: "hidden",
           textOverflow: "ellipsis",
-          whiteSpace: "nowrap"
+          whiteSpace: "nowrap",
+          color: "#FFFFFF",
         }}
       >
         {description}

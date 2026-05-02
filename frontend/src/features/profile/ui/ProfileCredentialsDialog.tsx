@@ -144,9 +144,10 @@ export const ProfileCredentialsDialog = ({
         Редактирование данных пользователя
       </DialogTitle>
 
-      <DialogContent dividers sx={{ display: "grid", gap: 2 }}>
+      <DialogContent dividers sx={{ display: "grid", gap: 2, minWidth: 360 }}>
         <TextField
-          placeholder="Новый логин"
+          label="Новый логин"
+          placeholder="Введите новый логин"
           value={form.login}
           error={!!validationErrors.login}
           helperText={validationErrors.login}
@@ -157,7 +158,8 @@ export const ProfileCredentialsDialog = ({
         />
 
         <TextField
-          placeholder="Текущий пароль"
+          label="Текущий пароль"
+          placeholder="Введите текущий пароль"
           type="password"
           value={form.currentPassword}
           error={!!validationErrors.currentPassword}
@@ -169,7 +171,8 @@ export const ProfileCredentialsDialog = ({
         />
 
         <TextField
-          placeholder="Новый пароль"
+          label="Новый пароль"
+          placeholder="Не менее 8 символов"
           type="password"
           value={form.newPassword}
           error={!!validationErrors.newPassword}
@@ -181,6 +184,7 @@ export const ProfileCredentialsDialog = ({
         />
 
         <TextField
+          label="Повторите новый пароль"
           placeholder="Повторите новый пароль"
           type="password"
           value={form.repeatPassword}
@@ -195,8 +199,8 @@ export const ProfileCredentialsDialog = ({
 
       <DialogActions>
         <Button
-          variant="outlined"
-          sx={{ textTransform: "none" }}
+          variant="contained"
+          color="primary"
           onClick={handleSubmit}
           disabled={isSaveDisabled}
         >
@@ -205,7 +209,7 @@ export const ProfileCredentialsDialog = ({
 
         <Button
           variant="outlined"
-          sx={{ textTransform: "none" }}
+          color="primary"
           onClick={onClose}
           disabled={loading}
         >

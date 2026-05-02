@@ -1,37 +1,62 @@
-import { Box } from "@mui/system";
+import { Box, Button, Typography } from "@mui/material";
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import React from "react";
-import DykTypography from "../../../components/UI/typography/DykTypography";
-import { Button } from "@mui/material";
 
 interface Props {
   title: string;
   onHome: () => void;
 }
 
-export default function ConstructorResult({ title, onHome}: Props) {
+export default function ConstructorResult({ title, onHome }: Props) {
   return (
-    <Box>
-      <DykTypography
-        text={title}
-        variant="body1"
-        align="center"
-        sx={{ my: 2 }}
-      />
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Button
-          variant="text"
-          aria-label="go-home"
-          sx={{
-            mx: 1,
-            color: "white",
-            textTransform: "none",
-            fontSize: 16,
-          }}
-          onClick={onHome}
-        >
-          На главную
-        </Button>
+    <Box
+      sx={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 2.5,
+        px: 2,
+        py: 4,
+      }}
+    >
+      {/* Icon */}
+      <Box
+        sx={{
+          width: 80,
+          height: 80,
+          borderRadius: "22px",
+          background: "linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 8px 24px rgba(109, 40, 217, 0.3)",
+        }}
+      >
+        <RocketLaunchIcon sx={{ fontSize: 38, color: "#FFFFFF" }} />
       </Box>
+
+      {/* Text */}
+      <Box sx={{ textAlign: "center" }}>
+        <Typography variant="h6" sx={{ fontWeight: 700, color: "#18181B", mb: 0.75 }}>
+          {title}
+        </Typography>
+        <Typography variant="body2" sx={{ color: "#71717A" }}>
+          Тест доступен на главной странице
+        </Typography>
+      </Box>
+
+      {/* CTA */}
+      <Button
+        variant="contained"
+        color="primary"
+        size="large"
+        onClick={onHome}
+        sx={{ px: 4, mt: 0.5 }}
+      >
+        На главную
+      </Button>
     </Box>
   );
 }

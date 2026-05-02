@@ -20,20 +20,23 @@ export const ProfileActions = memo(
         <DykTypography
           text={`Количество тестов: ${taskCount ?? 0}`}
           variant="body2"
-          sx={{ mb: 1 }}
+          sx={{ mb: 2, color: "#71717A" }}
         />
 
         <DykButton
           title="Редактировать"
+          variant="contained"
           onClick={onEditProfile}
         />
         <DykButton
           title="Удалить аккаунт"
-          sx={{ my: 1 }}
+          variant="outlined"
+          sx={{ my: 1.5, borderColor: "#FCA5A5", color: "#DC2626", "&:hover": { bgcolor: "#FEF2F2", borderColor: "#DC2626" } }}
           onClick={onDeleteAccount}
         />
         <DykButton
           title="Выход"
+          variant="outlined"
           onClick={onLogout}
         />
       </Box>

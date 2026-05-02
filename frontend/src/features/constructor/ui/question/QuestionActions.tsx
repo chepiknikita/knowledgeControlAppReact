@@ -14,8 +14,8 @@ export function QuestionActions({
 }: Props) {
   return (
     <DialogActions sx={{ m: 1 }}>
-      <DykButton title="Сохранить" disabled={!isValid} onClick={onSave} />
-      <DykButton title="Отмена" onClick={onCancel} />
+      <DykButton title="Сохранить" disabled={!isValid} onClick={onSave} variant="contained" />
+      <DykButton title="Отмена" onClick={onCancel} variant="outlined" />
     </DialogActions>
   );
 }
