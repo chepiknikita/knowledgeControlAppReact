@@ -7,19 +7,17 @@ interface Props {
   fullWidth?: boolean;
   sx?: SxProps<Theme>;
   disabled?: boolean;
+  variant?: "contained" | "outlined" | "text";
   onClick?: <T>(event: React.MouseEvent<T, MouseEvent>) => void;
 }
 
-export default function DykButton({ title, fullWidth, sx, disabled, onClick }: Props) {
+export default function DykButton({ title, fullWidth, sx, disabled, variant = "contained", onClick }: Props) {
   return (
     <Button
-      variant="outlined"
+      variant={variant}
+      color="primary"
       fullWidth={fullWidth}
-      sx={{
-        textTransform: "none",
-        fontSize: "14px",
-        ...sx,
-      }}
+      sx={{ ...sx }}
       disabled={disabled}
       onClick={onClick}
     >

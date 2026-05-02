@@ -35,23 +35,43 @@ export function TaskActions({ onEdit, onDelete }: Props) {
         width: 80,
         height: 40,
         zIndex: 100,
+        display: "flex",
+        alignItems: "center",
       }}
     >
       {onEdit && (
         <EditIcon
-          sx={{ mt: 1, ml: 1, cursor: "pointer", zIndex: 1000 }}
+          sx={{
+            mt: 1,
+            ml: 1,
+            cursor: "pointer",
+            zIndex: 1000,
+            color: "#7C3AED",
+            fontSize: 20,
+            transition: "all 0.15s ease",
+            "&:hover": { color: "#6D28D9", transform: "scale(1.1)" },
+          }}
           onClick={(e) => {
             e.stopPropagation();
-            openDialog("edit")
+            openDialog("edit");
           }}
         />
       )}
       {onDelete && (
         <DeleteIcon
-          sx={{ mt: 1, ml: 1, cursor: "pointer", zIndex: 1000 }}
+          sx={{
+            mt: 1,
+            ml: 1,
+            cursor: "pointer",
+            zIndex: 1000,
+            color: "#F87171",
+            fontSize: 20,
+            transition: "all 0.15s ease",
+            "&:hover": { color: "#DC2626", transform: "scale(1.1)" },
+          }}
           onClick={(e) => {
             e.stopPropagation();
-            openDialog("delete")
+            openDialog("delete");
           }}
         />
       )}

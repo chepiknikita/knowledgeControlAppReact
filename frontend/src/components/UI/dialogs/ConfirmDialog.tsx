@@ -39,8 +39,8 @@ export const ConfirmDialog = ({
 
       <DialogActions>
         <Button
-          variant="outlined"
-          sx={{ textTransform: "none" }}
+          variant="contained"
+          color="primary"
           onClick={(e) => {
             e.stopPropagation();
             onConfirm();
@@ -51,7 +51,7 @@ export const ConfirmDialog = ({
         </Button>
         <Button
           variant="outlined"
-          sx={{ textTransform: "none" }}
+          color="primary"
           onClick={(e) => {
             e.stopPropagation();
             onCancel();
